@@ -21,7 +21,6 @@
             $process->setTimeout(null);
             $process->setIdleTimeout(null);
 
-
             return $process->run(function($type, $buffer){
                 $this->output->write($buffer);
             });

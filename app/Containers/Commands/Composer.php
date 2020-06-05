@@ -3,7 +3,6 @@
 
     namespace App\Containers\Commands;
 
-
     use App\Exceptions\DockerServiceNotFoundException;
     use App\Services\DockerService;
     use App\Services\TerminalService;
@@ -12,11 +11,9 @@
 
     class Composer extends Command{
         protected $signature = 'composer
-                                {operation}
-                                {package?}
-                                ';
+                                {commands* : composer command to execute} ';
 
-        protected $description = 'Launch an Artisan Migration';
+        protected $description = 'Executes a basic Composer operation';
 
         /**
          * @param DockerService $docker_service
@@ -31,13 +28,12 @@
 
             $commands = [
                 "composer",
-                $this->argument('operation')
             ];
 
-            if($this->hasArgument('package')){
-                $commands[] = $this->argument('package');
+            $composer_commands = $this->argument("commands");
+            if(!empty($composer_commands)){
+                $commands = array_merge($commands, $composer_commands);
             }
-
             return $docker_service->service('composer')->execute($terminal, $commands);
 
 

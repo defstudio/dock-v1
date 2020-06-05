@@ -1,12 +1,10 @@
 <?php
 
-    namespace App\Commands;
+    namespace App\Commands\Log;
 
     use App\Services\DockerService;
     use App\Services\TerminalService;
     use LaravelZero\Framework\Commands\Command;
-    use NunoMaduro\LaravelConsoleMenu\Menu;
-    use Symfony\Component\Process\Process;
 
     /**
      * Class Log

@@ -1,6 +1,6 @@
 <?php
 
-    namespace App\Commands;
+    namespace App\Commands\Tools;
 
     use App\Contracts\DockerComposeRecipe;
     use LaravelZero\Framework\Commands\Command;
@@ -32,7 +32,7 @@
 
             if(empty($hosts)){
                 $this->warn("No host is defined by {$recipe->label()} Recipe");
-                return;
+                return 1;
             }
 
 
@@ -42,7 +42,7 @@
                 $this->info("> $host");
             }
 
-
+            return 0;
 
         }
 

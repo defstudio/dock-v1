@@ -1,9 +1,8 @@
 <?php
 
-    namespace App\Commands;
+    namespace App\Commands\Tools;
 
     use App\Contracts\DockerComposeRecipe;
-    use Illuminate\Console\Scheduling\Schedule;
     use LaravelZero\Framework\Commands\Command;
 
     class ListUrls extends Command{

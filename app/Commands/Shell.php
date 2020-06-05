@@ -18,14 +18,15 @@
          *
          * @var string
          */
-        protected $signature = 'shell';
+        protected $signature = 'shell
+                                {service?} : service to login';
 
         /**
          * The description of the command.
          *
          * @var string
          */
-        protected $description = 'Command description';
+        protected $description = 'Log into a service shell';
 
         /**
          * Execute the console command.
@@ -36,20 +37,22 @@
          */
         public function handle(TerminalService $terminal, DockerService $docker_service){
 
-            //@formatter:off
+            if($this->argument('service')==null){
+                //@formatter:off
             $menu = $this->menu('Select Service')
                                     ->setForegroundColour(config('styles.menu.colors.foreground'))
                                     ->setBackgroundColour(config('styles.menu.colors.background'))
                                     ->setWidth(config('styles.menu.width'));
             //@formatter:on
 
-            foreach($docker_service->get_services() as $service){
-                $menu->addOption($service->service_name(), $service->service_name());
+                foreach($docker_service->get_services() as $service){
+                    $menu->addOption($service->service_name(), $service->service_name());
+                }
+
+                $container_name = $menu->open();
+            }else{
+                $container_name = $this->option('service');
             }
-
-
-
-            $container_name = $menu->open();
 
             if(empty($container_name)) return 0;
 
