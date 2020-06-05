@@ -1,0 +1,32 @@
+<?php
+
+
+    namespace App\Recipes\Laravel\Containers;
+
+
+    use App\Containers\Container;
+    use App\Exceptions\ContainerException;
+
+    class Worker extends Container{
+        protected $service_name = "worker";
+
+        protected $service_definition = [
+            'restart' => 'always',
+            'working_dir' => '/var/www',
+            'build'       => [
+                'context' => 'https://gitlab.com/defstudio/docker/laravel-worker.git',
+            ],
+            'volumes'     => [
+                './src/:/var/www',
+            ],
+        ];
+
+        /**
+         * Php constructor.
+         * @throws ContainerException
+         */
+        public function __construct(){
+            parent::__construct();
+            $this->set_user_uid();
+        }
+    }
