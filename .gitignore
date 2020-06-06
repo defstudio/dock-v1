@@ -2,9 +2,10 @@
 /.idea
 /.vscode
 /.vagrant
-/src
 /volumes
+/configs
+/src
+
 docker-compose.yml
 .phpunit.result.cache
 .env
-/configs/

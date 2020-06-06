@@ -2,6 +2,7 @@
 
     use App\Providers\AppServiceProvider;
     use App\Providers\DockerComposeServiceProvider;
+    use App\Providers\EnvServiceProvider;
     use App\Providers\RecipesServiceProvider;
     use App\Recipes\Laravel\LaravelRecipeServiceProvider;
 
@@ -61,7 +62,8 @@
     'providers' => [
         AppServiceProvider::class,
         DockerComposeServiceProvider::class,
-        LaravelRecipeServiceProvider::class
+        LaravelRecipeServiceProvider::class,
+        EnvServiceProvider::class,
     ],
 
 ];

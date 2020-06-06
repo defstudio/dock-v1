@@ -5,12 +5,15 @@
 
     use App\Services\DockerService;
     use App\Services\TerminalService;
+    use App\Traits\InteractsWithEnvContent;
     use Illuminate\Contracts\Filesystem\FileNotFoundException;
     use Illuminate\Support\Facades\Storage;
-    use Illuminate\Support\Str;
     use LaravelZero\Framework\Commands\Command;
 
     class Init extends Command{
+        use InteractsWithEnvContent;
+
+
         protected $signature = 'laravel:init';
 
         protected $description = 'Installs laravel';
@@ -122,22 +125,6 @@
             return $env_content;
         }
 
-        private function set_env(string &$env_content, string $key, $value){
-            if(Str::contains($env_content, $key)){
-                $env_content = preg_replace("/$key=.*\$/m", "$key=$value", $env_content);
-            }else{
-                $env_content .= "\n$key=$value";
-            }
 
-        }
-
-        private function get_env(string $env_content, string $key){
-            $matches=[];
-            if(preg_match("/$key=(.*)\$/m", $env_content, $matches)){
-                return $matches[1];
-            }else{
-                return "";
-            }
-        }
 
     }

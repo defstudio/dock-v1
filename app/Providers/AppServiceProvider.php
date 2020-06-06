@@ -2,12 +2,10 @@
 
     namespace App\Providers;
 
-    use App\Contracts\DockerComposeRecipe;
     use App\Services\DockerService;
     use App\Services\TerminalService;
     use Illuminate\Contracts\Container\BindingResolutionException;
     use Illuminate\Support\ServiceProvider;
-    use Symfony\Component\Process\Process;
 
     class AppServiceProvider extends ServiceProvider{
         /**

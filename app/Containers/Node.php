@@ -26,5 +26,9 @@
             $this->set_user_uid();
         }
 
-
+        public function commands(): array{
+           return [
+               Commands\Node::class,
+           ];
+        }
     }

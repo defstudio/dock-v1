@@ -2,8 +2,6 @@
 
     namespace App\Commands;
 
-    use App\Containers\Nginx;
-    use App\Contracts\DockerComposeRecipe;
     use App\Exceptions\DuplicateNetworkException;
     use App\Exceptions\DuplicateServiceException;
     use App\Exceptions\ContainerException;
@@ -14,7 +12,8 @@
     class Start extends Command{
 
         protected $signature = 'start
-                                {--build : rebuilds images before starting}';
+                                {--build : rebuilds images before starting}
+                                {--remove-orphans : remove orphans containers}';
         protected $description = 'Launch docker containers';
 
 
@@ -30,32 +29,30 @@
          */
         public function handle(DockerService $docker_service, TerminalService $terminal){
 
+
             $terminal->init($this->output);
 
 
-            $this->task('Generating docker-compose files', function()use($docker_service){
+            $this->task('Generating docker-compose files', function() use ($docker_service){
                 return $docker_service->publish();
             });
 
 
-
-
-            $this->task('Starting containers', function()use($terminal){
+            $this->task('Starting containers', function() use ($terminal){
                 $command = [
                     'docker-compose',
                     'up',
-                    '-d'
+                    '-d',
                 ];
 
 
-                if($this->option('build')){
-                    $command[] = '--build';
-                }
+                if($this->option('build')) $command[] = '--build';
+                if($this->option('remove-orphans')) $command[] = '--remove-orphans';
 
 
                 $exit_code = $terminal->execute($command);
 
-                if($exit_code>0){
+                if($exit_code > 0){
                     return false;
                 }
 

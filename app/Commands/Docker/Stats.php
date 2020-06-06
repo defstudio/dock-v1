@@ -37,8 +37,6 @@
          */
         public function handle(TerminalService $terminal){
 
-
-
             $commands = [
               "docker",
               "stats",

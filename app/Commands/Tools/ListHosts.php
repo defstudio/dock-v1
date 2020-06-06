@@ -2,7 +2,7 @@
 
     namespace App\Commands\Tools;
 
-    use App\Contracts\DockerComposeRecipe;
+    use App\Recipes\DockerComposeRecipe;
     use LaravelZero\Framework\Commands\Command;
 
     class ListHosts extends Command{

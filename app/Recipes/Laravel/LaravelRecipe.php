@@ -10,11 +10,9 @@
     use App\Containers\Node;
     use App\Containers\PhpMyAdmin;
     use App\Containers\Redis;
-    use App\Contracts\DockerComposeRecipe;
     use App\Containers\Composer;
     use App\Containers\MySql;
-    use App\Exceptions\DuplicateServiceException;
-    use App\Exceptions\ContainerException;
+    use App\Recipes\DockerComposeRecipe;
     use App\Recipes\Laravel\Commands\Artisan;
     use App\Recipes\Laravel\Commands\Init;
     use App\Recipes\Laravel\Commands\Install;
@@ -22,23 +20,140 @@
     use App\Recipes\Laravel\Containers\EchoServer;
     use App\Recipes\Laravel\Containers\Php;
     use App\Recipes\Laravel\Containers\Worker;
-    use App\Services\DockerService;
+    use App\Traits\InteractsWithEnvContent;
+    use Illuminate\Console\Command;
     use Illuminate\Contracts\Container\BindingResolutionException;
+    use Illuminate\Contracts\Filesystem\FileNotFoundException;
+    use Illuminate\Support\Facades\Storage;
 
-    class LaravelRecipe implements DockerComposeRecipe{
+    class LaravelRecipe extends DockerComposeRecipe{
+        use InteractsWithEnvContent;
 
         const LABEL = 'Laravel';
 
-        private $docker_service;
 
-        /** @var Container[] $services */
-        private $containers = [];
+        public function init(Command $parent_command): int{
 
-        private $exposed_hosts = [];
-        private $exposed_addresses = [];
+            try{
 
-        public function __construct(DockerService $docker_service){
-            $this->docker_service = $docker_service;
+                $env_content = Storage::disk('local')->get('env/.env.laravel');
+
+            } catch(FileNotFoundException $e){
+                $parent_command->error('Cannot find this recipe .env file template');
+                return 1;
+            }
+
+            if($parent_command->confirm('Would you like to customize your recipe?')){
+
+                //<editor-fold desc="General Configuration">
+                $parent_command->question("Network configuration");
+
+                $application_host = $parent_command->ask("Enter application hostname", "laravel.ktm");
+                $this->set_env($env_content, "HOST", $application_host);
+
+                $application_env = $parent_command->choice("Enter application environment", ['local', 'production'], 0);
+                $this->set_env($env_content, "ENV", $application_env);
+                //</editor-fold>
+
+
+                //<editor-fold desc="Network CONfiguration">
+                $parent_command->question("Network configuration");
+                if($parent_command->confirm("Is the application behind a proxy?")){
+                    $this->comment_env($env_content, 'NGINX_PORT');
+                    $this->comment_env($env_content, 'NGINX_PORT_SSL');
+                    $this->comment_env($env_content, 'MYSQL_PORT');
+                    $this->comment_env($env_content, 'PHPMYADMIN_PORT');
+                    $this->comment_env($env_content, 'MAILHOG_PORT');
+                }else{
+
+                    $parent_command->info("Exposed services selection (leave blank to skip)");
+
+                    $nginx_port = $parent_command->ask("Enter Nginx exposed port", 80);
+                    if(!empty($nginx_port)){
+                        if($nginx_port=='443'){
+                            $this->comment_env($env_content, 'NGINX_PORT');
+                            $this->set_env($env_content, "NGINX_PORT_SSL", $nginx_port);
+                        }else{
+                            $this->set_env($env_content, "NGINX_PORT", $nginx_port);
+                        }
+                    }else{
+                        $this->comment_env($env_content, 'NGINX_PORT');
+                    }
+
+                    if($nginx_port!=443){
+                        $nginx_ssl_port = $parent_command->ask("Enter Nginx SSL exposed port", 443);
+                        if(!empty($nginx_ssl_port)) {
+                            $this->set_env($env_content, "NGINX_PORT_SSL", $nginx_ssl_port);
+                        }else{
+                            $this->comment_env($env_content, 'NGINX_PORT_SSL');
+                        }
+                    }
+
+                    $mysql_port = $parent_command->ask("Enter MySQL exposed port", 3306);
+                    if(!empty($mysql_port)) {
+                        $this->set_env($env_content, "MYSQL_PORT", $mysql_port);
+                    }else{
+                        $this->comment_env($env_content, 'MYSQL_PORT');
+                    }
+
+                    $phpmyadmin_port = $parent_command->ask("Enter PhpMyAdmin exposed port", 8081);
+                    if(!empty($phpmyadmin_port)) {
+                        $this->set_env($env_content, "PHPMYADMIN_PORT", $phpmyadmin_port);
+                    }else{
+                        $this->comment_env($env_content, 'PHPMYADMIN_PORT');
+                    }
+
+                    $phpmyadmin_subdomain = $parent_command->ask("Enter PhpMyAdmin exposed subdomain", "mysql");
+                    if(!empty($phpmyadmin_subdomain)) {
+                        $this->set_env($env_content, "PHPMYADMIN_SUBDOMAIN", $phpmyadmin_subdomain);
+                    }else{
+                        $this->comment_env($env_content, 'PHPMYADMIN_SUBDOMAIN');
+                    }
+
+                    $mailhog_port = $parent_command->ask("Enter MailHog exposed port", 8025);
+                    if(!empty($mailhog_port)) {
+                        $this->set_env($env_content, "MAILHOG_PORT", $mailhog_port);
+                    }else{
+                        $this->comment_env($env_content, 'MAILHOG_PORT');
+                    }
+
+                    $mailhog_subdomain = $parent_command->ask("Enter MailHog exposed subdomain", "mail");
+                    if(!empty($mailhog_subdomain)) {
+                        $this->set_env($env_content, "MAILHOG_SUBDOMAIN", $mailhog_subdomain);
+                    }else{
+                        $this->comment_env($env_content, 'MAILHOG_SUBDOMAIN');
+                    }
+                }
+                //</editor-fold>
+
+
+                //<editor-fold desc="MySql Configuration">
+                $parent_command->question("MySql configuration");
+                $this->set_env($env_content, 'MYSQL_DATABASE', $parent_command->ask("Database Name", "database"));
+                $this->set_env($env_content, 'MYSQL_USER', $parent_command->ask("Database User", "dbuser"));
+                $this->set_env($env_content, 'MYSQL_PASSWORD', $parent_command->ask("Database Password", "dbpassword"));
+                $this->set_env($env_content, 'MYSQL_ROOT_PASSWORD', $parent_command->ask("Database Root Password", "root"));
+                //</editor-fold>
+
+
+            }
+
+            Storage::disk('cwd')->put('.env', $env_content);
+
+
+            return 0;
+        }
+
+
+
+
+        protected function recipe_commands(): array{
+            return [
+                Install::class,
+                Init::class,
+                Artisan::class,
+                Migrate::class
+            ];
         }
 
         /**
@@ -71,8 +186,6 @@
             $redis = $this->add_container(Redis::class);
 
             $this->build_echo_server($redis, $nginx);
-
-
         }
 
         /**
@@ -210,70 +323,5 @@
             return $echo_server;
         }
 
-        public function commands(): array{
-            $commands = [
-                Install::class,
-                Init::class,
-                Artisan::class,
-                Migrate::class,
-            ];
-
-
-
-            foreach($this->containers as $container){
-                foreach($container->commands() as $command){
-                    $commands[] = $command;
-                }
-            }
-
-            return array_unique($commands);
-        }
-
-        /**
-         * @param string $class
-         * @param array $arguments
-         * @return Container
-         * @throws BindingResolutionException
-         */
-        private function add_container(string $class, array $arguments = []): Container{
-            $container = app()->make($class, $arguments);
-            $this->containers[] = $container;
-            return $container;
-        }
-
-        /**
-         * @throws DuplicateServiceException
-         * @throws ContainerException
-         */
-        public function setup(){
-            foreach($this->containers as $container){
-                $this->docker_service->add_container($container);
-            }
-        }
-
-        private function add_exposed_host($hostname){
-            $this->exposed_hosts[] = $hostname;
-        }
-
-        private function add_exposed_address(string $label, string $protocol, $uri, $port){
-            if($port==80||$port==443){
-                $port = "";
-            }else{
-                $port = ":$port";
-            }
-            $this->exposed_addresses[$label] = "$protocol://{$uri}{$port}";
-        }
-
-        public function hosts(): array{
-            return array_unique($this->exposed_hosts);
-        }
-
-        public function urls(): array{
-            return $this->exposed_addresses;
-        }
-
-        public function label(): string{
-            return static::LABEL;
-        }
 
     }

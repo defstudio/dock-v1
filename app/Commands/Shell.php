@@ -38,12 +38,13 @@
         public function handle(TerminalService $terminal, DockerService $docker_service){
 
             if($this->argument('service')==null){
+
                 //@formatter:off
-            $menu = $this->menu('Select Service')
+                $menu = $this->menu('Select Service')
                                     ->setForegroundColour(config('styles.menu.colors.foreground'))
                                     ->setBackgroundColour(config('styles.menu.colors.background'))
                                     ->setWidth(config('styles.menu.width'));
-            //@formatter:on
+                //@formatter:on
 
                 foreach($docker_service->get_services() as $service){
                     $menu->addOption($service->service_name(), $service->service_name());

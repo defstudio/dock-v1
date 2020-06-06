@@ -4,6 +4,7 @@
     namespace App\Services;
 
 
+    use App\Commands\Log\Log;
     use App\Containers\Container;
     use App\Exceptions\DuplicateNetworkException;
     use App\Exceptions\DuplicateServiceException;
