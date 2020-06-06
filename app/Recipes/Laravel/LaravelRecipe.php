@@ -17,6 +17,7 @@
     use App\Recipes\Laravel\Commands\Init;
     use App\Recipes\Laravel\Commands\Install;
     use App\Recipes\Laravel\Commands\Migrate;
+    use App\Recipes\Laravel\Commands\Watch;
     use App\Recipes\Laravel\Containers\EchoServer;
     use App\Recipes\Laravel\Containers\Php;
     use App\Recipes\Laravel\Containers\Worker;
@@ -144,15 +145,13 @@
             return 0;
         }
 
-
-
-
         protected function recipe_commands(): array{
             return [
                 Install::class,
                 Init::class,
                 Artisan::class,
-                Migrate::class
+                Migrate::class,
+                Watch::class,
             ];
         }
 

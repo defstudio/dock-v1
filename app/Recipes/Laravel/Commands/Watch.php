@@ -1,7 +1,7 @@
 <?php
 
 
-    namespace App\Containers\Commands;
+    namespace App\Recipes\Laravel\Commands;
 
     use App\Exceptions\DockerServiceNotFoundException;
     use App\Services\DockerService;
@@ -9,11 +9,10 @@
     use Illuminate\Contracts\Container\BindingResolutionException;
     use LaravelZero\Framework\Commands\Command;
 
-    class Npm extends Command{
-        protected $signature = 'npm
-                                {commands* : npm commands to execute} ';
+    class Watch extends Command{
+        protected $signature = 'watch';
 
-        protected $description = 'Executes an npm command';
+        protected $description = 'Executes npm run watch';
 
         /**
          * @param DockerService $docker_service
@@ -28,12 +27,11 @@
 
             $commands = [
                 "npm",
+                "run",
+                "watch",
             ];
 
-            $composer_commands = $this->argument("commands");
-            if(!empty($composer_commands)){
-                $commands = array_merge($commands, $composer_commands);
-            }
+
             return $docker_service->service('node')->execute($terminal, $commands);
 
 
