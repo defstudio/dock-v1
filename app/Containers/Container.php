@@ -183,7 +183,12 @@
             return [];
         }
 
-        protected function disk(): Filesystem{
+
+		public function backup(string $backup_folder): bool {
+            return true;
+		}
+
+		protected function disk(): Filesystem{
             return Storage::disk('configs');
         }
 

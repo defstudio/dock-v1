@@ -10,3 +10,4 @@ docker-compose.yml
 .phpunit.result.cache
 .env
 /.env.backup
+/backup/

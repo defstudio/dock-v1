@@ -15,10 +15,14 @@
                 'root'   => getcwd(),
             ],
 
-
             'configs' => [
                 'driver' => 'local',
                 'root'   => getcwd()."/configs",
+            ],
+
+            'backup' => [
+                'driver' => 'local',
+                'root'   => getcwd()."/backup",
             ],
 
             'src' => [

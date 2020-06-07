@@ -5,6 +5,9 @@
 
 
 
+    use App\Services\TerminalService;
+    use Illuminate\Contracts\Container\BindingResolutionException;
+
     class MySql extends Container{
         protected $service_name = 'mysql';
 
@@ -54,7 +57,27 @@
             $this->set_environment('MYSQL_ROOT_PASSWORD', $password);
         }
 
+        /**
+         * @param $backup_folder
+         * @return bool
+         * @throws BindingResolutionException
+         */
+        public function backup($backup_folder): bool{
+            /** @var TerminalService $terminal */
+            $terminal = app()->make(TerminalService::class);
 
+           return $this->execute($terminal, [
+               "/usr/bin/mysqldump",
+               '-u root',
+               '--password='.env('MYSQL_ROOT_PASSWORD'),
+               env('MYSQL_DATABASE'),
+               '>',
+               'backup.sql'
+            ]);
+
+
+
+        }
 
 
     }

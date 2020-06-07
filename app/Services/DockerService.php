@@ -17,8 +17,8 @@
     class DockerService{
 
 
-        /** @var Container[] $services  */
-        private $services = [];
+        /** @var Container[] $containers  */
+        private $containers = [];
 
         private $networks = [];
 
@@ -42,18 +42,18 @@
         }
 
         /**
-         * @param Container $service
+         * @param Container $container
          * @return Container
          * @throws DuplicateServiceException
          * @throws ContainerException
          */
-        public function add_container(Container $service){
-            if(!empty($this->services[$service->service_name()])) throw new DuplicateServiceException("Duplicate service: ". $service->service_name());
+        public function add_container(Container $container){
+            if(!empty($this->containers[$container->service_name()])) throw new DuplicateServiceException("Duplicate service: ". $container->service_name());
 
-            $service->setup($this);
-            $this->services[$service->service_name()] = $service;
+            $container->setup($this);
+            $this->containers[$container->service_name()] = $container;
 
-            return $service;
+            return $container;
         }
 
         /**
@@ -88,10 +88,9 @@
         private function publish_services(): array{
             $services = [];
 
-            /** @var Container $service */
-            foreach($this->services as $name => $service){
-                $service->publish_assets();
-                $services[$name] = $service->get_service_definition();
+            foreach($this->containers as $name => $container){
+                $container->publish_assets();
+                $services[$name] = $container->get_service_definition();
             }
 
             return $services;
@@ -105,8 +104,8 @@
         /**
          * @return Container[]
          */
-        public function get_services(){
-            return $this->services;
+        public function get_containers(){
+            return $this->containers;
         }
 
         /**
@@ -115,10 +114,12 @@
          * @throws DockerServiceNotFoundException
          */
         public function service(string $service_name): Container{
-            if(empty($this->services[$service_name])) throw new DockerServiceNotFoundException("Service $service_name not found");
+            if(empty($this->containers[$service_name])) throw new DockerServiceNotFoundException("Service $service_name not found");
 
-            return $this->services[$service_name];
+            return $this->containers[$service_name];
         }
 
 
-    }
+
+
+	}

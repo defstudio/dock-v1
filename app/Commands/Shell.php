@@ -46,7 +46,7 @@
                                     ->setWidth(config('styles.menu.width'));
                 //@formatter:on
 
-                foreach($docker_service->get_services() as $service){
+                foreach($docker_service->get_containers() as $service){
                     $menu->addOption($service->service_name(), $service->service_name());
                 }
 

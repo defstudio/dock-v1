@@ -4,12 +4,14 @@
 	namespace App\Services;
 
 
-	use Symfony\Component\Process\Process;
+	use Illuminate\Console\OutputStyle;
+    use Symfony\Component\Process\Process;
 
     class TerminalService{
+        /** @var OutputStyle $output */
 	    private $output;
 
-        public function init($output){
+        public function init(OutputStyle $output){
             $this->output = $output;
         }
 
@@ -22,7 +24,9 @@
             $process->setIdleTimeout(null);
 
             return $process->run(function($type, $buffer){
-                $this->output->write($buffer);
+                if(!empty($this->output)){
+                    $this->output->write($buffer);
+                }
             });
         }
 	}
