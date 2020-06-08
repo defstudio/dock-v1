@@ -14,7 +14,7 @@
 
         public function update(OutputStyle $output){
 
-            dd(app('version'));
+
 
             $result = $this->perform_update();
 
@@ -73,6 +73,6 @@
         }
 
         private function get_current_local_version():string{
-            return "";
+            return config('app.version');
         }
     }
