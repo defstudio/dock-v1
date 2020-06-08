@@ -14,7 +14,7 @@
 
         public function update(OutputStyle $output){
 
-            dd(app('git.version'));
+            dd(app('version'));
 
             $result = $this->perform_update();
 
