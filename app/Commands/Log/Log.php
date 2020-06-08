@@ -5,7 +5,6 @@
     use App\Services\DockerService;
     use App\Services\TerminalService;
     use LaravelZero\Framework\Commands\Command;
-    use NunoMaduro\LaravelConsoleMenu\Menu;
 
     /**
      * Class Log
@@ -29,19 +28,12 @@
         public function handle(TerminalService $terminal, DockerService $docker_service){
 
             if($this->argument('service')==null){
-
-                //@formatter:off
-                $menu = $this->menu('Select Service to Log')
-                             ->setForegroundColour(config('styles.menu.colors.foreground'))
-                             ->setBackgroundColour(config('styles.menu.colors.background'))
-                             ->setWidth(config('styles.menu.width'));
-                //@formatter:on
-
+                $available_services = [];
                 foreach($docker_service->get_containers() as $service){
-                    $menu->addOption($service->service_name(), $service->service_name());
+                    $available_services[] = $service->service_name();
                 }
 
-                $service = $menu->open();
+                $service = $this->choice("Select Service to log:", $available_services);
             }else{
                 $service = $this->argument('service');
             }

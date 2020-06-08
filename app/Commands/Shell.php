@@ -5,11 +5,9 @@
     use App\Services\DockerService;
     use App\Services\TerminalService;
     use LaravelZero\Framework\Commands\Command;
-    use NunoMaduro\LaravelConsoleMenu\Menu;
 
     /**
      * Class Shell
-     * @method Menu menu($name, $options = [])
      * @package App\Commands
      */
     class Shell extends Command{
@@ -39,30 +37,24 @@
 
             if($this->argument('service')==null){
 
-                //@formatter:off
-                $menu = $this->menu('Select Service')
-                                    ->setForegroundColour(config('styles.menu.colors.foreground'))
-                                    ->setBackgroundColour(config('styles.menu.colors.background'))
-                                    ->setWidth(config('styles.menu.width'));
-                //@formatter:on
-
+                $available_services = [];
                 foreach($docker_service->get_containers() as $service){
-                    $menu->addOption($service->service_name(), $service->service_name());
+                    $available_services[] = $service->service_name();
                 }
 
-                $container_name = $menu->open();
+                $service_name = $this->choice("Select Service:", $available_services);
             }else{
-                $container_name = $this->option('service');
+                $service_name = $this->option('service');
             }
 
-            if(empty($container_name)) return 0;
+            if(empty($service_name)) return 0;
 
-            $this->info("Starting shell for container: $container_name");
+            $this->info("Starting shell for container: $service_name");
 
             return $terminal->execute([
                 'docker-compose',
                 'exec',
-                $container_name,
+                $service_name,
                 'bash',
             ]);
 

@@ -37,7 +37,7 @@
 
             try{
 
-                $env_content = Storage::disk('local')->get('env/.env.laravel');
+                $env_content = Storage::get('env/Laravel');
 
             } catch(FileNotFoundException $e){
                 $parent_command->error('Cannot find this recipe .env file template');

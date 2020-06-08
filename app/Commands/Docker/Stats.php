@@ -5,11 +5,9 @@
     use App\Services\DockerService;
     use App\Services\TerminalService;
     use LaravelZero\Framework\Commands\Command;
-    use NunoMaduro\LaravelConsoleMenu\Menu;
 
     /**
      * Class Shell
-     * @method Menu menu($name, $options = [])
      * @package App\Commands
      */
     class Stats extends Command{

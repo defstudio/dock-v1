@@ -7,11 +7,9 @@
     use App\Services\TerminalService;
     use Illuminate\Support\Facades\Storage;
     use LaravelZero\Framework\Commands\Command;
-    use NunoMaduro\LaravelConsoleMenu\Menu;
 
     /**
      * Class Init
-     * @method Menu menu($name, $options = [])
      * @package App\Commands
      */
     class Init extends Command{
@@ -48,20 +46,13 @@
             }
 
 
-            //@formatter:off
-            $menu = $this->menu("Select a recipe:")
-                ->setForegroundColour(config('styles.menu.colors.foreground'))
-                ->setBackgroundColour(config('styles.menu.colors.background'))
-                ->setWidth(config('styles.menu.width'));
-            //@formatter:on
+            $recipes = config('recipes', []);
 
+            $recipes_labels = array_keys($recipes);
 
-            foreach(config('recipes', []) as $label => $recipe_class){
-                $menu->addOption($recipe_class, $label);
-            }
-            $recipe_class = $menu->open();
+            $recipes_label = $this->choice("Select a recipe:", $recipes_labels);
 
-            if(empty($recipe_class)) return 0;
+            $recipe_class = $recipes[$recipes_label];
 
             /** @var DockerComposeRecipe $recipe */
             $recipe = $this->app->make($recipe_class);

@@ -25,7 +25,7 @@
 
                 $recipe->setup();
             } catch(BindingResolutionException $e){
-                Log::error('No recipe is defined');
+
             }
 
 

@@ -26,8 +26,6 @@
          */
         public function handle(DockerService $docker_service, TerminalService $terminal){
 
-            $terminal->init($this->output);
-
             $src = Storage::disk('src');
 
 
