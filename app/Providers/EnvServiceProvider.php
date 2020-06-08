@@ -10,7 +10,14 @@
     class EnvServiceProvider extends ServiceProvider{
 
         protected $allowed_commands = [
-            'init', 'app:build'
+            'init',
+            'app:build',
+            'app:install',
+            'app:rename',
+            'app:update',
+            'make:command',
+            'stub:publish',
+            'self-update',
         ];
 
         public function register(){

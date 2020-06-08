@@ -11,7 +11,7 @@
         /** @var OutputStyle $output */
 	    private $output;
 
-        public function init(OutputStyle $output){
+        public function init($output){
             $this->output = $output;
         }
 
