@@ -67,8 +67,8 @@
             $terminal = app()->make(TerminalService::class);
 
            return $this->execute($terminal, [
-               "/usr/bin/mysqldump",
-               '-u root',
+               "mysqldump",
+               '-u','root',
                '--password='.env('MYSQL_ROOT_PASSWORD'),
                env('MYSQL_DATABASE'),
                '>',

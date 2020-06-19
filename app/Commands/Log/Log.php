@@ -8,7 +8,6 @@
 
     /**
      * Class Log
-     * @method Menu menu($name, $options = [])
      * @package App\Commands
      */
     class Log extends Command{
