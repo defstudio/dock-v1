@@ -162,7 +162,7 @@
 
         }
 
-        public function execute(TerminalService $terminal, array $commands){
+        public function execute(TerminalService $terminal, array $commands, string $input=null){
 
             $service_command = [
                 'docker-compose',
@@ -172,7 +172,22 @@
 
             $commands = array_merge($service_command, $commands);
 
-            return $terminal->execute($commands);
+            $result = $terminal->execute($commands, $input=null);
+
+            return $result;
+        }
+
+        public function execute_in_shell_command_line(TerminalService $terminal, array $commands){
+            $service_command = [
+                'docker-compose',
+                'exec',
+                $this->service_name(),
+            ];
+
+            $commands = array_merge($service_command, $commands);
+
+            $result = $terminal->execute_in_shell_command_line($commands);
+            return $result;
         }
 
         /**

@@ -4,7 +4,6 @@
     namespace App\Containers;
 
 
-
     use App\Services\TerminalService;
     use Illuminate\Contracts\Container\BindingResolutionException;
 
@@ -66,16 +65,26 @@
             /** @var TerminalService $terminal */
             $terminal = app()->make(TerminalService::class);
 
-           return $this->execute($terminal, [
-               "mysqldump",
-               '-u','root',
-               '--password='.env('MYSQL_ROOT_PASSWORD'),
-               env('MYSQL_DATABASE'),
-               '>',
-               'backup.sql'
+            // $this->execute($terminal, [
+            //    'echo',
+            //     '"[client]\nuser=root\npassword='.env('MYSQL_ROOT_PASSWORD').'"',
+            //     '>',
+            //     '~/.my.cnf',
+            // ]);
+
+            $result = $this->execute_in_shell_command_line($terminal, [
+                "mysqldump",
+                env('MYSQL_DATABASE'),
+                '>',
+                'backup.sql',
             ]);
 
 
+            if($result==0){
+                return true;
+            }else{
+                return false;
+            }
 
         }
 

@@ -16,8 +16,10 @@
         }
 
 
-        public function execute(array $commands): int{
+        public function execute(array $commands, string $input=null): int{
             $process = new Process($commands);
+
+            if(!empty($input)) $process->setInput($process);
 
             $process->setTty(Process::isTtySupported());
             $process->setTimeout(null);
@@ -29,4 +31,20 @@
                 }
             });
         }
+
+        public function execute_in_shell_command_line(array $commands): int{
+            $process = Process::fromShellCommandline(implode(' ', $commands));
+
+            $process->setTty(Process::isTtySupported());
+            $process->setTimeout(null);
+            $process->setIdleTimeout(null);
+
+            return $process->run(function($type, $buffer){
+                if(!empty($this->output)){
+                    $this->output->write($buffer);
+                }
+            });
+        }
+
+
 	}
