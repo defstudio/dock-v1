@@ -6,7 +6,7 @@
 
     use App\Services\TerminalService;
     use Illuminate\Contracts\Container\BindingResolutionException;
-
+    
     class MySql extends Container{
         protected $service_name = 'mysql';
 
@@ -65,19 +65,41 @@
             /** @var TerminalService $terminal */
             $terminal = app()->make(TerminalService::class);
 
-            // $this->execute($terminal, [
-            //    'echo',
-            //     '"[client]\nuser=root\npassword='.env('MYSQL_ROOT_PASSWORD').'"',
-            //     '>',
-            //     '~/.my.cnf',
-            // ]);
+            $backup_file = config('filesystems.disks.backup.root')."/$backup_folder/mysql.sql";
 
             $result = $this->execute_in_shell_command_line($terminal, [
                 "mysqldump",
+                "-uroot",
+                "-proot",
                 env('MYSQL_DATABASE'),
                 '>',
-                'backup.sql',
+                $backup_file,
             ]);
+
+            //Elimina la prima riga del file di backup, quella
+            //che conterrà il messaggio di errore per la password
+            //usata in command line
+            $firstline = false;
+            if($handle = fopen($backup_file,'c+')){
+                if(!flock($handle,LOCK_EX)){fclose($handle);}
+                $offset = 0;
+                $len = filesize($backup_file);
+                while(($line = fgets($handle,4096)) !== false){
+                    if(!$firstline ){
+                        $firstline = $line;
+                        $offset = strlen($firstline);
+                        continue;
+                    }
+                    $pos = ftell($handle);
+                    fseek($handle,$pos-strlen($line)-$offset);
+                    fputs($handle,$line);
+                    fseek($handle,$pos);
+                }
+                fflush($handle);
+                ftruncate($handle,($len-$offset));
+                flock($handle,LOCK_UN);
+                fclose($handle);
+            }
 
 
             if($result==0){
