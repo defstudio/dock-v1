@@ -1,6 +1,6 @@
 {
     "name": "def-studio/dock",
-    "version": "0.1.0",
+    "version": "1.1.0",
     "description": "Laravel Zero Docker Manager",
     "keywords": ["framework", "laravel", "laravel zero", "console", "cli"],
     "homepage": "https://defstudio.it",
@@ -12,8 +12,8 @@
     },
     "authors": [
         {
-            "name": "Nuno Maduro",
-            "email": "enunomaduro@gmail.com"
+            "name": "Fabio Ivona",
+            "email": "fabio.ivona@defstudio.it"
         }
     ],
     "require": {
