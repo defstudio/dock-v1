@@ -284,7 +284,7 @@
 
             if(!empty(env("MAILHOG_SUBDOMAIN"))){
                 $host = env('MAILHOG_SUBDOMAIN') . "." . env('HOST');
-                $nginx->add_proxy($host, $mailhog->service_name());
+                $nginx->add_proxy($host, $mailhog->service_name(), 8025);
                 $this->add_exposed_host($host);
                 $this->add_exposed_address("MailHog ", "http", $host, 80);
             }
