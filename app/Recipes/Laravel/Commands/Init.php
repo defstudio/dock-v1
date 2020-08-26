@@ -16,7 +16,7 @@
 
         protected $signature = 'laravel:init';
 
-        protected $description = 'Installs laravel';
+        protected $description = 'Initialize an existing laravel source';
 
         /**
          * @param DockerService $docker_service

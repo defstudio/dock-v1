@@ -166,13 +166,13 @@
 
             $service_command = [
                 'docker-compose',
-                'exec',
+                'run',
                 $this->service_name(),
             ];
 
             $commands = array_merge($service_command, $commands);
 
-            $result = $terminal->execute($commands, $input=null);
+            $result = $terminal->execute($commands, $input);
 
             return $result;
         }
