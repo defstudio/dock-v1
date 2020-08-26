@@ -38,8 +38,8 @@
 
 
 
-
-            $init_command = app()->make(Init::class);
+            $init_command = app()->make(Init::class, []);
+            $init_command->setOutput($this->output);
             $init_command->handle($docker_service, $terminal);
 
             return 0;
