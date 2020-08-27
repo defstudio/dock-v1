@@ -98,8 +98,20 @@
          * @noinspection PhpUnused
          * @return Container
          */
-        public function set_environment($key, $value){
-            $this->service_definition['environment'][$key] = $value;
+        public function set_environment($key, $value, $associative_array=true){
+            if($associative_array){
+                $this->service_definition['environment'][$key] = $value;
+            }else{
+                foreach($this->service_definition['environment']??[] as &$environment_definition){
+                    if(Str::startsWith($environment_definition, "$key=")){
+                        $environment_definition = "$key=$value";
+                        return $this;
+                    }
+                }
+                $this->service_definition['environment'][] = "$key=$value";
+                $this->service_definition['environment'][$key] = $value;
+            }
+
             return $this;
         }
 
