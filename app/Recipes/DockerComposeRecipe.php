@@ -10,6 +10,8 @@
     use App\Services\DockerService;
     use Illuminate\Console\Command;
     use Illuminate\Contracts\Container\BindingResolutionException;
+    use Illuminate\Contracts\Filesystem\FileNotFoundException;
+    use Illuminate\Support\Facades\Storage;
 
     abstract class DockerComposeRecipe{
 
@@ -36,7 +38,22 @@
          * @param Command $parent_command
          * @return int
          */
-        public abstract function init(Command $parent_command): int;
+        public function init(Command $parent_command): int{
+            try{
+                $env_content = Storage::get('env/'.$this->label());
+            } catch(FileNotFoundException $e){
+                $parent_command->error('Cannot find this recipe .env file template');
+                return 1;
+            }
+
+            $env_content = $this->customize_init($parent_command, $env_content);
+
+            Storage::disk('cwd')->put('.env', $env_content);
+
+            return 0;
+        }
+
+        protected abstract function customize_init(Command $parent_command, string $env_content): string;
 
 	    public function label(){
 	        return static::LABEL;
@@ -103,6 +120,7 @@
          * @throws BindingResolutionException
          */
         protected function add_container(string $class, array $arguments = []): Container{
+
             $container = app()->make($class, $arguments);
             $this->containers[] = $container;
             return $container;

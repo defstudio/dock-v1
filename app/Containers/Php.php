@@ -8,7 +8,8 @@
     use Illuminate\Contracts\Filesystem\Filesystem;
     use Illuminate\Support\Facades\Storage;
 
-    class Php extends Container{
+    class
+    Php extends Container{
 
         protected $service_name = "php";
 

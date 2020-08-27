@@ -99,13 +99,7 @@
          * @return Container
          */
         public function set_environment($key, $value){
-            foreach($this->service_definition['environment']??[] as &$environment_definition){
-                if(Str::startsWith($environment_definition, "$key=")){
-                    $environment_definition = "$key=$value";
-                    return $this;
-                }
-            }
-            $this->service_definition['environment'][] = "$key=$value";
+            $this->service_definition['environment'][$key] = $value;
             return $this;
         }
 

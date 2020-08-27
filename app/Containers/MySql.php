@@ -19,10 +19,10 @@
             ],
             'image'       => 'mysql:8',
             'environment' => [
-                'MYSQL_DATABASE=database',
-                'MYSQL_USER=dbuser',
-                'MYSQL_PASSWORD=dbpassword',
-                'MYSQL_ROOT_PASSWORD=root',
+                'MYSQL_DATABASE'=>'database',
+                'MYSQL_USER'=>'dbuser',
+                'MYSQL_PASSWORD'=>'dbpassword',
+                'MYSQL_ROOT_PASSWORD'=>'root',
             ],
             'volumes'     => [
                 './volumes/mysql/db/:/var/lib/mysql',

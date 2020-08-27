@@ -13,8 +13,8 @@
             'expose'      => [80],
             'image'       => 'phpmyadmin/phpmyadmin',
             'environment' => [
-                'MYSQL_ROOT_PASSWORD=root',
-                'PMA_HOST=mysql',
+                'MYSQL_ROOT_PASSWORD'=>'root',
+                'PMA_HOST'=>'mysql',
             ],
         ];
 

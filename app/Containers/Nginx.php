@@ -47,6 +47,7 @@
 
         public function __construct(Php $php_service){
             parent::__construct();
+
             $this->php_service = $php_service;
         }
 
@@ -77,7 +78,6 @@
          * @param DockerService $service
          * @throws DuplicateServiceException
          * @throws ContainerException
-         * @throws DuplicateNetworkException
          */
         public function setup(DockerService $service){
             $this->php_service->service_name(self::PHP_SERVICE_NAME);

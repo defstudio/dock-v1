@@ -5,6 +5,7 @@
     use App\Providers\EnvServiceProvider;
     use App\Providers\RecipesServiceProvider;
     use App\Recipes\Laravel\LaravelRecipeServiceProvider;
+    use App\Recipes\Wordpress\WordpressRecipeServiceProvider;
 
     return [
 
@@ -63,6 +64,7 @@
         AppServiceProvider::class,
         DockerComposeServiceProvider::class,
         LaravelRecipeServiceProvider::class,
+        WordpressRecipeServiceProvider::class,
         EnvServiceProvider::class,
     ],
 

@@ -1,55 +1,42 @@
-<?php
+<?php /** @noinspection DuplicatedCode */
 
 
-    namespace App\Recipes\Laravel;
+    namespace App\Recipes\Wordpress;
 
-    use App\Containers\MailHog;
-    use App\Containers\Nginx;
-    use App\Containers\Node;
-    use App\Containers\PhpMyAdmin;
-    use App\Containers\Redis;
+
     use App\Containers\Composer;
+    use App\Containers\MailHog;
     use App\Containers\MySql;
+    use App\Containers\Nginx;
+    use App\Containers\Php;
+    use App\Containers\PhpMyAdmin;
     use App\Recipes\DockerComposeRecipe;
-    use App\Recipes\Laravel\Commands\Artisan;
-    use App\Recipes\Laravel\Commands\Init;
-    use App\Recipes\Laravel\Commands\Install;
-    use App\Recipes\Laravel\Commands\Migrate;
-    use App\Recipes\Laravel\Commands\Watch;
-    use App\Recipes\Laravel\Containers\EchoServer;
-    use App\Recipes\Laravel\Containers\Php;
-    use App\Recipes\Laravel\Containers\Worker;
+    use App\Recipes\Wordpress\Containers\Wordpress;
     use App\Traits\InteractsWithEnvContent;
     use Illuminate\Console\Command;
     use Illuminate\Contracts\Container\BindingResolutionException;
-    use Illuminate\Contracts\Filesystem\FileNotFoundException;
-    use Illuminate\Support\Facades\Storage;
 
-    class LaravelRecipe extends DockerComposeRecipe{
+    class WordpressRecipe extends DockerComposeRecipe{
+
         use InteractsWithEnvContent;
 
-        const LABEL = 'Laravel';
+        const LABEL = 'Wordpress';
+        const DEFAULT_HOST = 'wordpress.ktm';
 
-        const DEFAULT_HOST = 'laravel.ktm';
-
-        public function label(): string{
-            return self::LABEL;
-        }
-
-        public function customize_init(Command $parent_command, string $env_content): string{
-
+        protected function customize_init(Command $parent_command, string $env_content): string{
             if($parent_command->confirm('Would you like to customize your recipe?')){
-
                 //<editor-fold desc="General Configuration">
                 $parent_command->question("General configuration");
 
-                $application_host = $parent_command->ask("Enter application hostname", self::DEFAULT_HOST);
+                $application_host = $parent_command->ask("Enter application hostname", "wordpress.ktm");
                 $this->set_env($env_content, "HOST", $application_host);
 
-                $application_env = $parent_command->choice("Enter application environment", ['local', 'production'], 0);
+                $application_env = $parent_command->choice("Enter application environment", [
+                    'local',
+                    'production',
+                ], 0);
                 $this->set_env($env_content, "ENV", $application_env);
                 //</editor-fold>
-
 
                 //<editor-fold desc="Network Configuration">
                 $parent_command->question("Network configuration");
@@ -59,66 +46,65 @@
                     $this->comment_env($env_content, 'MYSQL_PORT');
                     $this->comment_env($env_content, 'PHPMYADMIN_PORT');
                     $this->comment_env($env_content, 'MAILHOG_PORT');
-                }else{
+                } else{
 
                     $parent_command->info("Exposed services selection (type x to skip)");
 
                     $nginx_port = $parent_command->ask("Enter Nginx exposed port", 80);
-                    if($nginx_port=='x'){
+                    if($nginx_port == 'x'){
                         $this->comment_env($env_content, 'NGINX_PORT');
-                    }else{
-                        if($nginx_port=='443'){
+                    } else{
+                        if($nginx_port == '443'){
                             $this->comment_env($env_content, 'NGINX_PORT');
                             $this->set_env($env_content, "NGINX_PORT_SSL", $nginx_port);
-                        }else{
+                        } else{
                             $this->set_env($env_content, "NGINX_PORT", $nginx_port);
 
                             $nginx_ssl_port = $parent_command->ask("Enter Nginx SSL exposed port", 443);
-                            if($nginx_ssl_port=='x') {
+                            if($nginx_ssl_port == 'x'){
                                 $this->comment_env($env_content, 'NGINX_PORT_SSL');
-                            }else{
+                            } else{
                                 $this->set_env($env_content, "NGINX_PORT_SSL", $nginx_ssl_port);
                             }
                         }
                     }
 
                     $mysql_port = $parent_command->ask("Enter MySQL exposed port", 3306);
-                    if($mysql_port=='x') {
+                    if($mysql_port == 'x'){
                         $this->comment_env($env_content, 'MYSQL_PORT');
-                    }else{
+                    } else{
                         $this->set_env($env_content, "MYSQL_PORT", $mysql_port);
                     }
 
                     $phpmyadmin_port = $parent_command->ask("Enter PhpMyAdmin exposed port", 8081);
-                    if($phpmyadmin_port=='x') {
+                    if($phpmyadmin_port == 'x'){
                         $this->comment_env($env_content, 'PHPMYADMIN_PORT');
-                    }else{
+                    } else{
                         $this->set_env($env_content, "PHPMYADMIN_PORT", $phpmyadmin_port);
                     }
 
                     $phpmyadmin_subdomain = $parent_command->ask("Enter PhpMyAdmin exposed subdomain", "mysql");
-                    if($phpmyadmin_subdomain=='x') {
+                    if($phpmyadmin_subdomain == 'x'){
                         $this->comment_env($env_content, 'PHPMYADMIN_SUBDOMAIN');
-                    }else{
+                    } else{
                         $this->set_env($env_content, "PHPMYADMIN_SUBDOMAIN", $phpmyadmin_subdomain);
                     }
 
                     $mailhog_port = $parent_command->ask("Enter MailHog exposed port", 8025);
-                    if($mailhog_port=='x') {
+                    if($mailhog_port == 'x'){
                         $this->comment_env($env_content, 'MAILHOG_PORT');
-                    }else{
+                    } else{
                         $this->set_env($env_content, "MAILHOG_PORT", $mailhog_port);
                     }
 
                     $mailhog_subdomain = $parent_command->ask("Enter MailHog exposed subdomain", "mail");
-                    if($mailhog_subdomain=='x') {
+                    if($mailhog_subdomain == 'x'){
                         $this->comment_env($env_content, 'MAILHOG_SUBDOMAIN');
-                    }else{
+                    } else{
                         $this->set_env($env_content, "MAILHOG_SUBDOMAIN", $mailhog_subdomain);
                     }
                 }
                 //</editor-fold>
-
 
                 //<editor-fold desc="MySql Configuration">
                 $parent_command->question("MySql configuration");
@@ -126,25 +112,22 @@
                 $this->set_env($env_content, 'MYSQL_USER', $parent_command->ask("Database User", "dbuser"));
                 $this->set_env($env_content, 'MYSQL_PASSWORD', $parent_command->ask("Database Password", "dbpassword"));
                 $this->set_env($env_content, 'MYSQL_ROOT_PASSWORD', $parent_command->ask("Database Root Password", "root"));
+                $this->set_env($env_content, 'MYSQL_TABLES_PREFIX', $parent_command->ask("Wordpress Tables Prefix", "wp_"));
                 //</editor-fold>
-
-
             }
 
             return $env_content;
         }
 
+        /**
+         * @inheritDoc
+         */
         protected function recipe_commands(): array{
-            return [
-                Install::class,
-                Init::class,
-                Artisan::class,
-                Migrate::class,
-                Watch::class,
-            ];
+            return [];
         }
 
         /**
+         * @inheritDoc
          * @throws BindingResolutionException
          */
         public function build(){
@@ -155,16 +138,7 @@
 
             $this->build_mailhog($nginx);
 
-            $this->add_container(Worker::class);
-
             $this->add_container(Composer::class);
-
-            $this->add_container(Node::class);
-
-            /** @var Redis $redis */
-            $redis = $this->add_container(Redis::class);
-
-            $this->build_echo_server($redis, $nginx);
         }
 
         /**
@@ -172,16 +146,21 @@
          * @throws BindingResolutionException
          */
         private function build_nginx(): Nginx{
+
+
+            /** @var Wordpress $wordpress */
+            $wordpress = app()->make(Wordpress::class);
+            $wordpress->set_db_hostname('mysql');
+            $wordpress->set_db_name(env('MYSQL_DATABASE', 'database'));
+            $wordpress->set_db_user(env('MYSQL_USER', 'dbuser'));
+            $wordpress->set_db_password(env('MYSQL_PASSWORD', 'dbpassword'));
+            $wordpress->set_db_root_password(env('MYSQL_ROOT_PASSWORD', 'root'));
+            $wordpress->set_db_tables_prefix(env('MYSQL_TABLES_PREFIX', 'wp_'));
+
             /** @var Nginx $nginx */
-            $nginx = $this->add_container(Nginx::class, [app()->make(Php::class)]);
-            $nginx->add_site(env('HOST', self::DEFAULT_HOST), '/var/www/public', '
-                location /socket.io {
-                    proxy_pass http://localhost:6001;
-                    proxy_http_version 1.1;
-                    proxy_set_header Upgrade $http_upgrade;
-                    proxy_set_header Connection "Upgrade";
-                }
-            ');
+            $nginx = $this->add_container(Nginx::class, ['php_service' => $wordpress]);
+            $nginx->add_site(env('HOST', self::DEFAULT_HOST), '/var/www');
+
             if(!empty(env('NGINX_PORT'))) {
                 $nginx->map_port(env('NGINX_PORT'), 80);
                 $this->add_exposed_host(env('HOST', self::DEFAULT_HOST));
@@ -281,35 +260,4 @@
 
             return $mailhog;
         }
-
-        /**
-         * @param Redis $redis
-         * @param Nginx $nginx
-         * @return EchoServer
-         * @throws BindingResolutionException
-         */
-        public function build_echo_server(Redis $redis, Nginx $nginx):EchoServer{
-            /** @var EchoServer $echo_server */
-            $echo_server = $this->add_container(EchoServer::class);
-            $echo_server->depends_on($redis->service_name());
-            $echo_server->set_auth_host($nginx->service_name());
-            $echo_server->set_debug(false);
-            $echo_server->set_devmode(true);
-            $echo_server->set_allow_cors(true);
-            $echo_server->set_allow_origin("http://" . env('HOST', self::DEFAULT_HOST));
-            $echo_server->set_allow_methods();
-            $echo_server->set_allow_headers();
-            $echo_server->set_clients();
-            $echo_server->set_redis_port();
-            $echo_server->set_redis_service($redis->service_name());
-            $echo_server->set_protocol();
-            $echo_server->set_ssl_cert_path();
-            $echo_server->set_ssl_key_path();
-            $echo_server->set_ssl_chain_path();
-            $echo_server->set_ssl_passphrase();
-
-            return $echo_server;
-        }
-
-
     }
