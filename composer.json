@@ -1,5 +1,5 @@
 {
-    "name": "def-studio/dock",
+    "name": "defstudio/dock",
     "version": "1.2.2",
     "description": "Docker Manager",
     "keywords": ["framework", "laravel", "laravel zero", "console", "cli"],
