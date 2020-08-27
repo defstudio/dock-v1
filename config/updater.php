@@ -1,8 +1,9 @@
 <?php
 
-use LaravelZero\Framework\Components\Updater\Strategy\GithubStrategy;
 
-return [
+    use App\Updater\GitlabStrategy;
+
+    return [
 
     /*
     |--------------------------------------------------------------------------
@@ -15,6 +16,6 @@ return [
     |
     */
 
-    'strategy' => GithubStrategy::class,
+    'strategy' => GitlabStrategy::class,
 
 ];
