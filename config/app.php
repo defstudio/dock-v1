@@ -3,6 +3,7 @@
     use App\Providers\AppServiceProvider;
     use App\Providers\DockerComposeServiceProvider;
     use App\Providers\EnvServiceProvider;
+    use App\Providers\GitVersionServiceProvider;
     use App\Providers\RecipesServiceProvider;
     use App\Recipes\Laravel\LaravelRecipeServiceProvider;
     use App\Recipes\Wordpress\WordpressRecipeServiceProvider;
@@ -66,6 +67,7 @@
         LaravelRecipeServiceProvider::class,
         WordpressRecipeServiceProvider::class,
         EnvServiceProvider::class,
+        GitVersionServiceProvider::class,
     ],
 
 ];
