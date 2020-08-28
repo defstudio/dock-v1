@@ -89,7 +89,7 @@ Note that additional command can be added by the active recipe, for more informa
 
 
 <details>
-    <summary>Show documentation (`php dock`)</summary>
+    <summary><strong>Show documentation</strong> (<code>php dock</code>)</summary>
     by typing `php dock` command a list with all available commands will be displayed
 </details>
 
