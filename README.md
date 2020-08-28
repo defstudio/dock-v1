@@ -1,4 +1,4 @@
-# Dock: simple docker recipes provider
+# Dock: A simple Docker recipes provider
 
 defstudio/dock is an autonomous docker development configurator
 
@@ -7,63 +7,93 @@ defstudio/dock is an autonomous docker development configurator
 
 #### Requirements
 
-`dock` is a laravel-zero system packed in a .phar file, that uses docker and docker-compose in order to build a development environment. In order to work properly it needs a working installation of:
+**dock** is a laravel-zero system packed in a .phar file, that uses docker and docker-compose in order to build a development environment. In order to work properly it needs a working installation of:
 - php (^7.3)
 - docker
 - docker-compose
 
+
+
 #### Installation 
 
-`dock` does not require installation, simply download the binary file from [here](https://gitlab.com/defstudio/dock/-/raw/master/builds/dock) or type this from your project folder:
+**dock** does not require installation, simply download the binary file from [here](https://gitlab.com/defstudio/dock/-/raw/master/builds/dock) or type this from your project folder:
 
-`wget https://gitlab.com/defstudio/dock/-/raw/master/builds/dock`
+```shell script
+wget https://gitlab.com/defstudio/dock/-/raw/master/builds/dock
+```
+
+
 
 #### Building an environment
 
-in order to build a development environment, `dock` uses a "recipe" system that configure the proper services for the development target.
+in order to build a development environment, **dock** uses a "recipe" system that configure the proper services for the development target.
 
 the first step is .env file initialization:
 
-`php dock init`
+```shell script
+php dock init
+```
 
 the system will let you choose a list of recipes:
 
-<img src="https://gitlab.com/defstudio/dock/-/raw/master/docs/images/recipes-prompt.jpg" alt="recipe prompt">
+![recipes-prompt](https://gitlab.com/defstudio/dock/-/raw/master/docs/images/recipes-prompt.jpg)
 
 and a configuration wizard will start, if available:
 
-<img src="https://gitlab.com/defstudio/dock/-/raw/master/docs/images/recipes-wizard.jpg" alt="recipe wizard">
+![recipe wizard](https://gitlab.com/defstudio/dock/-/raw/master/docs/images/recipes-wizard.jpg)
 
 the process will end up with an `env` file and a `src` folder in your project root:
 
- ```
+```
 Project Root
 |-- dock
 |-- .env
 |-- src/
 ```
 
+
+
 #### Building and starting docker images
 
 after an `.env` file is created (manually or by running the `php dock init` command) the development environment can be bring to life:
 
-`php dock start --build`
+```shell script
+php dock start --build
+```
 
 the process can take quite a few minutes, so stop for a coffe (or better, a beer), it will end up with a confirmation in your terminal:
 
-<img src="https://gitlab.com/defstudio/dock/-/raw/master/docs/images/recipes-start-done.jpg" alt="startup completed">
+![startup completed](https://gitlab.com/defstudio/dock/-/raw/master/docs/images/recipes-start-done.jpg)
 
 your development system is up and running!
 
+
+
+#### Update **dock** executable
+
+**dock** embeds a self update command that checks current version against the last released version and auto updates itself:
+
+```shell script
+php dock self-update
+```
+
+![command-self-update](https://gitlab.com/defstudio/dock/-/raw/master/docs/images/commands-self-update.jpg)
+
+
+
 ## Commands
 
-`dock` offers a few commands to mantain and manage the development environment. 
+**dock** offers a few commands to mantain and manage the development environment. 
 
 Note that additional command can be added by the active recipe, for more information please check each recipe documentation
+
+
 
 #### Show documentation (`php dock`)
 
 by typing `php dock` command a list with all available commands will be displayed
+
+
 
 #### Init command (`php dock init`)
 
@@ -71,27 +101,42 @@ the initialization wizard can be started at any time with the `php dock init --f
 
 note that in order to load the changes the environment should be shut down with the `php dock stop` command
 
+
+
 #### Log a service (`php dock log`)
 
 with the `php dock log` command, a service selection prompt will be displayed and will let the user choose a service for showing its live log:
 
-<img src="https://gitlab.com/defstudio/dock/-/raw/master/docs/images/commands-log.jpg" alt="log">
+![log](https://gitlab.com/defstudio/dock/-/raw/master/docs/images/commands-log.jpg)
 
 to bypass the prompt, the service name can be given as parameter for the command es. `php dock log nginx`
 
-### Log all services (`php dock log:all`)
+
+
+#### Log all services (`php dock log:all`)
 
 a condensed log for all services can be displayed with the `php dock log:all` command:
 
-<img src="https://gitlab.com/defstudio/dock/-/raw/master/docs/images/commands-log-all.jpg" alt="log all">
+![log all](https://gitlab.com/defstudio/dock/-/raw/master/docs/images/commands-log-all.jpg)
+
+
+
+#### Log into a service shell (`php dock shell`)
+
+it is useful, sometimes, to log into a specific container, with the `php dock shell` commands it is possible to select the service to log into:
+
+![shell command](https://gitlab.com/defstudio/dock/-/raw/master/docs/images/commands-shell.jpg)
+
 
 ## Tips and Tricks
 
-- instead of writing `php dock [command]` you can run directly the `dock` file by making it executable (`chmod +x dock` in your terminal), this way you can execute command with `./dock [command]`
+- instead of writing `php dock [command]` you can run directly the **dock** file by making it executable (`chmod +x dock` in your terminal), this way you can execute command with `./dock [command]`
 
 - a simpler way to run command is by creating a console alias for dock: `alias dock=./dock`, so it will be enough to type `dock [command]`
 
-- to make the `dock` alias persistent between reboots, add `alias dock=./dock` at the end of your `~/.bashrc` file
+- to make the **dock** alias persistent between reboots, add `alias dock=./dock` at the end of your `~/.bashrc` file
 
 
+## Acknowledgements
 
+**dock** is built with, and depends on, the awesome [Laravel Zero](https://laravel-zero.com/) by [Nuno Maduro](https://github.com/nunomaduro) 
