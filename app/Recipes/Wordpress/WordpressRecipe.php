@@ -157,12 +157,14 @@
             $wordpress->set_db_root_password(env('MYSQL_ROOT_PASSWORD', 'root'));
             $wordpress->set_db_tables_prefix(env('MYSQL_TABLES_PREFIX', 'wp_'));
             $wordpress->set_volume(Wordpress::HOST_SRC_VOLUME_PATH, '/var/www/html');
+            $wordpress->set_service_definition('working_dir', '/var/www/html');
 
             /** @var Nginx $nginx */
             $nginx = $this->add_container(Nginx::class, ['php_service' => $wordpress]);
             $nginx->set_volume(Nginx::HOST_SRC_VOLUME_PATH, '/var/www/html');
+            $nginx->set_service_definition('working_dir', '/var/www/html');
 
-            $nginx->add_site(env('HOST', self::DEFAULT_HOST), '/var/www');
+            $nginx->add_site(env('HOST', self::DEFAULT_HOST), '/var/www/html');
 
             if(!empty(env('NGINX_PORT'))) {
                 $nginx->map_port(env('NGINX_PORT'), 80);
