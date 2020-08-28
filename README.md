@@ -93,25 +93,27 @@ Note that additional command can be added by the active recipe, for more informa
     by typing `php dock` command a list with all available commands will be displayed
 </details>
 
+<details>
+   <summary><strong>Init command</strong> (<code>php dock init</code>)</summary>
+   the initialization wizard can be started at any time with the `php dock init --force` command
+   note that in order to load the changes the environment should be shut down with the `php dock stop` command
+</details>
 
+<details>
+    <summary><strong>---</strong> (<code>---</code>)</summary>
+   
+</details>
 
+<details>
+    <summary><strong>Log a service</strong> (<code>php dock log</code>)</summary>
+   with the `php dock log` command, a service selection prompt will be displayed and will let the user choose a service for showing its live log:
+   
+   ![log](https://gitlab.com/defstudio/dock/-/raw/master/docs/images/commands-log.jpg)
+   
+   to bypass the prompt, the service name can be given as parameter for the command, es. `php dock log nginx`
 
+</details>
 
-#### Init command (`php dock init`)
-
-the initialization wizard can be started at any time with the `php dock init --force` command
-
-note that in order to load the changes the environment should be shut down with the `php dock stop` command
-
-
-
-#### Log a service (`php dock log`)
-
-with the `php dock log` command, a service selection prompt will be displayed and will let the user choose a service for showing its live log:
-
-![log](https://gitlab.com/defstudio/dock/-/raw/master/docs/images/commands-log.jpg)
-
-to bypass the prompt, the service name can be given as parameter for the command, es. `php dock log nginx`
 
 
 
