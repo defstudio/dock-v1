@@ -83,7 +83,7 @@ to bypass the prompt, the service name can be given as parameter for the command
 
 a condensed log for all services can be displayed with the `php dock log:all` command:
 
-
+<img src="https://gitlab.com/defstudio/dock/-/raw/master/docs/images/commands-log-all.jpg" alt="log all">
 
 ## Tips and Tricks
 
