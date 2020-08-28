@@ -272,5 +272,7 @@
             /** @var Composer $composer */
             $composer = $this->add_container(Composer::class);
             $composer->set_volume(Composer::HOST_SRC_VOLUME_PATH, '/var/www/html');
+
+            return $composer;
         }
     }
