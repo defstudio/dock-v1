@@ -18,7 +18,7 @@ defstudio/dock is an autonomous docker development configurator
 
 **dock** does not require installation, simply download the binary file from [here](https://gitlab.com/defstudio/dock/-/raw/master/builds/dock) or type this from your project folder:
 
-```shell script
+```bash
 wget https://gitlab.com/defstudio/dock/-/raw/master/builds/dock
 ```
 
@@ -30,7 +30,7 @@ in order to build a development environment, **dock** uses a "recipe" system tha
 
 the first step is .env file initialization:
 
-```shell script
+```bash
 php dock init
 ```
 
@@ -57,7 +57,7 @@ Project Root
 
 after an `.env` file is created (manually or by running the `php dock init` command) the development environment can be bring to life:
 
-```shell script
+```bash
 php dock start --build
 ```
 
@@ -73,7 +73,7 @@ your development system is up and running!
 
 **dock** embeds a self update command that checks current version against the last released version and auto updates itself:
 
-```shell script
+```bash
 php dock self-update
 ```
 
@@ -88,10 +88,12 @@ php dock self-update
 Note that additional command can be added by the active recipe, for more information please check each recipe documentation
 
 
+<details>
+    <summary>Show documentation (`php dock`)</summary>
+    by typing `php dock` command a list with all available commands will be displayed
+</details>
 
-#### Show documentation (`php dock`)
 
-by typing `php dock` command a list with all available commands will be displayed
 
 
 
