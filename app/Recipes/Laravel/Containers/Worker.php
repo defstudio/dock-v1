@@ -16,9 +16,10 @@
             'build'       => [
                 'context' => 'https://gitlab.com/defstudio/docker/laravel-worker.git',
             ],
-            'volumes'     => [
-                './src/:/var/www',
-            ],
+        ];
+
+        protected $volumes = [
+            self::HOST_SRC_VOLUME_PATH => '/var/www'
         ];
 
         /**

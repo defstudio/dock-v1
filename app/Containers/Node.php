@@ -12,9 +12,10 @@
         protected $service_definition = [
             'working_dir' => '/var/www',
             'image'       => 'node:13.8.0-alpine',
-            'volumes'     => [
-                './src/:/var/www',
-            ],
+        ];
+
+        protected $volumes = [
+            self::HOST_SRC_VOLUME_PATH => '/var/www'
         ];
 
         /**

@@ -22,9 +22,10 @@
                 'args' => ['ENABLE_XDEBUG=1']
             ],
             'expose' => [9000],
-            'volumes'     => [
-                './src/:/var/www',
-            ],
+        ];
+
+        protected $volumes = [
+          self::HOST_SRC_VOLUME_PATH => '/var/www'
         ];
 
         /**
@@ -35,6 +36,5 @@
             parent::__construct();
             $this->set_user_uid();
         }
-
 
     }

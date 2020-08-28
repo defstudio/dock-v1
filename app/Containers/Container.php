@@ -8,14 +8,20 @@
     use App\Services\DockerService;
     use App\Services\TerminalService;
     use Illuminate\Contracts\Filesystem\Filesystem;
+    use Illuminate\Support\Arr;
     use Illuminate\Support\Facades\Storage;
     use Illuminate\Support\Str;
 
     abstract class Container{
 
+        const HOST_SRC_VOLUME_PATH = './src/';
+        const HOST_CONFIG_VOLUME_PATH = './configs/';
+
         protected $service_name;
 
         protected $service_definition;
+
+        protected $volumes = [];
 
         protected $networks = [];
 
@@ -143,21 +149,37 @@
             return $default;
         }
 
+        public function set_volume($host_path, $container_path){
+            $this->volumes[$host_path] = $container_path;
+        }
+
+        public function set_service_definition($key, $value){
+            Arr::set($this->service_definition, $key, $value);
+        }
+
         /**
          * @return array
          */
         public function get_service_definition(): array{
 
+            $service_definition = $this->service_definition;
+
             foreach($this->networks as $network){
-                $this->service_definition['networks'][] = $network;
+                $service_definition['networks'][] = $network;
             }
 
 
-            if(!empty($this->service_definition['networks'])){
-                $this->service_definition['networks'] = array_unique( $this->service_definition['networks']);
+            if(!empty($service_definition['networks'])){
+                $service_definition['networks'] = array_unique( $service_definition['networks']);
             }
 
-            return $this->service_definition;
+            if(!empty($this->volumes)){
+                foreach($this->volumes as $host_path => $container_path){
+                    $service_definition['volumes'][] ="$host_path:$container_path";
+                }
+            }
+
+            return $service_definition;
         }
 
         public function publish_assets(){

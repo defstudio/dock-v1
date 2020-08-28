@@ -14,9 +14,10 @@
 
         protected $service_name = "nginx";
 
-        const NGINX_CONF = 'nginx/nginx.conf';
-        const SITES_AVAILABLE_DIR = 'nginx/sites-available';
-        const UPSTREAM_CONF = 'nginx/conf.d/upstream.conf';
+        const NGINX_CONF = self::HOST_CONFIG_VOLUME_PATH . 'nginx/nginx.conf';
+        const SITES_AVAILABLE_DIR = self::HOST_CONFIG_VOLUME_PATH . 'nginx/sites-available';
+        const UPSTREAM_CONF = self::HOST_CONFIG_VOLUME_PATH . 'nginx/conf.d/upstream.conf';
+
         const SITE_TEMPLATE = 'nginx/templates/site.conf';
         const PROXY_TEMPLATE = 'nginx/templates/proxy.conf';
 
@@ -28,16 +29,20 @@
             'build'       => [
                 'context' => 'https://gitlab.com/defstudio/docker/nginx.git',
             ],
-            'expose'      => [80,443],
-            'volumes'     => [
-                './src/:/var/www',
-                "./configs/" . self::NGINX_CONF . ":/etc/nginx/nginx.conf",
-                "./configs/" . self::UPSTREAM_CONF . ":/etc/nginx/conf.d/upstream.conf",
-                "./configs/" . self::SITES_AVAILABLE_DIR . "/" . ":/etc/nginx/sites-available",
+            'expose'      => [
+                80,
+                443,
             ],
             'depends_on'  => [
                 self::PHP_SERVICE_NAME,
             ],
+        ];
+
+        protected $volumes = [
+            self::HOST_SRC_VOLUME_PATH => '/var/www',
+            self::NGINX_CONF           => '/etc/nginx/nginx.conf',
+            self::UPSTREAM_CONF        => '/etc/nginx/conf.d/upstream.conf',
+            self::SITES_AVAILABLE_DIR  => '/etc/nginx/sites-available',
         ];
 
         private $sites = [];
@@ -51,20 +56,20 @@
             $this->php_service = $php_service;
         }
 
-        public function add_site($host, $root = "/var/www", $extra=''){
+        public function add_site($host, $root = "/var/www", $extra = ''){
             $this->sites[$host] = [
-                'host' => $host,
-                'root' => $root,
-                'extra' => $extra
+                'host'  => $host,
+                'root'  => $root,
+                'extra' => $extra,
             ];
         }
 
-        public function add_proxy($host, $proxy_target, $proxy_port=80, $extra=''){
+        public function add_proxy($host, $proxy_target, $proxy_port = 80, $extra = ''){
             $this->proxies[$host] = [
-                'host' => $host,
+                'host'         => $host,
                 'proxy_target' => $proxy_target,
-                'proxy_port' => $proxy_port,
-                'extra' => $extra
+                'proxy_port'   => $proxy_port,
+                'extra'        => $extra,
             ];
         }
 
@@ -73,9 +78,9 @@
         }
 
 
-
         /**
          * @param DockerService $service
+         *
          * @throws DuplicateServiceException
          * @throws ContainerException
          */
@@ -113,7 +118,7 @@
 
         protected function publish_sites(){
             foreach($this->sites as $site){
-                        $this->publish_site($site);
+                $this->publish_site($site);
             }
             foreach($this->proxies as $proxy){
                 $this->publish_proxy($proxy);

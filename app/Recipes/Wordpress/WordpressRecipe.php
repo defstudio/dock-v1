@@ -138,7 +138,7 @@
 
             $this->build_mailhog($nginx);
 
-            $this->add_container(Composer::class);
+            $this->build_composer();
         }
 
         /**
@@ -156,9 +156,12 @@
             $wordpress->set_db_password(env('MYSQL_PASSWORD', 'dbpassword'));
             $wordpress->set_db_root_password(env('MYSQL_ROOT_PASSWORD', 'root'));
             $wordpress->set_db_tables_prefix(env('MYSQL_TABLES_PREFIX', 'wp_'));
+            $wordpress->set_volume(Wordpress::HOST_SRC_VOLUME_PATH, '/var/www/html');
 
             /** @var Nginx $nginx */
             $nginx = $this->add_container(Nginx::class, ['php_service' => $wordpress]);
+            $nginx->set_volume(Nginx::HOST_SRC_VOLUME_PATH, '/var/www/html');
+
             $nginx->add_site(env('HOST', self::DEFAULT_HOST), '/var/www');
 
             if(!empty(env('NGINX_PORT'))) {
@@ -259,5 +262,15 @@
 
 
             return $mailhog;
+        }
+
+        /**
+         * @return Composer|null
+         * @throws BindingResolutionException
+         */
+        public function build_composer(): ?Composer{
+            /** @var Composer $composer */
+            $composer = $this->add_container(Composer::class);
+            $composer->set_volume(Composer::HOST_SRC_VOLUME_PATH, '/var/www/html');
         }
     }
