@@ -67,7 +67,6 @@
         LaravelRecipeServiceProvider::class,
         WordpressRecipeServiceProvider::class,
         EnvServiceProvider::class,
-        GitVersionServiceProvider::class,
     ],
 
 ];
