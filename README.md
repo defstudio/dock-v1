@@ -89,23 +89,22 @@ Note that additional command can be added by the active recipe, for more informa
 
 
 <details>
-    <summary><strong>Show documentation</strong> (<code>php dock</code>)</summary>
-    by typing `php dock` command a list with all available commands will be displayed
+   <summary><strong>Show documentation</strong> (<code>php dock</code>)</summary>
+   
+   by typing `php dock` command a list with all available commands will be displayed
 </details>
 
 <details>
    <summary><strong>Init command</strong> (<code>php dock init</code>)</summary>
+   
    the initialization wizard can be started at any time with the `php dock init --force` command
+   
    note that in order to load the changes the environment should be shut down with the `php dock stop` command
 </details>
 
 <details>
-    <summary><strong>---</strong> (<code>---</code>)</summary>
+   <summary><strong>Log a service</strong> (<code>php dock log</code>)</summary>
    
-</details>
-
-<details>
-    <summary><strong>Log a service</strong> (<code>php dock log</code>)</summary>
    with the `php dock log` command, a service selection prompt will be displayed and will let the user choose a service for showing its live log:
    
    ![log](https://gitlab.com/defstudio/dock/-/raw/master/docs/images/commands-log.jpg)
@@ -114,61 +113,65 @@ Note that additional command can be added by the active recipe, for more informa
 
 </details>
 
+<details>
+   <summary><strong>Log all services</strong> (<code>php dock log:all</code>)</summary>
+   
+   a condensed log for all services can be displayed with the `php dock log:all` command:
+   
+   ![log all](https://gitlab.com/defstudio/dock/-/raw/master/docs/images/commands-log-all.jpg)
+</details>
 
+<details>
+   <summary><strong>Log into a service shell</strong> (<code>php dock shell</code>)</summary>
+   
+   it is useful, sometimes, to log into a specific container, with the `php dock shell` commands it is possible to select the service to log into:
+   
+   ![shell command](https://gitlab.com/defstudio/dock/-/raw/master/docs/images/commands-shell.jpg)
+   
+   to bypass the prompt, the service name can be given as parameter for the command, ie. `php dock log php`
+</details>
 
+<details>
+   <summary><strong>Display active containers statistics</strong> (<code>php dock stats</code>)</summary>
+   
+   **dock** embeds docker's `stats` command to display containers memory, cpu, i/o data into its own `php dock stats` command
+</details>
 
-#### Log all services (`php dock log:all`)
+<details>
+   <summary><strong>List running containers</strong> (<code>php dock list:containers</code>)</summary>
+   
+   with the `php dock list:containers` command, **dock** will display the list of all running containers in the system
+   
+   ![list containers](https://gitlab.com/defstudio/dock/-/raw/master/docs/images/commands-list-containers.jpg)
+</details>
 
-a condensed log for all services can be displayed with the `php dock log:all` command:
+<details>
+   <summary><strong>List available hosts</strong> (<code>php dock list:hosts</code>)</summary>
+   
+   usually you will bind your services to a custom hostname, in order to simplify the addressing during development.
+   
+   this means that the OS _hosts_ file should be updated to include the mapping between these hostnames and the local ip address.
+   
+   to obtain a list of the hostnames defined by the build process, type `php dock list:hosts` in your terminal:
+   
+   ![list containers](https://gitlab.com/defstudio/dock/-/raw/master/docs/images/commands-list-hosts.jpg)
+   
+   in this example, you should append this entries to your _hosts_ file
+   
+   ```
+   127.0.0.1         laravel.ktm
+   127.0.0.1         mysql.laravel.ktm
+   127.0.0.1         mail.laravel.ktm
+   ```
+</details>
 
-![log all](https://gitlab.com/defstudio/dock/-/raw/master/docs/images/commands-log-all.jpg)
-
-
-
-#### Log into a service shell (`php dock shell`)
-
-it is useful, sometimes, to log into a specific container, with the `php dock shell` commands it is possible to select the service to log into:
-
-![shell command](https://gitlab.com/defstudio/dock/-/raw/master/docs/images/commands-shell.jpg)
-
-to bypass the prompt, the service name can be given as parameter for the command, ie. `php dock log php`
-
-
-#### Display active containers statistics (`php dock stats`)
-
-**dock** embeds docker's `stats` command to display containers memory, cpu, i/o data into its own `php dock stats` command
-
-
-### List running containers (`php dock list:containers`)
-
-with the `php dock list:containers` command, **dock** will display the list of all running containers in the system
-
-![list containers](https://gitlab.com/defstudio/dock/-/raw/master/docs/images/commands-list-containers.jpg)
-
-
-#### List available hosts (`php dock list:hosts`)
-
-usually you will bind your services to a custom hostname, in order to simplify the addressing during development.
-
-this means that the OS _hosts_ file should be updated to include the mapping between these hostnames and the local ip address.
-
-to obtain a list of the hostnames defined by the build process, type `php dock list:hosts` in your terminal:
-
-![list containers](https://gitlab.com/defstudio/dock/-/raw/master/docs/images/commands-list-hosts.jpg)
-
-in this example, you should append this entries to your _hosts_ file
-
-```
-127.0.0.1         laravel.ktm
-127.0.0.1         mysql.laravel.ktm
-127.0.0.1         mail.laravel.ktm
-```
-
-#### List available URLs (`php dock list:urls`)
-
-like the `list:urls` command, with `php dock list:urls` **dock** can display the list of available urls defined during the build process:
-
-![list containers](https://gitlab.com/defstudio/dock/-/raw/master/docs/images/commands-list-urls.jpg)
+<details>
+   <summary><strong>List available URLs</strong> (<code>php dock list:urls</code>)</summary>
+   
+   like the `list:urls` command, with `php dock list:urls` **dock** can display the list of available urls defined during the build process:
+   
+   ![list containers](https://gitlab.com/defstudio/dock/-/raw/master/docs/images/commands-list-urls.jpg)
+</details>
 
 
 
