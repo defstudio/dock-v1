@@ -109,7 +109,7 @@ with the `php dock log` command, a service selection prompt will be displayed an
 
 ![log](https://gitlab.com/defstudio/dock/-/raw/master/docs/images/commands-log.jpg)
 
-to bypass the prompt, the service name can be given as parameter for the command es. `php dock log nginx`
+to bypass the prompt, the service name can be given as parameter for the command, es. `php dock log nginx`
 
 
 
@@ -126,6 +126,46 @@ a condensed log for all services can be displayed with the `php dock log:all` co
 it is useful, sometimes, to log into a specific container, with the `php dock shell` commands it is possible to select the service to log into:
 
 ![shell command](https://gitlab.com/defstudio/dock/-/raw/master/docs/images/commands-shell.jpg)
+
+to bypass the prompt, the service name can be given as parameter for the command, ie. `php dock log php`
+
+
+#### Display active containers statistics (`php dock stats`)
+
+**dock** embeds docker's `stats` command to display containers memory, cpu, i/o data into its own `php dock stats` command
+
+
+### List running containers (`php dock list:containers`)
+
+with the `php dock list:containers` command, **dock** will display the list of all running containers in the system
+
+![list containers](https://gitlab.com/defstudio/dock/-/raw/master/docs/images/commands-list-containers.jpg)
+
+
+#### List available hosts (`php dock list:hosts`)
+
+usually you will bind your services to a custom hostname, in order to simplify the addressing during development.
+
+this means that the OS _hosts_ file should be updated to include the mapping between these hostnames and the local ip address.
+
+to obtain a list of the hostnames defined by the build process, type `php dock list:hosts` in your terminal:
+
+![list containers](https://gitlab.com/defstudio/dock/-/raw/master/docs/images/commands-list-hosts.jpg)
+
+in this example, you should append this entries to your _hosts_ file
+
+```
+127.0.0.1         laravel.ktm
+127.0.0.1         mysql.laravel.ktm
+127.0.0.1         mail.laravel.ktm
+```
+
+#### List available URLs (`php dock list:urls`)
+
+like the `list:urls` command, with `php dock list:urls` **dock** can display the list of available urls defined during the build process:
+
+![list containers](https://gitlab.com/defstudio/dock/-/raw/master/docs/images/commands-list-urls.jpg)
+
 
 
 ## Tips and Tricks
