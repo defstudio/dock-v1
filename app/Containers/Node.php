@@ -30,6 +30,7 @@
         public function commands(): array{
            return [
                Commands\Node::class,
+               Commands\Npm::class,
            ];
         }
     }
