@@ -1,6 +1,6 @@
 {
     "name": "defstudio/dock",
-    "version": "1.3.13",
+    "version": "1.3.14",
     "description": "Docker Manager",
     "keywords": ["docker", "docker-compose", "recipes", "automation", "console", "cli"],
     "homepage": "https://defstudio.it",

@@ -11,7 +11,7 @@
 
     class Npm extends Command{
         protected $signature = 'npm
-                                {commands* : npm commands to execute} ';
+                                {commands?* : npm commands to execute} ';
 
         protected $description = 'Executes an npm command';
 
