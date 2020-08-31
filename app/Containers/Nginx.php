@@ -23,7 +23,7 @@
         const PHP_SERVICE_NAME = 'php';
 
         protected $service_definition = [
-            'restart'     => 'always',
+            'restart'     => 'unless-stopped',
             'working_dir' => '/var/www',
             'build'       => [
                 'context' => 'https://gitlab.com/defstudio/docker/nginx.git',

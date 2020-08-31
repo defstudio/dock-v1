@@ -14,7 +14,7 @@
         protected $service_name = 'mysql';
 
         protected $service_definition = [
-            'restart'     => 'always',
+            'restart'     => 'unless-stopped',
             'command'     => [
                 '--character-set-server=utf8mb4',
                 '--collation-server=utf8mb4_unicode_ci',

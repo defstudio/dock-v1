@@ -9,7 +9,7 @@
         protected $service_name = 'phpmyadmin';
 
         protected $service_definition = [
-            'restart'     => 'always',
+            'restart'     => 'unless-stopped',
             'expose'      => [80],
             'image'       => 'phpmyadmin/phpmyadmin',
             'environment' => [

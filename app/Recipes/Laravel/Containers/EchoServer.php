@@ -10,7 +10,7 @@
         protected $service_name = 'echo-server';
 
         protected $service_definition = [
-            'restart'     => 'always',
+            'restart'     => 'unless-stopped',
             'working_dir' => '/var/www',
             'build'       => [
                 'context' => 'https://gitlab.com/defstudio/docker/laravel-echo-server.git',

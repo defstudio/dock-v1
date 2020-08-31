@@ -9,7 +9,7 @@
         protected $service_name = "redis";
 
         protected $service_definition = [
-            'restart' => 'always',
+            'restart' => 'unless-stopped',
             'image'       => 'redis:5',
             'expose'     => [6379],
         ];

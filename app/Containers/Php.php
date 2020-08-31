@@ -15,7 +15,7 @@
 
 
         protected $service_definition = [
-            'restart'     => 'always',
+            'restart'     => 'unless-stopped',
             'working_dir' => '/var/www',
             'build'       => [
                 'context' => 'https://gitlab.com/defstudio/docker/php.git',
