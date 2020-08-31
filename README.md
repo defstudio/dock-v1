@@ -179,6 +179,14 @@ Note that additional command can be added by the active recipe, for more informa
 
 
 
+<details>
+   <summary><strong>Start a Lazydocker instance</strong> (<code>php dock lazydocker</code>)</summary>
+   
+   Starts a [Lazydocker](https://github.com/jesseduffield/lazydocker) instance, a simple terminal UI for docker and docker-compose
+</details>
+
+
+
 ## Tips and Tricks
 
 - instead of writing `php dock [command]` you can run directly the **dock** file by making it executable (`chmod +x dock` in your terminal), this way you can execute command with `./dock [command]`

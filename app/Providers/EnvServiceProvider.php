@@ -18,6 +18,7 @@
             'make:command',
             'stub:publish',
             'self-update',
+            'lazydocker',
         ];
 
         public function register(){
