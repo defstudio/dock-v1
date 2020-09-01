@@ -13,7 +13,7 @@
             'restart'     => 'unless-stopped',
             'working_dir' => '/var/www',
             'build'       => [
-                'context' => 'git@gitlab.com/defstudio/docker/laravel-echo-server.git',
+                'context' => 'git@gitlab.com:defstudio/docker/laravel-echo-server.git',
             ],
             'environment' => [
                 'ECHO_AUTH_HOST=http://nginx',

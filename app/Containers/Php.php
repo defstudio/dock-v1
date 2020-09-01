@@ -18,7 +18,7 @@
             'restart'     => 'unless-stopped',
             'working_dir' => '/var/www',
             'build'       => [
-                'context' => 'git@gitlab.com/defstudio/docker/php.git',
+                'context' => 'git@gitlab.com:defstudio/docker/php.git',
                 'args' => ['ENABLE_XDEBUG=1']
             ],
             'expose' => [9000],
