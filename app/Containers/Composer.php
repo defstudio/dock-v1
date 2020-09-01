@@ -12,7 +12,7 @@
         protected $service_definition = [
             'working_dir' => '/var/www',
             'build'       => [
-                'context' => 'git@gitlab.com:defstudio/docker/composer.git',
+                'context' => 'https://gitlab.com/defstudio/docker/composer.git',
             ],
         ];
 
