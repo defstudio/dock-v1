@@ -14,7 +14,7 @@
             'restart' => 'unless-stopped',
             'working_dir' => '/var/www',
             'build'       => [
-                'context' => 'git://gitlab.com/defstudio/docker/laravel-worker.git',
+                'context' => 'git@gitlab.com/defstudio/docker/laravel-worker.git',
             ],
         ];
 
