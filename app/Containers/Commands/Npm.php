@@ -34,7 +34,7 @@
 
                 return $terminal->execute([
                     'docker-compose',
-                    'exec',
+                    'run',
                     'node',
                     'bash',
                 ]);
