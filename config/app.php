@@ -6,6 +6,7 @@
     use App\Providers\GitVersionServiceProvider;
     use App\Providers\RecipesServiceProvider;
     use App\Recipes\Laravel\LaravelRecipeServiceProvider;
+    use App\Recipes\ReverseProxy\ReverseProxyRecipeServiceProvider;
     use App\Recipes\Wordpress\WordpressRecipeServiceProvider;
 
     return [
@@ -64,6 +65,7 @@
     'providers' => [
         AppServiceProvider::class,
         DockerComposeServiceProvider::class,
+        ReverseProxyRecipeServiceProvider::class,
         LaravelRecipeServiceProvider::class,
         WordpressRecipeServiceProvider::class,
         EnvServiceProvider::class,

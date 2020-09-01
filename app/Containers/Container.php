@@ -157,6 +157,10 @@
             Arr::set($this->service_definition, $key, $value);
         }
 
+        public function unset_service_definition($key){
+            Arr::forget($this->service_definition, $key);
+        }
+
         /**
          * @return array
          */

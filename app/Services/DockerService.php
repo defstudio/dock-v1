@@ -42,6 +42,18 @@
         }
 
         /**
+         * @param string $network_name
+         *
+         * @throws DuplicateNetworkException
+         */
+        public function add_external_network(string $network_name){
+            if(!empty($this->networks[$network_name])) throw new DuplicateNetworkException("Duplicate network: ". $internal_name);
+            $this->networks[$network_name] = [
+                'external' => true,
+            ];
+        }
+
+        /**
          * @param Container $container
          * @return Container
          * @throws DuplicateServiceException

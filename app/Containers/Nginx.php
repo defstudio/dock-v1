@@ -34,6 +34,8 @@
             ],
         ];
 
+
+
         protected $volumes = [
             self::HOST_SRC_VOLUME_PATH => '/var/www',
             self::HOST_CONFIG_VOLUME_PATH . self::NGINX_CONF => '/etc/nginx/nginx.conf',
@@ -45,6 +47,7 @@
         private $proxies = [];
 
         private $php_service;
+
 
         public function __construct(Php $php_service){
             parent::__construct();
@@ -73,6 +76,10 @@
             $this->php_service = $php_service;
         }
 
+        public function unset_php_service(){
+            $this->php_service = null;
+            unset($this->service_definition['depends_on']);
+        }
 
 
         /**
@@ -81,17 +88,22 @@
          * @throws ContainerException
          */
         public function setup(DockerService $service){
-            $this->php_service->service_name(self::PHP_SERVICE_NAME);
-            $service->add_container($this->php_service);
+
+            if(!empty($this->php_service)){
+                $this->php_service->service_name(self::PHP_SERVICE_NAME);
+                $service->add_container($this->php_service);
+            }
         }
+
 
         public function publish_assets(){
             $this->publish_nginx_conf();
-            $this->publish_upstream_conf();
             $this->publish_sites_available_directory();
             $this->publish_sites();
-        }
 
+                $this->publish_upstream_conf();
+
+        }
 
         protected function publish_nginx_conf(){
             $this->disk()->put(self::NGINX_CONF, Storage::get(self::NGINX_CONF));
