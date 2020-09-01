@@ -26,7 +26,7 @@
             'restart'     => 'unless-stopped',
             'working_dir' => '/var/www',
             'build'       => [
-                'context' => 'gitlab.com/defstudio/docker/nginx.git',
+                'context' => 'https://gitlab.com/defstudio/docker/nginx.git',
             ],
             'expose'      => [80,443],
             'depends_on'  => [
