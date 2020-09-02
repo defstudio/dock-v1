@@ -75,8 +75,10 @@
             if($this->disk()->exists('letsencrypt.cert')){
 
             } else{
-                $this->sites[$host]['ssl_certificate'] = "/etc/nginx/ssl/nginx.cert";
-                $this->sites[$host]['ssl_certificate_key'] = "/etc/nginx/ssl/nginx.key";
+                // $this->sites[$host]['ssl_certificate'] = "ssl_certificate /etc/nginx/ssl/nginx.cert;";
+                // $this->sites[$host]['ssl_certificate_key'] = "ssl_certificate_key /etc/nginx/ssl/nginx.key;";
+                $this->sites[$host]['ssl_certificate'] = "";
+                $this->sites[$host]['ssl_certificate_key'] = "";
             }
         }
 
