@@ -198,15 +198,28 @@
 
             $service_command = [
                 'docker-compose',
-                'run',
+                'exec',
+                '-ti',
                 $this->service_name(),
             ];
 
             $commands = array_merge($service_command, $commands);
 
-            $result = $terminal->execute($commands, $input);
+            return $terminal->execute($commands, $input);
+        }
 
-            return $result;
+        public function run(TerminalService $terminal, array $commands, string $input=null){
+
+            $service_command = [
+                'docker-compose',
+                'run',
+                '-ti',
+                $this->service_name(),
+            ];
+
+            $commands = array_merge($service_command, $commands);
+
+            return $terminal->execute($commands, $input);
         }
 
         public function execute_in_shell_command_line(TerminalService $terminal, array $commands){

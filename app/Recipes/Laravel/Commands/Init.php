@@ -57,20 +57,20 @@
 
 
             if(!$this->task("Installing Composer packages", function()use($docker_service, $terminal){
-                return $docker_service->service('composer')->execute($terminal, [
+                return $docker_service->service('composer')->run($terminal, [
                     "install",
                 ]);
             })) return 1;
 
             if(!$this->task("Installing NPM packages", function()use($docker_service, $terminal){
-                return $docker_service->service('node')->execute($terminal, [
+                return $docker_service->service('node')->run($terminal, [
                     "npm",
                     "install",
                 ]);
             })) return 1;
 
             if(!$this->task("Compiling Assets", function()use($docker_service, $terminal){
-                return $docker_service->service('node')->execute($terminal, [
+                return $docker_service->service('node')->run($terminal, [
                     "npm",
                     "run",
                     "dev",

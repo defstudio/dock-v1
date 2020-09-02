@@ -41,7 +41,7 @@
                 ]);
             }else{
                 $commands = array_merge(['composer'], $composer_commands);
-                return $docker_service->service('composer')->execute($terminal, $commands);
+                return $docker_service->service('composer')->run($terminal, $commands);
             }
 
 

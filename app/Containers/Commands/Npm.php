@@ -42,7 +42,7 @@
 
                 $commands = array_merge(['npm'], $npm_commands);
 
-                return $docker_service->service('node')->execute($terminal, $commands);
+                return $docker_service->service('node')->run($terminal, $commands);
             }
 
 
