@@ -56,7 +56,7 @@
                 'docker-compose',
                 'exec',
                 $service_name,
-                'bash',
+                '/bin/sh',
             ]);
 
         }

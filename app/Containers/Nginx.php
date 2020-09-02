@@ -4,8 +4,8 @@
     namespace App\Containers;
 
 
+    use App\Containers\Commands\NginxCertificates;
     use App\Containers\Commands\NginxReload;
-    use App\Exceptions\DuplicateNetworkException;
     use App\Exceptions\DuplicateServiceException;
     use App\Exceptions\ContainerException;
     use App\Services\DockerService;
@@ -18,8 +18,12 @@
         const NGINX_CONF = 'nginx/nginx.conf';
         const SITES_AVAILABLE_DIR = 'nginx/sites-available';
         const UPSTREAM_CONF = 'nginx/conf.d/upstream.conf';
-        const SITE_TEMPLATE = 'nginx/templates/site.conf';
+
         const PROXY_TEMPLATE = 'nginx/templates/proxy.conf';
+        const SITE_TEMPLATE = 'nginx/templates/site.conf';
+        const SSL_SITE_TEMPLATE = 'nginx/templates/site-ssl.conf';
+
+        const LETSENCRYPT_DIR = 'nginx/letsencrypt';
 
         const PHP_SERVICE_NAME = 'php';
 
@@ -29,19 +33,22 @@
             'build'       => [
                 'context' => 'https://gitlab.com/defstudio/docker/nginx.git',
             ],
-            'expose'      => [80,443],
+            'expose'      => [
+                80,
+                443,
+            ],
             'depends_on'  => [
                 self::PHP_SERVICE_NAME,
             ],
         ];
 
 
-
         protected $volumes = [
-            self::HOST_SRC_VOLUME_PATH => '/var/www',
-            self::HOST_CONFIG_VOLUME_PATH . self::NGINX_CONF => '/etc/nginx/nginx.conf',
-            self::HOST_CONFIG_VOLUME_PATH . self::UPSTREAM_CONF => '/etc/nginx/conf.d/upstream.conf',
+            self::HOST_SRC_VOLUME_PATH                                => '/var/www',
+            self::HOST_CONFIG_VOLUME_PATH . self::NGINX_CONF          => '/etc/nginx/nginx.conf',
+            self::HOST_CONFIG_VOLUME_PATH . self::UPSTREAM_CONF       => '/etc/nginx/conf.d/upstream.conf',
             self::HOST_CONFIG_VOLUME_PATH . self::SITES_AVAILABLE_DIR => '/etc/nginx/sites-available',
+            self::HOST_CONFIG_VOLUME_PATH . self::LETSENCRYPT_DIR     => '/etc/letsencrypt',
         ];
 
         private $sites = [];
@@ -56,20 +63,29 @@
             $this->php_service = $php_service;
         }
 
-        public function add_site($host, $root = "/var/www", $extra=''){
+        public function add_site($host, $root = "/var/www", $extra = ''){
+
+
             $this->sites[$host] = [
-                'host' => $host,
-                'root' => $root,
-                'extra' => $extra
+                'host'  => $host,
+                'root'  => $root,
+                'extra' => $extra,
             ];
+
+            if($this->disk()->exists('letsencrypt.cert')){
+
+            } else{
+                $this->sites[$host]['ssl_certificate'] = "/etc/nginx/ssl/nginx.cert";
+                $this->sites[$host]['ssl_certificate_key'] = "/etc/nginx/ssl/nginx.key";
+            }
         }
 
-        public function add_proxy($host, $proxy_target, $proxy_port=80, $extra=''){
+        public function add_proxy($host, $proxy_target, $proxy_port = 80, $extra = ''){
             $this->proxies[$host] = [
-                'host' => $host,
+                'host'         => $host,
                 'proxy_target' => $proxy_target,
-                'proxy_port' => $proxy_port,
-                'extra' => $extra
+                'proxy_port'   => $proxy_port,
+                'extra'        => $extra,
             ];
         }
 
@@ -85,6 +101,7 @@
 
         /**
          * @param DockerService $service
+         *
          * @throws DuplicateServiceException
          * @throws ContainerException
          */
@@ -102,7 +119,7 @@
             $this->publish_sites_available_directory();
             $this->publish_sites();
 
-                $this->publish_upstream_conf();
+            $this->publish_upstream_conf();
 
         }
 
@@ -127,7 +144,8 @@
 
         protected function publish_sites(){
             foreach($this->sites as $site){
-                        $this->publish_site($site);
+                $this->publish_site($site);
+                $this->publish_ssl_site($site);
             }
             foreach($this->proxies as $proxy){
                 $this->publish_proxy($proxy);
@@ -135,12 +153,22 @@
         }
 
         protected function publish_site(array $site_data){
-            $template = Storage::get(self::SITE_TEMPLATE);
 
+            $template = Storage::get(self::SITE_TEMPLATE);
             $this->compile_template($template, $site_data);
 
             $this->disk()->put(self::SITES_AVAILABLE_DIR . "/" . $site_data['host'] . ".conf", $template);
         }
+
+
+        protected function publish_ssl_site(array $site_data){
+
+            $template = Storage::get(self::SSL_SITE_TEMPLATE);
+            $this->compile_template($template, $site_data);
+
+            $this->disk()->put(self::SITES_AVAILABLE_DIR . "/" . $site_data['host'] . ".ssl.conf", $template);
+        }
+
 
         protected function publish_proxy(array $proxy_data){
             $template = Storage::get(self::PROXY_TEMPLATE);
@@ -153,6 +181,7 @@
         public function commands(): array{
             return [
                 NginxReload::class,
+                NginxCertificates::class,
             ];
         }
 
