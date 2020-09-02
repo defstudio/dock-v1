@@ -4,6 +4,7 @@
     namespace App\Containers;
 
 
+    use App\Containers\Commands\NginxReload;
     use App\Exceptions\DuplicateNetworkException;
     use App\Exceptions\DuplicateServiceException;
     use App\Exceptions\ContainerException;
@@ -148,5 +149,12 @@
 
             $this->disk()->put(self::SITES_AVAILABLE_DIR . "/" . $proxy_data['host'] . ".conf", $template);
         }
+
+        public function commands(): array{
+            return [
+                NginxReload::class,
+            ];
+        }
+
 
     }
