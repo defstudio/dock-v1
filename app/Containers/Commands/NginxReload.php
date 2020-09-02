@@ -24,16 +24,13 @@
          */
         public function handle(DockerService $docker_service, TerminalService $terminal){
 
-                $this->task('Executing Nginx soft reload', function() use ($docker_service, $terminal){
-                     $docker_service->service('nginx')->execute($terminal, [
+                return $this->task('Executing Nginx soft reload', function() use ($docker_service, $terminal){
+                    return $docker_service->service('nginx')->execute($terminal, [
                         'nginx',
                         '-s',
                         'reload',
                      ]);
                 });
-
-                $commands = array_merge(['composer'], $composer_commands);
-                return $docker_service->service('composer')->execute($terminal, $commands);
 
 
 
