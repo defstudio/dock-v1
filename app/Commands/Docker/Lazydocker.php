@@ -42,7 +42,7 @@
               "-v",
               "/var/run/docker.sock:/var/run/docker.sock",
               "-v",
-              "./configs/lazydocker:/.config/jesseduffield/lazydocker",
+              getcwd().'/configs/lazydocker:/.config/jesseduffield/lazydocker',
               "lazyteam/lazydocker",
             ];
 
