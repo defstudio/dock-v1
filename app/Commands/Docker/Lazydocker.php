@@ -4,6 +4,7 @@
 
     use App\Services\DockerService;
     use App\Services\TerminalService;
+    use Illuminate\Support\Facades\Storage;
     use LaravelZero\Framework\Commands\Command;
 
     /**
@@ -34,21 +35,13 @@
          */
         public function handle(TerminalService $terminal){
 
-            $commands = [
-              "docker",
-              "run",
-              "--rm",
-              "-it",
-              "-v",
-              "/var/run/docker.sock:/var/run/docker.sock",
-              "-v",
-              getcwd().'/configs/lazydocker:/.config/jesseduffield/lazydocker',
-              "lazyteam/lazydocker",
-            ];
+            $terminal->execute_in_shell_command_line([' "curl https://raw.githubusercontent.com/jesseduffield/lazydocker/master/scripts/install_update_linux.sh | bash"']);
 
-            return $terminal->execute($commands);
+            $terminal->execute_in_shell_command_line(['lazydocker']);
 
+            return true;
         }
+
 
 
     }
