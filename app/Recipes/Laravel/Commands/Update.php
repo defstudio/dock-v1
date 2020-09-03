@@ -49,11 +49,12 @@
 
 
             $this->task("Updating codebase from git", function() use($docker_service, $terminal){
-               $terminal->execute_in_shell_command_line([
+               return $terminal->execute_in_shell_command_line([
                   'cd',
                   'src',
                   '&&',
                   'git reset --hard',
+                  '&&',
                   'git pull',
                ]);
             });
