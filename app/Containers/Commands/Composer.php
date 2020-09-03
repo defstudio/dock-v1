@@ -13,7 +13,7 @@
         protected $signature = 'composer
                                 {commands?* : composer command to execute} ';
 
-        protected $description = 'Executes a basic Composer operation';
+        protected $description = 'Executes Composer command';
 
         /**
          * @param DockerService $docker_service

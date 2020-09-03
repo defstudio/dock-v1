@@ -11,9 +11,11 @@
     use LaravelZero\Framework\Commands\Command;
 
     class Artisan extends Command{
-        protected $signature = 'artisan';
+        protected $signature = 'artisan
+                                {commands?* : artisan commmands to execute}
+                               ';
 
-        protected $description = 'Launch an Artisan shell';
+        protected $description = 'Executes an Artisan command';
 
         /**
          * @param DockerService $docker_service
@@ -26,14 +28,22 @@
 
             $terminal->init($this->output);
 
-            $this->info('Log into Artisan Shell');
+            $artisan_commands = $this->argument("commands");
 
-            return $terminal->execute([
-                'docker-compose',
-                'exec',
-                'php',
-                'bash',
-            ]);
+            if(empty($artisan_commands)){
+                $this->info('Log into Artisan Shell');
+
+                return $terminal->execute([
+                    'docker-compose',
+                    'exec',
+                    'php',
+                    'bash',
+                ]);
+            }else{
+                $commands = array_merge(['composer'], $artisan_commands);
+                return $docker_service->service('artisan')->run($terminal, $commands);
+            }
+
 
 
 
