@@ -28,4 +28,4 @@ NGINX_PORT_SSL=443
 #######################
 
 #CERTBOT_CHALLENGE_MODE=dns-cloudflare
-#CLOUDFLARE_TOKEN
+#CLOUDFLARE_TOKEN=

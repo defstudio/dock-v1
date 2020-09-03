@@ -53,7 +53,7 @@
             $ssl_provider = $parent_command->choice('Select SSL Provider', [
                 'openssl',
                 'certbot',
-            ], 0);
+            ], 1);
 
             $this->set_env($env_content, 'SSL_PROVIDER', $ssl_provider);
 
