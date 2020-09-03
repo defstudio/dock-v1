@@ -33,12 +33,11 @@
                     [
                         'container_network'   => 'example_default',
                         'container_hostname'  => 'example_nginx_1',
-                        'container_port'  => 80,
-                        'external_hostname' => 'example.ktm',
-                        'external_port'     => 80,
+                        'container_port'      => 80,
+                        'external_hostname'   => 'example.ktm',
+                        'external_port'       => 80,
                         'ssl_certificate'     => '/etc/letsencrypt/live/example.ktm/fullchain.pem',
-                        'ssl_certificate_key'     => '/etc/letsencrypt/live/example.ktm/privkey.pem',
-
+                        'ssl_certificate_key' => '/etc/letsencrypt/live/example.ktm/privkey.pem',
                     ],
                 ], JSON_PRETTY_PRINT));
             }
@@ -101,6 +100,7 @@
          * @inheritDoc
          * @throws BindingResolutionException
          * @throws FileNotFoundException
+         * @throws ProxyTargetInvalidException
          */
         public function build(){
 
@@ -136,7 +136,7 @@
         /**
          * @param Nginx $nginx
          *
-         * @throws FileNotFoundException
+         * @throws FileNotFoundException|ProxyTargetInvalidException
          */
         private function build_targets(Nginx $nginx): void{
 
@@ -148,7 +148,7 @@
             foreach($targets as $target){
                 $this->external_networks[] = $target->container_network;
                 $nginx->add_network($target->container_network);
-                $nginx->add_proxy($target->external_hostname, $target->external_port,  $target->container_hostname, $target->container_port, $target->ssl_certificate??'', $target->ssl_certificate_key??'');
+                $nginx->add_proxy($target->external_hostname, $target->external_port, $target->container_hostname, $target->container_port, $target->ssl_certificate ?? '', $target->ssl_certificate_key ?? '');
             }
         }
 
@@ -183,7 +183,7 @@
          * @throws BindingResolutionException
          */
         private function build_certbot_dns_cloudflare(): void{
-           $this->add_container(CertbotCloudflare::class, [
+            $this->add_container(CertbotCloudflare::class, [
                 'cloudflare_token' => env('CLOUDFLARE_TOKEN'),
             ]);
 
