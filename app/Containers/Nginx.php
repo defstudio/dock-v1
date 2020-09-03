@@ -17,6 +17,7 @@
 
         const PATH_NGINX_CONF = 'nginx/nginx.conf';
         const PATH_SITES_AVAILABLE = 'nginx/sites-available';
+
         const PATH_UPSTREAM_CONF = 'nginx/conf.d/upstream.conf';
 
         const PATH_SITE_TEMPLATE = 'nginx/templates/site.conf';
@@ -42,7 +43,6 @@
         protected array $volumes = [
             self::HOST_SRC_VOLUME_PATH                                 => '/var/www',
             self::HOST_CONFIG_VOLUME_PATH . self::PATH_NGINX_CONF      => '/etc/nginx/nginx.conf',
-            self::HOST_CONFIG_VOLUME_PATH . self::PATH_UPSTREAM_CONF   => '/etc/nginx/conf.d/upstream.conf',
             self::HOST_CONFIG_VOLUME_PATH . self::PATH_SITES_AVAILABLE => '/etc/nginx/sites-available',
         ];
 
@@ -119,6 +119,8 @@
 
                 $this->compile_template($template, ['php_service' => self::PHP_SERVICE_NAME]);
                 $this->disk()->put(self::PATH_UPSTREAM_CONF, $template);
+
+                $this->set_volume(self::HOST_CONFIG_VOLUME_PATH . self::PATH_UPSTREAM_CONF, '/etc/nginx/conf.d/upstream.conf');
             }
         }
 

@@ -17,27 +17,31 @@
     class DockerService{
 
 
-        /** @var Container[] $containers  */
+        /** @var Container[] $containers */
         private $containers = [];
 
         private $networks = [];
 
 
         public function __construct(){
-            if(!Storage::disk('cwd')->exists('src')) Storage::disk('cwd')->makeDirectory('src');
+            if(!Storage::disk('cwd')->exists('src')){
+                Storage::disk('cwd')->makeDirectory('src');
+            }
+
         }
 
         /**
          * @param string $internal_name
          * @param string $network_name
          * @param string $driver
+         *
          * @throws DuplicateNetworkException
          */
         public function add_network(string $internal_name, string $network_name, string $driver){
-            if(!empty($this->networks[$internal_name])) throw new DuplicateNetworkException("Duplicate network: ". $internal_name);
+            if(!empty($this->networks[$internal_name])) throw new DuplicateNetworkException("Duplicate network: " . $internal_name);
             $this->networks[$internal_name] = [
-              'name' => $network_name,
-              'driver' => $driver
+                'name'   => $network_name,
+                'driver' => $driver,
             ];
         }
 
@@ -47,7 +51,7 @@
          * @throws DuplicateNetworkException
          */
         public function add_external_network(string $network_name){
-            if(!empty($this->networks[$network_name])) throw new DuplicateNetworkException("Duplicate network: ". $internal_name);
+            if(!empty($this->networks[$network_name])) throw new DuplicateNetworkException("Duplicate network: " . $internal_name);
             $this->networks[$network_name] = [
                 'external' => true,
             ];
@@ -55,12 +59,13 @@
 
         /**
          * @param Container $container
+         *
          * @return Container
          * @throws DuplicateServiceException
          * @throws ContainerException
          */
         public function add_container(Container $container){
-            if(!empty($this->containers[$container->service_name()])) throw new DuplicateServiceException("Duplicate service: ". $container->service_name());
+            if(!empty($this->containers[$container->service_name()])) throw new DuplicateServiceException("Duplicate service: " . $container->service_name());
 
             $container->setup($this);
             $this->containers[$container->service_name()] = $container;
@@ -80,9 +85,9 @@
          */
         private function publish_docker_compose(){
             $docker_compose = [
-              'version' => '3.5',
-              'services' => $this->publish_services(),
-              'networks' => $this->publish_networks(),
+                'version'  => '3.5',
+                'services' => $this->publish_services(),
+                'networks' => $this->publish_networks(),
             ];
 
 
@@ -122,6 +127,7 @@
 
         /**
          * @param string $service_name
+         *
          * @return Container
          * @throws DockerServiceNotFoundException
          */
@@ -132,6 +138,4 @@
         }
 
 
-
-
-	}
+    }
