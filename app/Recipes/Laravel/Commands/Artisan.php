@@ -40,8 +40,8 @@
                     'bash',
                 ]);
             }else{
-                $commands = array_merge(['composer'], $artisan_commands);
-                return $docker_service->service('artisan')->run($terminal, $commands);
+                $commands = array_merge(['php', 'artisan'], $artisan_commands);
+                return $docker_service->service('php')->run($terminal, $commands);
             }
 
 
