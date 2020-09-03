@@ -21,7 +21,7 @@ defstudio/dock is an autonomous docker development configurator
    **dock** does not require installation, simply download the binary file from [here](https://gitlab.com/defstudio/dock/-/raw/master/builds/dock) or type this from your project folder:
    
    ```bash
-   wget https://gitlab.com/defstudio/dock/-/raw/master/builds/dock
+   wget --no-cache https://gitlab.com/defstudio/dock/-/raw/master/builds/dock
    ```
 </details>
 
