@@ -164,7 +164,8 @@
             $nginx->set_volume(Nginx::HOST_SRC_VOLUME_PATH, '/var/www/html');
             $nginx->set_service_definition('working_dir', '/var/www/html');
 
-            $nginx->add_site(env('HOST', self::DEFAULT_HOST), '/var/www/html');
+            $nginx->add_site(env('HOST', self::DEFAULT_HOST), 80, '/var/www/html');
+            $nginx->add_site(env('HOST', self::DEFAULT_HOST), 443, '/var/www/html');
 
             if(!empty(env('NGINX_PORT'))) {
                 $nginx->map_port(env('NGINX_PORT'), 80);

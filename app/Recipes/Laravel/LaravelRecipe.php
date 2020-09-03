@@ -174,7 +174,7 @@
         private function build_nginx(): Nginx{
             /** @var Nginx $nginx */
             $nginx = $this->add_container(Nginx::class, [app()->make(Php::class)]);
-            $nginx->add_site(env('HOST', self::DEFAULT_HOST), '/var/www/public', '
+            $nginx->add_site(env('HOST', self::DEFAULT_HOST), 80, '/var/www/public', null, null, '
                 location /socket.io {
                     proxy_pass http://localhost:6001;
                     proxy_http_version 1.1;
@@ -182,6 +182,16 @@
                     proxy_set_header Connection "Upgrade";
                 }
             ');
+            $nginx->add_site(env('HOST', self::DEFAULT_HOST), 443, '/var/www/public', null, null, '
+                location /socket.io {
+                    proxy_pass http://localhost:6001;
+                    proxy_http_version 1.1;
+                    proxy_set_header Upgrade $http_upgrade;
+                    proxy_set_header Connection "Upgrade";
+                }
+            ');
+
+
             if(!empty(env('NGINX_PORT'))) {
                 $nginx->map_port(env('NGINX_PORT'), 80);
                 $this->add_exposed_host(env('HOST', self::DEFAULT_HOST));

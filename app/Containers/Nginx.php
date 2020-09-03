@@ -21,6 +21,7 @@
         const PATH_UPSTREAM_CONF = 'nginx/conf.d/upstream.conf';
 
         const PATH_SITE_TEMPLATE = 'nginx/templates/site.conf';
+        const PATH_SSL_SITE_TEMPLATE = 'nginx/templates/site-ssl.conf';
         const PATH_PROXY_TEMPLATE = 'nginx/templates/proxy.conf';
         const PATH_SSL_PROXY_TEMPLATE = 'nginx/templates/proxy-ssl.conf';
 
@@ -32,12 +33,14 @@
             'build'       => [
                 'context' => 'https://gitlab.com/defstudio/docker/nginx.git',
             ],
-            'expose'      => [80,443],
+            'expose'      => [
+                80,
+                443,
+            ],
             'depends_on'  => [
                 self::PHP_SERVICE_NAME,
             ],
         ];
-
 
 
         protected array $volumes = [
@@ -58,23 +61,26 @@
             $this->php_service = $php_service;
         }
 
-        public function add_site($host, $root = "/var/www", $extra=''){
-            $this->sites[$host] = [
-                'host' => $host,
-                'root' => $root,
-                'extra' => $extra
+        public function add_site(string $host, int $port=80, $root = "/var/www", ?string $ssl_certificate = null, string $ssl_certificate_key = null, string $extra = ''){
+            $this->sites[] = [
+                'host'                => $host,
+                'port'                => $port,
+                'root'                => $root,
+                'ssl_certificate'     => $ssl_certificate,
+                'ssl_certificate_key' => $ssl_certificate_key,
+                'extra'               => $extra,
             ];
         }
 
-        public function add_proxy(string $host, int $port, string $proxy_target, int $proxy_port, string $ssl_certificate='', string $ssl_certificate_key='', string $extra=''): void{
+        public function add_proxy(string $host, int $port, string $proxy_target, int $proxy_port, ?string $ssl_certificate = null, string $ssl_certificate_key = null, string $extra = ''): void{
             $this->proxies[] = [
-                'port' => $port,
-                'host' => $host,
-                'proxy_target' => $proxy_target,
-                'proxy_port' => $proxy_port,
-                'ssl_certificate' => $ssl_certificate,
+                'port'                => $port,
+                'host'                => $host,
+                'proxy_target'        => $proxy_target,
+                'proxy_port'          => $proxy_port,
+                'ssl_certificate'     => $ssl_certificate,
                 'ssl_certificate_key' => $ssl_certificate_key,
-                'extra' => $extra
+                'extra'               => $extra,
             ];
         }
 
@@ -90,6 +96,7 @@
 
         /**
          * @param DockerService $service
+         *
          * @throws DuplicateServiceException
          * @throws ContainerException
          */
@@ -134,7 +141,7 @@
 
         protected function publish_sites(){
             foreach($this->sites as $site){
-                        $this->publish_site($site);
+                $this->publish_site($site);
             }
             foreach($this->proxies as $proxy){
                 $this->publish_proxy($proxy);
@@ -142,17 +149,22 @@
         }
 
         protected function publish_site(array $site_data){
-            $template = Storage::get(self::PATH_SITE_TEMPLATE);
+            if(empty($site_data['ssl_certificate'])){
+                $template = Storage::get(self::PATH_SITE_TEMPLATE);
+            } else{
+                $template = Storage::get(self::PATH_SSL_SITE_TEMPLATE);
+            }
+
 
             $this->compile_template($template, $site_data);
 
-            $this->disk()->put(self::PATH_SITES_AVAILABLE . "/" . $site_data['host'] . ".conf", $template);
+            $this->disk()->put(self::PATH_SITES_AVAILABLE . "/{$site_data['host']}.{$site_data['port']}.conf", $template);
         }
 
         protected function publish_proxy(array $proxy_data){
             if(empty($proxy_data['ssl_certificate'])){
                 $template = Storage::get(self::PATH_PROXY_TEMPLATE);
-            }else{
+            } else{
                 $template = Storage::get(self::PATH_SSL_PROXY_TEMPLATE);
             }
 
