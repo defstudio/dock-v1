@@ -198,4 +198,5 @@ Note that additional command can be added by the active recipe, for more informa
 
 ## Acknowledgements
 
-**dock** is built with, and depends on, the awesome [Laravel Zero](https://laravel-zero.com/) by [Nuno Maduro](https://github.com/nunomaduro) 
+- **dock** is built with, and depends on, the awesome [Laravel Zero](https://laravel-zero.com/) by [Nuno Maduro](https://github.com/nunomaduro)
+- **dock** embeds [Jesse Duffield](https://jesseduffield.com/) 's docker management terminal UI: [lazydocker](https://github.com/jesseduffield/lazydocker) 
