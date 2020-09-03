@@ -35,7 +35,7 @@
          */
         public function handle(TerminalService $terminal){
 
-            $terminal->execute_in_shell_command_line([' "curl https://raw.githubusercontent.com/jesseduffield/lazydocker/master/scripts/install_update_linux.sh | bash"']);
+            $terminal->execute_in_shell_command_line(['curl https://raw.githubusercontent.com/jesseduffield/lazydocker/master/scripts/install_update_linux.sh | bash']);
 
             $terminal->execute_in_shell_command_line(['lazydocker']);
 
