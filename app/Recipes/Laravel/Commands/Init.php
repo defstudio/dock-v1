@@ -72,6 +72,7 @@
             if(!$this->task("Installing Composer packages", function()use($docker_service, $terminal){
                 return $docker_service->service('composer')->run($terminal, [
                     "install",
+                    "--no-interaction",
                 ]);
             })) return false;
 
@@ -129,6 +130,7 @@
             if(!$this->task("Installing Composer packages", function()use($docker_service, $terminal){
                 return $docker_service->service('composer')->run($terminal, [
                     "install",
+                    "--no-interaction",
                     "--optimize-autoloader",
                     "--no-dev",
                 ]);
