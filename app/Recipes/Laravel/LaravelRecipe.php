@@ -141,6 +141,7 @@
                 Artisan::class,
                 Migrate::class,
                 Watch::class,
+                Update::class,
             ];
         }
 
