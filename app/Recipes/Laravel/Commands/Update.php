@@ -13,10 +13,13 @@
     class Update extends Command{
         use InteractsWithEnvContent;
 
-
-        protected $signature = 'laravel:update';
+        protected $signature = 'laravel:update
+                                {--message= : Message to show on 503 maintenance page}
+                               ';
 
         protected $description = 'Update Laravel codebase from git';
+
+        protected $maintenance_message = "Ongonig maintenance, system will be available soon...";
 
         /**
          * @param DockerService $docker_service
@@ -28,6 +31,9 @@
 
             $this->title('Starting Laravel update procedure');
 
+            if($this->hasOption('message')){
+                $this->maintenance_message = $this->option('message');
+            }
 
             $this->task("Going in Maintenance mode", function() use($docker_service, $terminal){
                 if(!Storage::disk('src')->exists('storage/framework/down')){
@@ -35,6 +41,8 @@
                         'php',
                         'artisan',
                         'down',
+                        "--message={$this->maintenance_message}",
+                        "--retry=60",
                     ]);
                 }
             });
