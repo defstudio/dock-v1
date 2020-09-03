@@ -17,13 +17,13 @@
         const HOST_SRC_VOLUME_PATH = './src/';
         const HOST_CONFIG_VOLUME_PATH = './configs/';
 
-        protected $service_name;
+        protected string $service_name;
 
-        protected $service_definition;
+        protected array $service_definition;
 
-        protected $volumes = [];
+        protected array $volumes = [];
 
-        protected $networks = [];
+        protected array $networks = [];
 
         /**
          * Container constructor.

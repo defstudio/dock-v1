@@ -11,9 +11,9 @@
 
         const HOST_DB_VOLUME_PATH = './volumes/mysql/db/';
 
-        protected $service_name = 'mysql';
+        protected string $service_name = 'mysql';
 
-        protected $service_definition = [
+        protected array $service_definition = [
             'restart'     => 'unless-stopped',
             'command'     => [
                 '--character-set-server=utf8mb4',
@@ -30,7 +30,7 @@
             'expose'      => [3306],
         ];
 
-        protected $volumes = [
+        protected array $volumes = [
             self::HOST_DB_VOLUME_PATH => '/var/lib/mysql',
         ];
 

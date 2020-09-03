@@ -227,7 +227,7 @@
 
             if(!empty(env("PHPMYADMIN_SUBDOMAIN"))){
                 $host = env('PHPMYADMIN_SUBDOMAIN') . "." . env('HOST');
-                $nginx->add_proxy($host, $phpmyadmin->service_name());
+                $nginx->add_proxy($host, 80, $phpmyadmin->service_name(), 80);
                 $this->add_exposed_host($host);
                 $this->add_exposed_address("PhpMyAdmin ", "http", $host, 80);
             }
@@ -257,7 +257,7 @@
 
             if(!empty(env("MAILHOG_SUBDOMAIN"))){
                 $host = env('MAILHOG_SUBDOMAIN') . "." . env('HOST');
-                $nginx->add_proxy($host, $mailhog->service_name(), 8025);
+                $nginx->add_proxy($host, 80, $mailhog->service_name(), 8025);
                 $this->add_exposed_host($host);
                 $this->add_exposed_address("MailHog ", "http", $host, 80);
             }

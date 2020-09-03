@@ -13,17 +13,19 @@
 
     class Nginx extends Container{
 
-        protected $service_name = "nginx";
+        protected string $service_name = "nginx";
 
-        const NGINX_CONF = 'nginx/nginx.conf';
-        const SITES_AVAILABLE_DIR = 'nginx/sites-available';
-        const UPSTREAM_CONF = 'nginx/conf.d/upstream.conf';
-        const SITE_TEMPLATE = 'nginx/templates/site.conf';
-        const PROXY_TEMPLATE = 'nginx/templates/proxy.conf';
+        const PATH_NGINX_CONF = 'nginx/nginx.conf';
+        const PATH_SITES_AVAILABLE = 'nginx/sites-available';
+        const PATH_UPSTREAM_CONF = 'nginx/conf.d/upstream.conf';
+
+        const PATH_SITE_TEMPLATE = 'nginx/templates/site.conf';
+        const PATH_PROXY_TEMPLATE = 'nginx/templates/proxy.conf';
+        const PATH_SSL_PROXY_TEMPLATE = 'nginx/templates/proxy-ssl.conf';
 
         const PHP_SERVICE_NAME = 'php';
 
-        protected $service_definition = [
+        protected array $service_definition = [
             'restart'     => 'unless-stopped',
             'working_dir' => '/var/www',
             'build'       => [
@@ -37,17 +39,17 @@
 
 
 
-        protected $volumes = [
-            self::HOST_SRC_VOLUME_PATH => '/var/www',
-            self::HOST_CONFIG_VOLUME_PATH . self::NGINX_CONF => '/etc/nginx/nginx.conf',
-            self::HOST_CONFIG_VOLUME_PATH . self::UPSTREAM_CONF => '/etc/nginx/conf.d/upstream.conf',
-            self::HOST_CONFIG_VOLUME_PATH . self::SITES_AVAILABLE_DIR => '/etc/nginx/sites-available',
+        protected array $volumes = [
+            self::HOST_SRC_VOLUME_PATH                                 => '/var/www',
+            self::HOST_CONFIG_VOLUME_PATH . self::PATH_NGINX_CONF      => '/etc/nginx/nginx.conf',
+            self::HOST_CONFIG_VOLUME_PATH . self::PATH_UPSTREAM_CONF   => '/etc/nginx/conf.d/upstream.conf',
+            self::HOST_CONFIG_VOLUME_PATH . self::PATH_SITES_AVAILABLE => '/etc/nginx/sites-available',
         ];
 
-        private $sites = [];
-        private $proxies = [];
+        private array $sites = [];
+        private array $proxies = [];
 
-        private $php_service;
+        private ?Php $php_service;
 
 
         public function __construct(Php $php_service){
@@ -64,11 +66,14 @@
             ];
         }
 
-        public function add_proxy($host, $proxy_target, $proxy_port=80, $extra=''){
-            $this->proxies[$host] = [
+        public function add_proxy(string $host, int $port, string $proxy_target, int $proxy_port, string $ssl_certificate='', string $ssl_certificate_key='', string $extra=''): void{
+            $this->proxies[] = [
+                'port' => $port,
                 'host' => $host,
                 'proxy_target' => $proxy_target,
                 'proxy_port' => $proxy_port,
+                'ssl_certificate' => $ssl_certificate,
+                'ssl_certificate_key' => $ssl_certificate_key,
                 'extra' => $extra
             ];
         }
@@ -101,28 +106,28 @@
             $this->publish_nginx_conf();
             $this->publish_sites_available_directory();
             $this->publish_sites();
-
-                $this->publish_upstream_conf();
-
+            $this->publish_upstream_conf();
         }
 
         protected function publish_nginx_conf(){
-            $this->disk()->put(self::NGINX_CONF, Storage::get(self::NGINX_CONF));
+            $this->disk()->put(self::PATH_NGINX_CONF, Storage::get(self::PATH_NGINX_CONF));
         }
 
         protected function publish_upstream_conf(){
-            $template = Storage::get(self::UPSTREAM_CONF);
+            if(!empty($this->php_service)){
+                $template = Storage::get(self::PATH_UPSTREAM_CONF);
 
-            $this->compile_template($template, ['php_service' => self::PHP_SERVICE_NAME]);
-            $this->disk()->put(self::UPSTREAM_CONF, $template);
+                $this->compile_template($template, ['php_service' => self::PHP_SERVICE_NAME]);
+                $this->disk()->put(self::PATH_UPSTREAM_CONF, $template);
+            }
         }
 
         protected function publish_sites_available_directory(){
-            if($this->disk()->exists(self::SITES_AVAILABLE_DIR)){
-                $this->disk()->deleteDirectory(self::SITES_AVAILABLE_DIR);
+            if($this->disk()->exists(self::PATH_SITES_AVAILABLE)){
+                $this->disk()->deleteDirectory(self::PATH_SITES_AVAILABLE);
             }
 
-            $this->disk()->makeDirectory(self::SITES_AVAILABLE_DIR);
+            $this->disk()->makeDirectory(self::PATH_SITES_AVAILABLE);
         }
 
         protected function publish_sites(){
@@ -135,19 +140,23 @@
         }
 
         protected function publish_site(array $site_data){
-            $template = Storage::get(self::SITE_TEMPLATE);
+            $template = Storage::get(self::PATH_SITE_TEMPLATE);
 
             $this->compile_template($template, $site_data);
 
-            $this->disk()->put(self::SITES_AVAILABLE_DIR . "/" . $site_data['host'] . ".conf", $template);
+            $this->disk()->put(self::PATH_SITES_AVAILABLE . "/" . $site_data['host'] . ".conf", $template);
         }
 
         protected function publish_proxy(array $proxy_data){
-            $template = Storage::get(self::PROXY_TEMPLATE);
+            if(empty($proxy_data['ssl_certificate'])){
+                $template = Storage::get(self::PATH_PROXY_TEMPLATE);
+            }else{
+                $template = Storage::get(self::PATH_SSL_PROXY_TEMPLATE);
+            }
 
             $this->compile_template($template, $proxy_data);
+            $this->disk()->put(self::PATH_SITES_AVAILABLE . "/{$proxy_data['host']}.{$proxy_data['port']}.conf", $template);
 
-            $this->disk()->put(self::SITES_AVAILABLE_DIR . "/" . $proxy_data['host'] . ".conf", $template);
         }
 
         public function commands(): array{

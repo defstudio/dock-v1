@@ -8,9 +8,9 @@
     use App\Exceptions\ContainerException;
 
     class Worker extends Container{
-        protected $service_name = "worker";
+        protected string $service_name = "worker";
 
-        protected $service_definition = [
+        protected array $service_definition = [
             'restart' => 'unless-stopped',
             'working_dir' => '/var/www',
             'build'       => [
@@ -18,7 +18,7 @@
             ],
         ];
 
-        protected $volumes = [
+        protected array $volumes = [
             self::HOST_SRC_VOLUME_PATH => '/var/www'
         ];
 

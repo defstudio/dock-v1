@@ -11,10 +11,10 @@
     class
     Php extends Container{
 
-        protected $service_name = "php";
+        protected string $service_name = "php";
 
 
-        protected $service_definition = [
+        protected array $service_definition = [
             'restart'     => 'unless-stopped',
             'working_dir' => '/var/www',
             'build'       => [
@@ -24,7 +24,7 @@
             'expose' => [9000],
         ];
 
-        protected $volumes = [
+        protected array $volumes = [
           self::HOST_SRC_VOLUME_PATH => '/var/www'
         ];
 

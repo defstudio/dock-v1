@@ -7,9 +7,9 @@
     use Illuminate\Support\Arr;
 
     class EchoServer extends Container{
-        protected $service_name = 'echo-server';
+        protected string $service_name = 'echo-server';
 
-        protected $service_definition = [
+        protected array $service_definition = [
             'restart'     => 'unless-stopped',
             'working_dir' => '/var/www',
             'build'       => [

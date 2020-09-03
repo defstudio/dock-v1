@@ -7,14 +7,14 @@
 	use App\Exceptions\ContainerException;
 
     class Node extends Container{
-        protected $service_name = "node";
+        protected string $service_name = "node";
 
-        protected $service_definition = [
+        protected array $service_definition = [
             'working_dir' => '/var/www',
             'image'       => 'node:13.8.0-alpine',
         ];
 
-        protected $volumes = [
+        protected array $volumes = [
             self::HOST_SRC_VOLUME_PATH => '/var/www'
         ];
 
