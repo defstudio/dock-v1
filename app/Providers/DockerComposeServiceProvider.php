@@ -17,13 +17,17 @@
         public function boot(){
 
 
-            $recipe = $this->app->make(DockerComposeRecipe::class);
+            try{
+                $recipe = $this->app->make(DockerComposeRecipe::class);
+                $recipe->build();
 
-            $recipe->build();
+                $this->commands($recipe->commands());
 
-            $this->commands($recipe->commands());
+                $recipe->setup();
+            } catch(BindingResolutionException $e){
+            }
 
-            $recipe->setup();
+
 
 
         }
