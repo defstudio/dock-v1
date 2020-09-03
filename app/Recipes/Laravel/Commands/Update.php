@@ -31,7 +31,7 @@
 
             $this->task("Going in Maintenance mode", function() use($docker_service, $terminal){
                 if(!Storage::disk('src')->exists('storage/framework/down')){
-                    $docker_service->service('artisan')->run($terminal, [
+                    $docker_service->service('php')->run($terminal, [
                         'php',
                         'artisan',
                         'down',
@@ -45,7 +45,7 @@
 
             $this->task("Exit from Maintenance mode", function() use($docker_service, $terminal){
                 if(Storage::disk('src')->exists('storage/framework/down')){
-                    $docker_service->service('artisan')->run($terminal, [
+                    $docker_service->service('php')->run($terminal, [
                         'php',
                         'artisan',
                         'up',
