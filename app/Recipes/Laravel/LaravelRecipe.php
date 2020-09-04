@@ -45,7 +45,10 @@
                 $application_host = $parent_command->ask("Enter application hostname", self::DEFAULT_HOST);
                 $this->set_env($env_content, "HOST", $application_host);
 
-                $application_env = $parent_command->choice("Enter application environment", ['local', 'production'], 0);
+                $application_env = $parent_command->choice("Enter application environment", [
+                    'local',
+                    'production',
+                ], 0);
                 $this->set_env($env_content, "ENV", $application_env);
                 //</editor-fold>
 
@@ -58,61 +61,61 @@
                     $this->comment_env($env_content, 'MYSQL_PORT');
                     $this->comment_env($env_content, 'PHPMYADMIN_PORT');
                     $this->comment_env($env_content, 'MAILHOG_PORT');
-                }else{
+                } else{
 
                     $parent_command->info("Exposed services selection (type x to skip)");
 
                     $nginx_port = $parent_command->ask("Enter Nginx exposed port", 80);
-                    if($nginx_port=='x'){
+                    if($nginx_port == 'x'){
                         $this->comment_env($env_content, 'NGINX_PORT');
-                    }else{
-                        if($nginx_port=='443'){
+                    } else{
+                        if($nginx_port == '443'){
                             $this->comment_env($env_content, 'NGINX_PORT');
                             $this->set_env($env_content, "NGINX_PORT_SSL", $nginx_port);
-                        }else{
+                        } else{
                             $this->set_env($env_content, "NGINX_PORT", $nginx_port);
 
                             $nginx_ssl_port = $parent_command->ask("Enter Nginx SSL exposed port", 443);
-                            if($nginx_ssl_port=='x') {
+                            if($nginx_ssl_port == 'x'){
                                 $this->comment_env($env_content, 'NGINX_PORT_SSL');
-                            }else{
+                            } else{
                                 $this->set_env($env_content, "NGINX_PORT_SSL", $nginx_ssl_port);
                             }
                         }
                     }
 
                     $mysql_port = $parent_command->ask("Enter MySQL exposed port", 3306);
-                    if($mysql_port=='x') {
+                    if($mysql_port == 'x'){
                         $this->comment_env($env_content, 'MYSQL_PORT');
-                    }else{
+                    } else{
                         $this->set_env($env_content, "MYSQL_PORT", $mysql_port);
                     }
 
                     $phpmyadmin_port = $parent_command->ask("Enter PhpMyAdmin exposed port", 8081);
-                    if($phpmyadmin_port=='x') {
+                    if($phpmyadmin_port == 'x'){
                         $this->comment_env($env_content, 'PHPMYADMIN_PORT');
-                    }else{
+                    } else{
                         $this->set_env($env_content, "PHPMYADMIN_PORT", $phpmyadmin_port);
                     }
 
                     $phpmyadmin_subdomain = $parent_command->ask("Enter PhpMyAdmin exposed subdomain", "mysql");
-                    if($phpmyadmin_subdomain=='x') {
+                    if($phpmyadmin_subdomain == 'x'){
                         $this->comment_env($env_content, 'PHPMYADMIN_SUBDOMAIN');
-                    }else{
+                    } else{
                         $this->set_env($env_content, "PHPMYADMIN_SUBDOMAIN", $phpmyadmin_subdomain);
                     }
 
                     $mailhog_port = $parent_command->ask("Enter MailHog exposed port", 8025);
-                    if($mailhog_port=='x') {
+                    if($mailhog_port == 'x'){
                         $this->comment_env($env_content, 'MAILHOG_PORT');
-                    }else{
+                    } else{
                         $this->set_env($env_content, "MAILHOG_PORT", $mailhog_port);
                     }
 
                     $mailhog_subdomain = $parent_command->ask("Enter MailHog exposed subdomain", "mail");
-                    if($mailhog_subdomain=='x') {
+                    if($mailhog_subdomain == 'x'){
                         $this->comment_env($env_content, 'MAILHOG_SUBDOMAIN');
-                    }else{
+                    } else{
                         $this->set_env($env_content, "MAILHOG_SUBDOMAIN", $mailhog_subdomain);
                     }
                 }
@@ -125,6 +128,11 @@
                 $this->set_env($env_content, 'MYSQL_USER', $parent_command->ask("Database User", "dbuser"));
                 $this->set_env($env_content, 'MYSQL_PASSWORD', $parent_command->ask("Database Password", "dbpassword"));
                 $this->set_env($env_content, 'MYSQL_ROOT_PASSWORD', $parent_command->ask("Database Root Password", "root"));
+                //</editor-fold>
+
+                //<editor-fold desc="Redis Configuration">
+                $parent_command->question("Redis Configuration");
+                $this->set_env($env_content, 'REDIS_PASSWORD', $parent_command->ask("Enter Redis Password (leave blank to disable redis service)", "database"));
                 //</editor-fold>
 
 
@@ -161,10 +169,30 @@
 
             $this->add_container(Node::class);
 
-            /** @var Redis $redis */
-            $redis = $this->add_container(Redis::class);
+            $redis = $this->build_redis();
 
-            $this->build_echo_server($redis, $nginx);
+            if(!empty($redis)){
+                $this->build_echo_server($redis, $nginx);
+            }
+
+        }
+
+        /**
+         * @return Redis|null
+         * @throws BindingResolutionException
+         */
+        private function build_redis(): ?Redis{
+            $redis_password = env('REDIS_PASSWORD');
+            if(!empty($redis_password)){
+                /** @var Redis $redis */
+
+                $redis = $this->add_container(Redis::class);
+                $redis->set_password($redis_password);
+
+                return $redis;
+            }
+
+            return null;
         }
 
         /**
@@ -192,15 +220,15 @@
             ');
 
 
-            if(!empty(env('NGINX_PORT'))) {
+            if(!empty(env('NGINX_PORT'))){
                 $nginx->map_port(env('NGINX_PORT'), 80);
                 $this->add_exposed_host(env('HOST', self::DEFAULT_HOST));
                 $this->add_exposed_address(self::LABEL, "http", env('HOST', self::DEFAULT_HOST), env('NGINX_PORT'));
             }
-            if(!empty(env('NGINX_PORT_SSL'))) {
+            if(!empty(env('NGINX_PORT_SSL'))){
                 $nginx->map_port(env('NGINX_PORT_SSL'), 443);
                 $this->add_exposed_host(env('HOST', self::DEFAULT_HOST));
-                $this->add_exposed_address(self::LABEL." SSL", "https", env('HOST', self::DEFAULT_HOST), env('NGINX_PORT_SSL'));
+                $this->add_exposed_address(self::LABEL . " SSL", "https", env('HOST', self::DEFAULT_HOST), env('NGINX_PORT_SSL'));
             }
 
             return $nginx;
@@ -218,7 +246,7 @@
             $mysql->set_password(env('MYSQL_PASSWORD', 'dbpassword'));
             $mysql->set_root_password(env('MYSQL_ROOT_PASSWORD', 'root'));
 
-            if(!empty(env('MYSQL_PORT'))) {
+            if(!empty(env('MYSQL_PORT'))){
                 $this->add_exposed_host(env('HOST', self::DEFAULT_HOST));
                 $this->add_exposed_address("MySql", "http", env('HOST', self::DEFAULT_HOST), env('MYSQL_PORT'));
                 $mysql->map_port(env('MYSQL_PORT'), 3306);
@@ -230,12 +258,13 @@
         /**
          * @param MySql $mysql
          * @param Nginx $nginx
+         *
          * @return PhpMyAdmin
          * @throws BindingResolutionException
          */
         public function build_phpmyadmin(MySql $mysql, Nginx $nginx): ?PhpMyAdmin{
 
-            if(env('ENV', 'local')!='local') return null;
+            if(env('ENV', 'local') != 'local') return null;
             if(empty(env("PHPMYADMIN_PORT")) && empty(env("PHPMYADMIN_SUBDOMAIN"))) return null;
 
 
@@ -263,12 +292,13 @@
 
         /**
          * @param Nginx $nginx
+         *
          * @return MailHog
          * @throws BindingResolutionException
          */
         public function build_mailhog(Nginx $nginx): ?MailHog{
 
-            if(env('ENV', 'local')!='local') return null;
+            if(env('ENV', 'local') != 'local') return null;
             if(empty(env("MAILHOG_PORT")) && empty(env("MAILHOG_SUBDOMAIN"))) return null;
 
 
@@ -295,10 +325,11 @@
         /**
          * @param Redis $redis
          * @param Nginx $nginx
+         *
          * @return EchoServer
          * @throws BindingResolutionException
          */
-        public function build_echo_server(Redis $redis, Nginx $nginx):EchoServer{
+        public function build_echo_server(Redis $redis, Nginx $nginx): EchoServer{
             /** @var EchoServer $echo_server */
             $echo_server = $this->add_container(EchoServer::class);
             $echo_server->depends_on($redis->service_name());
