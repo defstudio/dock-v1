@@ -182,13 +182,7 @@
 
         protected function publish_site(array $site_data){
             if(empty($site_data['ssl_certificate'])){
-                if($site_data['port']==443 && empty($site_data['ssl_certificate'])){
-                    $site_data['ssl_certificate'] = '/etc/nginx/ssl/nginx.cert';
-                    $site_data['ssl_certificate_key'] = '/etc/nginx/ssl/nginx.key';
-                    $template = Storage::get(self::PATH_SSL_SITE_TEMPLATE);
-                }else{
-                    $template = Storage::get(self::PATH_SITE_TEMPLATE);
-                }
+                $template = Storage::get(self::PATH_SITE_TEMPLATE);
             } else{
                 $template = Storage::get(self::PATH_SSL_SITE_TEMPLATE);
             }
@@ -201,13 +195,7 @@
 
         protected function publish_proxy(array $proxy_data){
             if(empty($proxy_data['ssl_certificate'])){
-                if($proxy_data['port']==443 && empty($proxy_data['ssl_certificate'])){
-                    $proxy_data['ssl_certificate'] = '/etc/nginx/ssl/nginx.cert';
-                    $proxy_data['ssl_certificate_key'] = '/etc/nginx/ssl/nginx.key';
-                    $template = Storage::get(self::PATH_SSL_PROXY_TEMPLATE);
-                }else{
-                    $template = Storage::get(self::PATH_PROXY_TEMPLATE);
-                }
+                $template = Storage::get(self::PATH_PROXY_TEMPLATE);
             } else{
                 $template = Storage::get(self::PATH_SSL_PROXY_TEMPLATE);
             }

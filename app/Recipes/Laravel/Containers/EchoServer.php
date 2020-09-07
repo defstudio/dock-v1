@@ -106,7 +106,7 @@
             $this->set_environment("ECHO_REDIS_HOSTNAME", $service_name, false);
         }
 
-        public function set_redis_password($password = "redis"){
+        public function set_redis_password($password = ""){
             $this->set_environment("ECHO_REDIS_PASSWORD", $password, false);
         }
 
