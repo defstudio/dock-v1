@@ -119,7 +119,8 @@
             $nginx->unset_service_definition('working_dir');
             $nginx->unset_php_service();
 
-            $nginx->enable_backend_not_found_page();
+            // TODO: verificare come mai genera errore per certificato mancante
+            // $nginx->enable_backend_not_found_page();
 
             $nginx->set_volume(Container::HOST_CONFIG_VOLUME_PATH . 'certbot/letsencrypt', '/etc/letsencrypt');
 
