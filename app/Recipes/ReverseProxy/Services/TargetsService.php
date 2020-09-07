@@ -1,0 +1,109 @@
+<?php
+
+
+    namespace App\Recipes\ReverseProxy\Services;
+
+
+    use App\Containers\Nginx;
+    use App\Recipes\ReverseProxy\Exceptions\ProxyTargetInvalidException;
+    use Illuminate\Contracts\Filesystem\Filesystem;
+    use Illuminate\Support\Facades\Storage;
+
+    class TargetsService{
+
+        const TARGETS_FILE = 'targets.json';
+
+        const TARGETS_TEMPLATE = [
+            [
+                'active'              => 0,
+                'project'             => '[project_name]',
+                'port'                => 443,
+                'hostname'            => 'example.ktm',
+                'ssl_certificate'     => '/etc/letsencrypt/live/example.ktm/fullchain.pem',
+                'ssl_certificate_key' => '/etc/letsencrypt/live/example.ktm/privkey.pem',
+            ],
+            [
+                'active'              => 0,
+                'container_hostname'  => '[project_name]_nginx_1',
+                'container_port'      => 443,
+                'hostname'            => 'example.ktm',
+                'port'                => 443,
+                'ssl_certificate'     => '/etc/letsencrypt/live/example.ktm/fullchain.pem',
+                'ssl_certificate_key' => '/etc/letsencrypt/live/example.ktm/privkey.pem',
+            ],
+        ];
+
+
+        private function disk(): Filesystem{
+            return Storage::disk('cwd');
+        }
+
+        public function init_targets_file(){
+            if(!$this->disk()->exists(self::TARGETS_FILE)){
+                $this->set_targets(self::TARGETS_TEMPLATE);
+            }
+        }
+
+        private function get_target_id(object $target): string{
+            $project = $target->project ?? $target->hostname;
+            return "{$project}:{$target->port}";
+        }
+
+        public function get_target($target_id): ?object{
+            $targets = $this->get_targets();
+
+            foreach($targets as $target){
+                if($this->get_target_id($target) == $target_id) return $target;
+            }
+
+            return null;
+        }
+
+        public function set_target($new_target): void{
+            $targets = $this->get_targets();
+
+            foreach($targets as $index => $target){
+                if($this->get_target_id($target) == $this->get_target_id($new_target)){
+                    $targets[$index] = $new_target;
+
+                    $this->set_targets($targets);
+                    return;
+                }
+            }
+
+            $targets[] = $new_target;
+            $this->set_targets($targets);
+        }
+
+        private function get_targets(): array{
+            $targets = json_decode($this->disk()->get(self::TARGETS_FILE));
+            if(empty($targets)) throw new ProxyTargetInvalidException("targets.json file is invalid");
+
+            return $targets;
+        }
+
+        private function set_targets(array $targets): void{
+            $this->disk()->put(self::TARGETS_FILE, json_encode($targets, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+        }
+
+        public function make_proxies(Nginx &$nginx){
+
+            foreach($this->get_targets() as $target){
+                if(!$this->target_active($target)) return;
+
+                $container_hostname = $target->container_hostname ?? "{$target->project}_nginx_1";
+                $container_port = $target->container_port ?? $target->port;
+                $hostname = $target->hostname;
+                $port = $target->port;
+                $ssl_certificate = $target->ssl_certificate ?? '';
+                $ssl_certificate_key = $target->ssl_certificate_key ?? '';
+
+                $nginx->add_proxy($hostname, $port, $container_hostname, $container_port, $ssl_certificate, $ssl_certificate_key);
+            }
+        }
+
+        private function target_active(object $target){
+            return ($target->active ?? 1) == 1;
+        }
+
+    }

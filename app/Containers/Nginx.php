@@ -19,6 +19,7 @@
         const PATH_SITES_AVAILABLE = 'nginx/sites-available';
 
         const PATH_UPSTREAM_CONF = 'nginx/conf.d/upstream.conf';
+        const PATH_BACKEND_NOT_FOUND_CONF = 'nginx/sites-available/backend_not_found.conf';
 
         const PATH_SITE_TEMPLATE = 'nginx/templates/site.conf';
         const PATH_SSL_SITE_TEMPLATE = 'nginx/templates/site-ssl.conf';
@@ -54,6 +55,8 @@
 
         private ?Php $php_service;
 
+        private bool $enable_backend_not_found = false;
+
 
         public function __construct(Php $php_service){
             parent::__construct();
@@ -61,7 +64,7 @@
             $this->php_service = $php_service;
         }
 
-        public function add_site(string $host, int $port=80, $root = "/var/www", ?string $ssl_certificate = null, string $ssl_certificate_key = null, string $extra = ''){
+        public function add_site(string $host, int $port = 80, $root = "/var/www", ?string $ssl_certificate = null, string $ssl_certificate_key = null, string $extra = ''): self{
             $this->sites[] = [
                 'host'                => $host,
                 'port'                => $port,
@@ -70,9 +73,11 @@
                 'ssl_certificate_key' => $ssl_certificate_key,
                 'extra'               => $extra,
             ];
+
+            return $this;
         }
 
-        public function add_proxy(string $host, int $port, string $proxy_target, int $proxy_port, ?string $ssl_certificate = null, string $ssl_certificate_key = null, string $extra = ''): void{
+        public function add_proxy(string $host, int $port, string $proxy_target, int $proxy_port, ?string $ssl_certificate = null, string $ssl_certificate_key = null, string $extra = ''): self{
             $this->proxies[] = [
                 'port'                => $port,
                 'host'                => $host,
@@ -82,6 +87,20 @@
                 'ssl_certificate_key' => $ssl_certificate_key,
                 'extra'               => $extra,
             ];
+
+            return $this;
+        }
+
+        public function reset_proxies(): self{
+            $this->proxies = [];
+
+            return $this;
+        }
+
+        public function reset_sites(): self{
+            $this->proxies = [];
+
+            return $this;
         }
 
         public function set_php_service(Php $php_service){
@@ -91,6 +110,12 @@
         public function unset_php_service(){
             $this->php_service = null;
             unset($this->service_definition['depends_on']);
+        }
+
+        public function enable_backend_not_found_page(): self{
+            $this->enable_backend_not_found = true;
+
+            return $this;
         }
 
 
@@ -114,6 +139,7 @@
             $this->publish_sites_available_directory();
             $this->publish_sites();
             $this->publish_upstream_conf();
+            $this->publish_backend_not_found();
         }
 
         protected function publish_nginx_conf(){
@@ -129,6 +155,12 @@
 
                 $this->set_volume(self::HOST_CONFIG_VOLUME_PATH . self::PATH_UPSTREAM_CONF, '/etc/nginx/conf.d/upstream.conf');
             }
+        }
+
+        protected function publish_backend_not_found(): void{
+            if(!$this->enable_backend_not_found) return;
+
+            $this->disk()->put(self::PATH_BACKEND_NOT_FOUND_CONF, Storage::get(self::PATH_BACKEND_NOT_FOUND_CONF));
         }
 
         protected function publish_sites_available_directory(){
@@ -150,7 +182,13 @@
 
         protected function publish_site(array $site_data){
             if(empty($site_data['ssl_certificate'])){
-                $template = Storage::get(self::PATH_SITE_TEMPLATE);
+                if($site_data['port']==443 && empty($site_data['ssl_certificate'])){
+                    $site_data['ssl_certificate'] = '/etc/nginx/ssl/nginx.cert';
+                    $site_data['ssl_certificate_key'] = '/etc/nginx/ssl/nginx.key';
+                    $template = Storage::get(self::PATH_SSL_SITE_TEMPLATE);
+                }else{
+                    $template = Storage::get(self::PATH_SITE_TEMPLATE);
+                }
             } else{
                 $template = Storage::get(self::PATH_SSL_SITE_TEMPLATE);
             }
@@ -163,7 +201,13 @@
 
         protected function publish_proxy(array $proxy_data){
             if(empty($proxy_data['ssl_certificate'])){
-                $template = Storage::get(self::PATH_PROXY_TEMPLATE);
+                if($proxy_data['port']==443 && empty($proxy_data['ssl_certificate'])){
+                    $proxy_data['ssl_certificate'] = '/etc/nginx/ssl/nginx.cert';
+                    $proxy_data['ssl_certificate_key'] = '/etc/nginx/ssl/nginx.key';
+                    $template = Storage::get(self::PATH_SSL_PROXY_TEMPLATE);
+                }else{
+                    $template = Storage::get(self::PATH_PROXY_TEMPLATE);
+                }
             } else{
                 $template = Storage::get(self::PATH_SSL_PROXY_TEMPLATE);
             }

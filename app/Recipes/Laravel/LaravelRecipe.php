@@ -10,6 +10,9 @@
     use App\Containers\Redis;
     use App\Containers\Composer;
     use App\Containers\MySql;
+    use App\Exceptions\ContainerException;
+    use App\Exceptions\DuplicateNetworkException;
+    use App\Exceptions\DuplicateServiceException;
     use App\Recipes\DockerComposeRecipe;
     use App\Recipes\Laravel\Commands\Artisan;
     use App\Recipes\Laravel\Commands\Init;
@@ -20,9 +23,11 @@
     use App\Recipes\Laravel\Containers\EchoServer;
     use App\Recipes\Laravel\Containers\Php;
     use App\Recipes\Laravel\Containers\Worker;
+    use App\Recipes\ReverseProxy\ReverseProxyRecipe;
     use App\Traits\InteractsWithEnvContent;
     use Illuminate\Console\Command;
     use Illuminate\Contracts\Container\BindingResolutionException;
+    use Illuminate\Support\Str;
 
     class LaravelRecipe extends DockerComposeRecipe{
         use InteractsWithEnvContent;
@@ -61,6 +66,7 @@
                     $this->comment_env($env_content, 'MYSQL_PORT');
                     $this->comment_env($env_content, 'PHPMYADMIN_PORT');
                     $this->comment_env($env_content, 'MAILHOG_PORT');
+                    $this->set_env($env_content, 'REVERSE_PROXY_NETWORK', ReverseProxyRecipe::PROXY_NETWORK);
                 } else{
 
                     $parent_command->info("Exposed services selection (type x to skip)");
@@ -132,7 +138,7 @@
 
                 //<editor-fold desc="Redis Configuration">
                 $parent_command->question("Redis Configuration");
-                $this->set_env($env_content, 'REDIS_PASSWORD', $parent_command->ask("Enter Redis Password (leave blank to disable redis service)", "database"));
+                $this->set_env($env_content, 'REDIS_PASSWORD', $parent_command->ask("Enter Redis Password (leave blank to disable redis service)", Str::uuid()));
                 //</editor-fold>
 
 
@@ -152,6 +158,14 @@
             ];
         }
 
+        protected function host(): string{
+            return env('HOST', self::DEFAULT_HOST);
+        }
+
+        protected function internal_network(): string{
+            return "{$this->host()}_internal_network";
+        }
+
         /**
          * @throws BindingResolutionException
          */
@@ -163,11 +177,11 @@
 
             $this->build_mailhog($nginx);
 
-            $this->add_container(Worker::class);
+            $this->add_container(Worker::class)->add_network($this->internal_network());
 
-            $this->add_container(Composer::class);
+            $this->add_container(Composer::class)->add_network($this->internal_network());
 
-            $this->add_container(Node::class);
+            $this->add_container(Node::class)->add_network($this->internal_network());
 
             $redis = $this->build_redis();
 
@@ -185,8 +199,8 @@
             $redis_password = env('REDIS_PASSWORD');
             if(!empty($redis_password)){
                 /** @var Redis $redis */
+                $redis = $this->add_container(Redis::class)->add_network($this->internal_network());
 
-                $redis = $this->add_container(Redis::class);
                 $redis->set_password($redis_password);
 
                 return $redis;
@@ -200,9 +214,15 @@
          * @throws BindingResolutionException
          */
         private function build_nginx(): Nginx{
+            /** @var Php $php */
+            $php = app()->make(Php::class)->add_network($this->internal_network());
+
             /** @var Nginx $nginx */
-            $nginx = $this->add_container(Nginx::class, [app()->make(Php::class)]);
-            $nginx->add_site(env('HOST', self::DEFAULT_HOST), 80, '/var/www/public', null, null, '
+            $nginx = $this->add_container(Nginx::class)->add_network($this->internal_network());
+            $nginx->set_php_service($php);
+
+
+            $nginx->add_site($this->host(), 80, '/var/www/public', null, null, '
                 location /socket.io {
                     proxy_pass http://localhost:6001;
                     proxy_http_version 1.1;
@@ -210,7 +230,7 @@
                     proxy_set_header Connection "Upgrade";
                 }
             ');
-            $nginx->add_site(env('HOST', self::DEFAULT_HOST), 443, '/var/www/public', null, null, '
+            $nginx->add_site($this->host(), 443, '/var/www/public', null, null, '
                 location /socket.io {
                     proxy_pass http://localhost:6001;
                     proxy_http_version 1.1;
@@ -231,6 +251,11 @@
                 $this->add_exposed_address(self::LABEL . " SSL", "https", env('HOST', self::DEFAULT_HOST), env('NGINX_PORT_SSL'));
             }
 
+            $proxy_network = env('REVERSE_PROXY_NETWORK');
+            if(!empty($proxy_network)){
+                $nginx->add_network($proxy_network);
+            }
+
             return $nginx;
         }
 
@@ -240,7 +265,8 @@
          */
         private function build_mysql(): MySql{
             /** @var MySql $mysql */
-            $mysql = $this->add_container(MySql::class);
+            $mysql = $this->add_container(MySql::class)->add_network($this->internal_network());
+
             $mysql->set_database(env('MYSQL_DATABASE', 'database'));
             $mysql->set_user(env('MYSQL_USER', 'dbuser'));
             $mysql->set_password(env('MYSQL_PASSWORD', 'dbpassword'));
@@ -269,7 +295,7 @@
 
 
             /** @var PhpMyAdmin $phpmyadmin */
-            $phpmyadmin = $this->add_container(PhpMyAdmin::class);
+            $phpmyadmin = $this->add_container(PhpMyAdmin::class)->add_network($this->internal_network());
             $phpmyadmin->set_database_service($mysql->service_name());
             $phpmyadmin->set_database_root_password($mysql->get_environment('MYSQL_ROOT_PASSWORD', 'root'));
             $phpmyadmin->depends_on($mysql->service_name());
@@ -303,7 +329,7 @@
 
 
             /** @var MailHog $mailhog */
-            $mailhog = $this->add_container(MailHog::class);
+            $mailhog = $this->add_container(MailHog::class)->add_network($this->internal_network());
 
             if(!empty(env("MAILHOG_PORT"))){
                 $mailhog->map_port(env("MAILHOG_PORT"), 8025);
@@ -331,7 +357,8 @@
          */
         public function build_echo_server(Redis $redis, Nginx $nginx): EchoServer{
             /** @var EchoServer $echo_server */
-            $echo_server = $this->add_container(EchoServer::class);
+            $echo_server = $this->add_container(EchoServer::class)->add_network($this->internal_network());
+
             $echo_server->depends_on($redis->service_name());
             $echo_server->set_auth_host($nginx->service_name());
             $echo_server->set_debug(false);
@@ -352,5 +379,20 @@
             return $echo_server;
         }
 
+        /**
+         * @throws ContainerException
+         * @throws DuplicateNetworkException
+         * @throws DuplicateServiceException
+         */
+        public function setup(){
+            parent::setup();
+
+            $this->docker_service->add_network($this->internal_network(), $this->internal_network(), 'bridge');
+
+            $proxy_network = env('REVERSE_PROXY_NETWORK');
+            if(!empty($proxy_network)){
+                $this->docker_service->add_external_network($proxy_network);
+            }
+        }
 
     }

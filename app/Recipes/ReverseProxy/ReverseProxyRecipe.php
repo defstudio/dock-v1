@@ -11,7 +11,10 @@
     use App\Exceptions\DuplicateNetworkException;
     use App\Exceptions\DuplicateServiceException;
     use App\Recipes\DockerComposeRecipe;
+    use App\Recipes\ReverseProxy\Commands\ProxyDisable;
+    use App\Recipes\ReverseProxy\Commands\ProxyEnable;
     use App\Recipes\ReverseProxy\Exceptions\ProxyTargetInvalidException;
+    use App\Recipes\ReverseProxy\Services\TargetsService;
     use App\Traits\InteractsWithEnvContent;
     use Illuminate\Console\Command;
     use Illuminate\Contracts\Container\BindingResolutionException;
@@ -24,23 +27,13 @@
 
         const LABEL = 'ReverseProxy';
 
-        private array $external_networks = [];
+        const PROXY_NETWORK = 'reverse_proxy_network';
 
 
         protected function customize_init(Command $parent_command, string $env_content): string{
-            if(!Storage::disk('cwd')->exists('targets.json')){
-                Storage::disk('cwd')->put('targets.json', json_encode([
-                    [
-                        'container_network'   => 'example_default',
-                        'container_hostname'  => 'example_nginx_1',
-                        'container_port'      => 80,
-                        'external_hostname'   => 'example.ktm',
-                        'external_port'       => 80,
-                        'ssl_certificate'     => '/etc/letsencrypt/live/example.ktm/fullchain.pem',
-                        'ssl_certificate_key' => '/etc/letsencrypt/live/example.ktm/privkey.pem',
-                    ],
-                ], JSON_PRETTY_PRINT));
-            }
+            /** @var TargetsService $targets */
+            $targets = app()->make(TargetsService::class);
+            $targets->init_targets_file();
 
             $env_content = $this->init_ssl_configuration($parent_command, $env_content);
 
@@ -106,9 +99,7 @@
 
             $nginx = $this->build_nginx();
 
-
             $this->build_targets($nginx);
-
 
             $this->build_ssl_providers();
 
@@ -128,7 +119,11 @@
             $nginx->unset_service_definition('working_dir');
             $nginx->unset_php_service();
 
+            $nginx->enable_backend_not_found_page();
+
             $nginx->set_volume(Container::HOST_CONFIG_VOLUME_PATH . 'certbot/letsencrypt', '/etc/letsencrypt');
+
+            $nginx->add_network(self::PROXY_NETWORK);
 
             return $nginx;
         }
@@ -140,17 +135,15 @@
          */
         private function build_targets(Nginx $nginx): void{
 
-            $targets_json = Storage::disk('cwd')->get('targets.json');
-            $targets = json_decode($targets_json);
+            /** @var TargetsService $targets */
+            $targets = app()->make(TargetsService::class);
 
-            if(empty($targets)) throw new ProxyTargetInvalidException("targets.json file is invalid");
+            $targets->make_proxies($nginx);
 
-            foreach($targets as $target){
-                $this->external_networks[] = $target->container_network;
-                $nginx->add_network($target->container_network);
-                $nginx->add_proxy($target->external_hostname, $target->external_port, $target->container_hostname, $target->container_port, $target->ssl_certificate ?? '', $target->ssl_certificate_key ?? '');
-            }
+
         }
+
+
 
         /**
          * @throws BindingResolutionException
@@ -196,17 +189,17 @@
          */
         public function setup(){
             parent::setup();
-
-            foreach(array_unique($this->external_networks) as $network){
-                $this->docker_service->add_external_network($network);
-            }
+            $this->docker_service->add_network(self::PROXY_NETWORK, self::PROXY_NETWORK, 'bridge');
         }
 
         /**
          * @inheritDoc
          */
         protected function recipe_commands(): array{
-            return [];
+            return [
+                ProxyEnable::class,
+                ProxyDisable::class,
+            ];
         }
     }
 

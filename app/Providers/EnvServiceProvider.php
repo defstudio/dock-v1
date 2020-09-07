@@ -10,6 +10,7 @@
     class EnvServiceProvider extends ServiceProvider{
 
         protected $allowed_commands = [
+            'stop',
             'init',
             'app:build',
             'app:install',
