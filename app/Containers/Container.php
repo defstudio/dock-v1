@@ -108,9 +108,9 @@
             if($associative_array){
                 $this->service_definition['environment'][$key] = $value;
             }else{
-                foreach($this->service_definition['environment']??[] as &$environment_definition){
+                foreach($this->service_definition['environment']??[] as $index => $environment_definition){
                     if(Str::startsWith($environment_definition, "$key=")){
-                        $environment_definition = "$key=$value";
+                        $this->service_definition['environment'][$index] = "$key=$value";
                         return $this;
                     }
                 }

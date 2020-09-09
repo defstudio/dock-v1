@@ -51,7 +51,7 @@
          * @throws DuplicateNetworkException
          */
         public function add_external_network(string $network_name){
-            if(!empty($this->networks[$network_name])) throw new DuplicateNetworkException("Duplicate network: " . $internal_name);
+            if(!empty($this->networks[$network_name])) throw new DuplicateNetworkException("Duplicate network: " . $network_name);
             $this->networks[$network_name] = [
                 'external' => true,
             ];

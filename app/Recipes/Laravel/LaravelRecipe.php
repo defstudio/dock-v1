@@ -138,7 +138,11 @@
 
                 //<editor-fold desc="Redis Configuration">
                 $parent_command->question("Redis Configuration");
-                $this->set_env($env_content, 'REDIS_PASSWORD', $parent_command->ask("Enter Redis Password (leave blank to disable redis service)", Str::uuid()));
+                $redis_password = $parent_command->ask("Enter Redis Password (type x disable redis service)", Str::uuid());
+                if($redis_password!='x'){
+                    $this->set_env($env_content, 'REDIS_PASSWORD', );
+                }
+
                 //</editor-fold>
 
 
@@ -374,7 +378,10 @@
             $echo_server->set_clients();
             $echo_server->set_redis_port();
             $echo_server->set_redis_service($redis->service_name());
-            $echo_server->set_redis_password(env('REDIS_PASSWORD'));
+
+            $redis_password = env('REDIS_PASSWORD');
+            $echo_server->set_redis_password($redis_password);
+
             $echo_server->set_protocol();
             $echo_server->set_ssl_cert_path();
             $echo_server->set_ssl_key_path();

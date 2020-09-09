@@ -102,19 +102,19 @@
             }
 
             if(!$this->task("Cache setup", function()use($docker_service, $terminal){
-                $docker_service->service('php')->execute($terminal, [
+                $docker_service->service('php')->run($terminal, [
                     "php",
                     "artisan",
                     "config:clear",
                 ]);
 
-                $docker_service->service('php')->execute($terminal, [
+                $docker_service->service('php')->run($terminal, [
                     "php",
                     "artisan",
                     "route:clear",
                 ]);
 
-                $docker_service->service('php')->execute($terminal, [
+                $docker_service->service('php')->run($terminal, [
                     "php",
                     "artisan",
                     "view:clear",
