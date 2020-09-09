@@ -216,6 +216,10 @@
         private function build_nginx(): Nginx{
             /** @var Php $php */
             $php = app()->make(Php::class)->add_network($this->internal_network());
+            if(env('ENV', 'local') == 'local'){
+                $php->enable_xdebug();
+            }
+
 
             /** @var Nginx $nginx */
             $nginx = $this->add_container(Nginx::class)->add_network($this->internal_network());
@@ -370,7 +374,7 @@
             $echo_server->set_clients();
             $echo_server->set_redis_port();
             $echo_server->set_redis_service($redis->service_name());
-            $echo_server->set_redis_password( env('REDIS_PASSWORD'));
+            $echo_server->set_redis_password(env('REDIS_PASSWORD'));
             $echo_server->set_protocol();
             $echo_server->set_ssl_cert_path();
             $echo_server->set_ssl_key_path();
