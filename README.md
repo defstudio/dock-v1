@@ -189,9 +189,7 @@ Note that additional command can be added by the active recipe, for more informa
 
 ## Tips and Tricks
 
-- instead of writing `php dock [command]` you can run directly the **dock** file by making it executable (`chmod +x dock` in your terminal), this way you can execute command with `./dock [command]`
-
-- a simpler way to run command is by creating a console alias for dock: `alias dock=./dock`, so it will be enough to type `dock [command]`
+- instead of writing `php dock [command]` you can setup a console alias for dock: `alias dock="php dock"`, so it will be enough to type `dock [command]`
 
 - to make the **dock** alias persistent between reboots, add `alias dock=./dock` at the end of your `~/.bashrc` file
 

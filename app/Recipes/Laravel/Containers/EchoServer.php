@@ -75,7 +75,7 @@
         public function set_allow_methods($methods = ["GET", "POST"]){
             $methods = Arr::wrap($methods);
             $methods = implode(',', $methods);
-            $this->set_environment("ECHO_ALLOW_HEADERS", "$methods", false);
+            $this->set_environment("ECHO_ALLOW_HEADERS", "\"$methods\"", false);
         }
 
 
@@ -85,7 +85,7 @@
         public function set_allow_headers($headers = ["Origin", "Content-Type", "X-Auth-Token", "X-Requested-With", "Accept", "Authorization", "X-CSRF-TOKEN", "X-Socket-Id"]){
             $headers = Arr::wrap($headers);
             $headers = implode(',', $headers);
-            $this->set_environment("ECHO_ALLOW_METHODS", "$headers", false);
+            $this->set_environment("ECHO_ALLOW_METHODS", "\"$headers\"", false);
         }
 
 

@@ -136,16 +136,6 @@
                 $this->set_env($env_content, 'MYSQL_ROOT_PASSWORD', $parent_command->ask("Database Root Password", "root"));
                 //</editor-fold>
 
-                //<editor-fold desc="Redis Configuration">
-                $parent_command->question("Redis Configuration");
-                $redis_password = $parent_command->ask("Enter Redis Password (type x disable redis service)", Str::uuid());
-                if($redis_password!='x'){
-                    $this->set_env($env_content, 'REDIS_PASSWORD', $redis_password);
-                }
-
-                //</editor-fold>
-
-
             }
 
             return $env_content;
@@ -187,7 +177,8 @@
 
             $this->add_container(Node::class)->add_network($this->internal_network());
 
-            $redis = $this->build_redis();
+            /** @var Redis $redis */
+            $redis = $this->add_container(Redis::class)->add_network($this->internal_network());
 
             if(!empty($redis)){
                 $this->build_echo_server($redis, $nginx);
@@ -195,23 +186,6 @@
 
         }
 
-        /**
-         * @return Redis|null
-         * @throws BindingResolutionException
-         */
-        private function build_redis(): ?Redis{
-            $redis_password = env('REDIS_PASSWORD');
-            if(!empty($redis_password)){
-                /** @var Redis $redis */
-                $redis = $this->add_container(Redis::class)->add_network($this->internal_network());
-
-                $redis->set_password($redis_password);
-
-                return $redis;
-            }
-
-            return null;
-        }
 
         /**
          * @return Nginx
@@ -378,10 +352,6 @@
             $echo_server->set_clients();
             $echo_server->set_redis_port();
             $echo_server->set_redis_service($redis->service_name());
-
-            $redis_password = env('REDIS_PASSWORD');
-            $echo_server->set_redis_password($redis_password);
-
             $echo_server->set_protocol();
             $echo_server->set_ssl_cert_path();
             $echo_server->set_ssl_key_path();
