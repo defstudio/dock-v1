@@ -7,19 +7,23 @@
     use App\Containers\CertbotCloudflare;
     use App\Containers\Container;
     use App\Containers\Nginx;
+    use App\Contracts\SSLService;
     use App\Exceptions\ContainerException;
     use App\Exceptions\DuplicateNetworkException;
     use App\Exceptions\DuplicateServiceException;
     use App\Recipes\DockerComposeRecipe;
+    use App\Recipes\ReverseProxy\Commands\ProxyAdd;
     use App\Recipes\ReverseProxy\Commands\ProxyDisable;
     use App\Recipes\ReverseProxy\Commands\ProxyEnable;
+    use App\Recipes\ReverseProxy\Commands\ProxyReload;
     use App\Recipes\ReverseProxy\Exceptions\ProxyTargetInvalidException;
     use App\Recipes\ReverseProxy\Services\TargetsService;
+    use App\Services\SSL\Certbot;
+    use App\Services\SSL\SelfSigned;
     use App\Traits\InteractsWithEnvContent;
     use Illuminate\Console\Command;
     use Illuminate\Contracts\Container\BindingResolutionException;
     use Illuminate\Contracts\Filesystem\FileNotFoundException;
-    use Illuminate\Support\Facades\Storage;
 
     class ReverseProxyRecipe extends DockerComposeRecipe{
 
@@ -43,51 +47,21 @@
         private function init_ssl_configuration(Command $parent_command, string $env_content): string{
             $parent_command->question('SSL Configuration');
 
-            $ssl_provider = $parent_command->choice('Select SSL Provider', [
-                'openssl',
-                'certbot',
-            ], 1);
+            $ssl_provider_class = $parent_command->choice('Select SSL Provider', [
+                SelfSigned::class => 'self-signed',
+                Certbot::class => 'certbot',
+            ], Certbot::class);
 
-            $this->set_env($env_content, 'SSL_PROVIDER', $ssl_provider);
+            $this->set_env($env_content, 'SSL_PROVIDER', $ssl_provider_class);
 
-            switch($ssl_provider){
-                case 'certbot':
-                    $env_content = $this->init_certbot_provider($parent_command, $env_content);
-                    break;
-                case 'openssl':
+            /** @var SSLService $ssl_provider */
+            $ssl_provider = app()->make($ssl_provider_class);
 
-                    break;
-            }
+            $env_content = $ssl_provider->init_recipe($parent_command, $env_content);
 
             return $env_content;
         }
 
-        private function init_certbot_provider(Command $parent_command, string $env_content): string{
-
-            $challenge_mode = $parent_command->choice('Certbot challenge mode', [
-                'dns-cloudflare',
-            ], 'dns-cloudflare');
-
-            $this->set_env($env_content, 'CERTBOT_CHALLENGE_MODE', $challenge_mode);
-
-            switch($challenge_mode){
-                case 'dns-cloudflare':
-                    $env_content = $this->init_certbot_dns_challenge($parent_command, $env_content);
-                    break;
-            }
-
-
-            return $env_content;
-        }
-
-        private function init_certbot_dns_challenge(Command $parent_command, string $env_content): string{
-
-            $token = $parent_command->ask('Cloudflare Token');
-
-            $this->set_env($env_content, 'CLOUDFLARE_TOKEN', $token);
-
-            return $env_content;
-        }
 
         /**
          * @inheritDoc
@@ -144,44 +118,18 @@
 
         }
 
-
-
         /**
          * @throws BindingResolutionException
          */
         private function build_ssl_providers(): void{
-            $ssl_provider = env('SSL_PROVIDER');
 
-
-            switch($ssl_provider){
-                case 'certbot':
-                    $this->build_certbot_provider();
-                    break;
-            }
-        }
-
-        /**
-         * @throws BindingResolutionException
-         */
-        private function build_certbot_provider(): void{
-            $challenge_mode = env('CERTBOT_CHALLENGE_MODE');
-
-            switch($challenge_mode){
-                case 'dns-cloudflare':
-                    $this->build_certbot_dns_cloudflare();
-                    break;
-            }
-        }
-
-        /**
-         * @throws BindingResolutionException
-         */
-        private function build_certbot_dns_cloudflare(): void{
-            $this->add_container(CertbotCloudflare::class, [
-                'cloudflare_token' => env('CLOUDFLARE_TOKEN'),
-            ]);
+            /** @var SSLService $ssl_provider */
+            $ssl_provider = app()->make(SSLService::class);
+            $ssl_provider->build_ssl_provider($this);
 
         }
+
+
 
         /**
          * @throws ContainerException
@@ -200,6 +148,8 @@
             return [
                 ProxyEnable::class,
                 ProxyDisable::class,
+                ProxyAdd::class,
+                ProxyReload::class,
             ];
         }
     }

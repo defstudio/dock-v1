@@ -8,6 +8,7 @@
     use App\Recipes\ReverseProxy\Exceptions\ProxyTargetInvalidException;
     use Illuminate\Contracts\Filesystem\Filesystem;
     use Illuminate\Support\Facades\Storage;
+    use LaravelZero\Framework\Commands\Command;
 
     class TargetsService{
 
@@ -24,8 +25,8 @@
             ],
             [
                 'active'              => 0,
-                'container_hostname'  => '[project_name]_nginx_1',
-                'container_port'      => 443,
+                'destination_hostname'  => '[project_name]_nginx_1',
+                'destination_port'      => 443,
                 'hostname'            => 'example.ktm',
                 'port'                => 443,
                 'ssl_certificate'     => '/etc/letsencrypt/live/example.ktm/fullchain.pem',
@@ -91,19 +92,27 @@
             foreach($this->get_targets() as $target){
                 if(!$this->target_active($target)) return;
 
-                $container_hostname = $target->container_hostname ?? "{$target->project}_nginx_1";
-                $container_port = $target->container_port ?? $target->port;
+                $destination_hostname = $target->destination_hostname ?? "{$target->project}_nginx_1";
+                $destination_port = $target->destination_port ?? $target->port;
                 $hostname = $target->hostname;
                 $port = $target->port;
                 $ssl_certificate = $target->ssl_certificate ?? '';
                 $ssl_certificate_key = $target->ssl_certificate_key ?? '';
 
-                $nginx->add_proxy($hostname, $port, $container_hostname, $container_port, $ssl_certificate, $ssl_certificate_key);
+                $nginx->add_proxy($hostname, $port, $destination_hostname, $destination_port, $ssl_certificate, $ssl_certificate_key);
             }
         }
 
         private function target_active(object $target){
             return ($target->active ?? 1) == 1;
+        }
+
+        public function reload_targets(Nginx $nginx, Command $parent_command){
+            $nginx->reset_proxies();
+            $this->make_proxies($nginx);
+            $nginx->publish_assets();
+
+            return $parent_command->call('nginx:reload');
         }
 
     }

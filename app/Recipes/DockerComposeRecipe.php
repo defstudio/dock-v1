@@ -119,7 +119,7 @@
          * @return Container
          * @throws BindingResolutionException
          */
-        protected function add_container(string $class, array $arguments = []): Container{
+        public function add_container(string $class, array $arguments = []): Container{
 
             $container = app()->make($class, $arguments);
             $this->containers[] = $container;

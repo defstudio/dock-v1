@@ -33,14 +33,9 @@
 
             $targets->set_target($target);
 
-            /** @var Nginx $nginx */
-            $nginx =$docker_service->service('nginx');
-            $nginx->reset_proxies();
-            $targets->make_proxies($nginx);
-            $nginx->publish_assets();
 
+            /** @noinspection PhpParamsInspection */
+            return $targets->reload_targets($docker_service->service('nginx'), $this);
 
-
-            return $this->call('nginx:reload');
         }
     }

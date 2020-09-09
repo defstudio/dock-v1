@@ -19,14 +19,17 @@
 
             try{
                 $recipe = $this->app->make(DockerComposeRecipe::class);
+
+            } catch(BindingResolutionException $e){
+            }
+
+            if(!empty($recipe)){
                 $recipe->build();
 
                 $this->commands($recipe->commands());
 
                 $recipe->setup();
-            } catch(BindingResolutionException $e){
             }
-
 
 
 

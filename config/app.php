@@ -4,6 +4,7 @@
     use App\Providers\DockerComposeServiceProvider;
     use App\Providers\EnvServiceProvider;
     use App\Providers\RecipesServiceProvider;
+    use App\Providers\SSLServiceProvider;
     use App\Recipes\Laravel\LaravelRecipeServiceProvider;
     use App\Recipes\ReverseProxy\ReverseProxyRecipeServiceProvider;
     use App\Recipes\Wordpress\WordpressRecipeServiceProvider;
@@ -68,6 +69,7 @@
         LaravelRecipeServiceProvider::class,
         WordpressRecipeServiceProvider::class,
         EnvServiceProvider::class,
+        SSLServiceProvider::class,
     ],
 
 ];
