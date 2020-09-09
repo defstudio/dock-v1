@@ -140,7 +140,7 @@
                 $parent_command->question("Redis Configuration");
                 $redis_password = $parent_command->ask("Enter Redis Password (type x disable redis service)", Str::uuid());
                 if($redis_password!='x'){
-                    $this->set_env($env_content, 'REDIS_PASSWORD', );
+                    $this->set_env($env_content, 'REDIS_PASSWORD', $redis_password);
                 }
 
                 //</editor-fold>
