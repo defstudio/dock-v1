@@ -11,3 +11,5 @@ docker-compose.yml
 .env
 /.env.backup
 /backup/
+
+targets.json

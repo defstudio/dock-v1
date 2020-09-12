@@ -9,7 +9,7 @@
 
            $service_definition = parent::get_service_definition();
 
-           $service_definition['build']['args'][] = 'ENABLE_LARAVEL_CRON=1';
+           $service_definition['build']['args']['ENABLE_LARAVEL_CRON'] = 1;
 
            return $service_definition;
         }

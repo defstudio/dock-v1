@@ -11,9 +11,9 @@
 
     class Composer extends Command{
         protected $signature = 'composer
-                                {commands* : composer command to execute} ';
+                                {commands?* : composer command to execute} ';
 
-        protected $description = 'Executes a basic Composer operation';
+        protected $description = 'Executes Composer command';
 
         /**
          * @param DockerService $docker_service
@@ -26,15 +26,24 @@
 
             $terminal->init($this->output);
 
-            $commands = [
-                "composer",
-            ];
-
             $composer_commands = $this->argument("commands");
-            if(!empty($composer_commands)){
-                $commands = array_merge($commands, $composer_commands);
+
+
+
+            if(empty($composer_commands)){
+                $this->info('Log into Composer Shell');
+
+                return $terminal->execute([
+                    'docker-compose',
+                    'run',
+                    'composer',
+                    'bash',
+                ]);
+            }else{
+                $commands = array_merge(['composer'], $composer_commands);
+                return $docker_service->service('composer')->run($terminal, $commands);
             }
-            return $docker_service->service('composer')->execute($terminal, $commands);
+
 
 
         }

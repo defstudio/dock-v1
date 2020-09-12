@@ -17,7 +17,8 @@
          * @var string
          */
         protected $signature = 'shell
-                                {service?} : service to login';
+                                {service?} : service to login
+                               ';
 
         /**
          * The description of the command.
@@ -44,7 +45,7 @@
 
                 $service_name = $this->choice("Select Service:", $available_services);
             }else{
-                $service_name = $this->option('service');
+                $service_name = $this->argument('service');
             }
 
             if(empty($service_name)) return 0;
@@ -55,7 +56,7 @@
                 'docker-compose',
                 'exec',
                 $service_name,
-                'bash',
+                '/bin/bash',
             ]);
 
         }

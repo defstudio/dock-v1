@@ -8,16 +8,22 @@
     use App\Services\DockerService;
     use App\Services\TerminalService;
     use Illuminate\Contracts\Filesystem\Filesystem;
+    use Illuminate\Support\Arr;
     use Illuminate\Support\Facades\Storage;
     use Illuminate\Support\Str;
 
     abstract class Container{
 
-        protected $service_name;
+        const HOST_SRC_VOLUME_PATH = './src/';
+        const HOST_CONFIG_VOLUME_PATH = './configs/';
 
-        protected $service_definition;
+        protected string $service_name;
 
-        protected $networks = [];
+        protected array $service_definition;
+
+        protected array $volumes = [];
+
+        protected array $networks = [];
 
         /**
          * Container constructor.
@@ -98,14 +104,20 @@
          * @noinspection PhpUnused
          * @return Container
          */
-        public function set_environment($key, $value){
-            foreach($this->service_definition['environment']??[] as &$environment_definition){
-                if(Str::startsWith($environment_definition, "$key=")){
-                    $environment_definition = "$key=$value";
-                    return $this;
+        public function set_environment($key, $value, $associative_array=true){
+            if($associative_array){
+                $this->service_definition['environment'][$key] = $value;
+            }else{
+                foreach($this->service_definition['environment']??[] as $index => $environment_definition){
+                    if(Str::startsWith($environment_definition, "$key=")){
+                        $this->service_definition['environment'][$index] = "$key=$value";
+                        return $this;
+                    }
                 }
+                $this->service_definition['environment'][] = "$key=$value";
+                $this->service_definition['environment'][$key] = $value;
             }
-            $this->service_definition['environment'][] = "$key=$value";
+
             return $this;
         }
 
@@ -137,21 +149,41 @@
             return $default;
         }
 
+        public function set_volume($host_path, $container_path){
+            $this->volumes[$host_path] = $container_path;
+        }
+
+        public function set_service_definition($key, $value){
+            Arr::set($this->service_definition, $key, $value);
+        }
+
+        public function unset_service_definition($key){
+            Arr::forget($this->service_definition, $key);
+        }
+
         /**
          * @return array
          */
         public function get_service_definition(): array{
 
+            $service_definition = $this->service_definition;
+
             foreach($this->networks as $network){
-                $this->service_definition['networks'][] = $network;
+                $service_definition['networks'][] = $network;
             }
 
 
-            if(!empty($this->service_definition['networks'])){
-                $this->service_definition['networks'] = array_unique( $this->service_definition['networks']);
+            if(!empty($service_definition['networks'])){
+                $service_definition['networks'] = array_unique( $service_definition['networks']);
             }
 
-            return $this->service_definition;
+            if(!empty($this->volumes)){
+                foreach($this->volumes as $host_path => $container_path){
+                    $service_definition['volumes'][] ="$host_path:$container_path";
+                }
+            }
+
+            return $service_definition;
         }
 
         public function publish_assets(){
@@ -172,9 +204,20 @@
 
             $commands = array_merge($service_command, $commands);
 
-            $result = $terminal->execute($commands, $input=null);
+            return $terminal->execute($commands, $input);
+        }
 
-            return $result;
+        public function run(TerminalService $terminal, array $commands, string $input=null){
+
+            $service_command = [
+                'docker-compose',
+                'run',
+                $this->service_name(),
+            ];
+
+            $commands = array_merge($service_command, $commands);
+
+            return $terminal->execute($commands, $input);
         }
 
         public function execute_in_shell_command_line(TerminalService $terminal, array $commands){

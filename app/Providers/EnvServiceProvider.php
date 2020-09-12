@@ -10,6 +10,7 @@
     class EnvServiceProvider extends ServiceProvider{
 
         protected $allowed_commands = [
+            'stop',
             'init',
             'app:build',
             'app:install',
@@ -18,6 +19,7 @@
             'make:command',
             'stub:publish',
             'self-update',
+            'lazydocker',
         ];
 
         public function register(){

@@ -3,10 +3,10 @@
 #######################
 
 #Name of the recipe to use
-RECIPE=Laravel
+RECIPE=Wordpress
 
 #Host exposed to external environments
-HOST=laravel.ktm
+HOST=wordpress.ktm
 
 #working environment:
 #accepted values: production|local
@@ -37,6 +37,7 @@ MYSQL_DATABASE=database
 MYSQL_USER=dbuser
 MYSQL_PASSWORD=dbpassword
 MYSQL_ROOT_PASSWORD=root
+MYSQL_TABLES_PREFIX=wp_
 
 
 

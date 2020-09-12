@@ -1,0 +1,31 @@
+#######################
+#       General       #
+#######################
+
+#Name of the recipe to use
+RECIPE=ReverseProxy
+
+
+#######################
+#        Nginx        #
+#######################
+
+#Nginx exposed ports
+NGINX_PORT=80
+NGINX_PORT_SSL=443
+
+
+
+#######################
+#         SSL         #
+#######################
+
+#SSL_PROVIDER=openssl
+
+
+#######################
+#       Certbot       #
+#######################
+
+#CERTBOT_CHALLENGE_MODE=dns-cloudflare
+#CLOUDFLARE_TOKEN=

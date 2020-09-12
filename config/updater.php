@@ -1,9 +1,9 @@
 <?php
 
-    use App\Updater\GitlabStrategy;
-    use LaravelZero\Framework\Components\Updater\Strategy\GithubStrategy;
 
-return [
+    use App\Updater\GitlabStrategy;
+
+    return [
 
     /*
     |--------------------------------------------------------------------------

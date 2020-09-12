@@ -8,23 +8,37 @@
     use Illuminate\Contracts\Filesystem\Filesystem;
     use Illuminate\Support\Facades\Storage;
 
-    class Php extends Container{
+    class
+    Php extends Container{
 
-        protected $service_name = "php";
+        protected string $service_name = "php";
 
 
-        protected $service_definition = [
-            'restart'     => 'always',
+        protected array $service_definition = [
+            'restart'     => 'unless-stopped',
             'working_dir' => '/var/www',
             'build'       => [
                 'context' => 'https://gitlab.com/defstudio/docker/php.git',
-                'args' => ['ENABLE_XDEBUG=1']
+                'args' => [
+                    'ENABLE_XDEBUG' => 0
+                ]
             ],
             'expose' => [9000],
-            'volumes'     => [
-                './src/:/var/www',
-            ],
         ];
+
+        protected array $volumes = [
+          self::HOST_SRC_VOLUME_PATH => '/var/www'
+        ];
+
+        public function enable_xdebug(): self{
+            $this->set_service_definition('build.args.ENABLE_XDEBUG', 1);
+            return $this;
+        }
+
+        public function disable_xdebug(): self{
+            $this->set_service_definition('build.args.ENABLE_XDEBUG', 1);
+            return $this;
+        }
 
         /**
          * Php constructor.
@@ -34,6 +48,5 @@
             parent::__construct();
             $this->set_user_uid();
         }
-
 
     }

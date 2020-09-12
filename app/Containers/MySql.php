@@ -8,10 +8,13 @@
     use Illuminate\Contracts\Container\BindingResolutionException;
     
     class MySql extends Container{
-        protected $service_name = 'mysql';
 
-        protected $service_definition = [
-            'restart'     => 'always',
+        const HOST_DB_VOLUME_PATH = './volumes/mysql/db/';
+
+        protected string $service_name = 'mysql';
+
+        protected array $service_definition = [
+            'restart'     => 'unless-stopped',
             'command'     => [
                 '--character-set-server=utf8mb4',
                 '--collation-server=utf8mb4_unicode_ci',
@@ -19,15 +22,16 @@
             ],
             'image'       => 'mysql:8',
             'environment' => [
-                'MYSQL_DATABASE=database',
-                'MYSQL_USER=dbuser',
-                'MYSQL_PASSWORD=dbpassword',
-                'MYSQL_ROOT_PASSWORD=root',
-            ],
-            'volumes'     => [
-                './volumes/mysql/db/:/var/lib/mysql',
+                'MYSQL_DATABASE'      => 'database',
+                'MYSQL_USER'          => 'dbuser',
+                'MYSQL_PASSWORD'      => 'dbpassword',
+                'MYSQL_ROOT_PASSWORD' => 'root',
             ],
             'expose'      => [3306],
+        ];
+
+        protected array $volumes = [
+            self::HOST_DB_VOLUME_PATH => '/var/lib/mysql',
         ];
 
 
@@ -58,6 +62,7 @@
 
         /**
          * @param $backup_folder
+         *
          * @return bool
          * @throws BindingResolutionException
          */
@@ -102,9 +107,9 @@
             }
 
 
-            if($result==0){
+            if($result == 0){
                 return true;
-            }else{
+            } else{
                 return false;
             }
 

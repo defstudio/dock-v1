@@ -6,15 +6,15 @@
 
 
     class PhpMyAdmin extends Container{
-        protected $service_name = 'phpmyadmin';
+        protected string $service_name = 'phpmyadmin';
 
-        protected $service_definition = [
-            'restart'     => 'always',
+        protected array $service_definition = [
+            'restart'     => 'unless-stopped',
             'expose'      => [80],
             'image'       => 'phpmyadmin/phpmyadmin',
             'environment' => [
-                'MYSQL_ROOT_PASSWORD=root',
-                'PMA_HOST=mysql',
+                'MYSQL_ROOT_PASSWORD'=>'root',
+                'PMA_HOST'=>'mysql',
             ],
         ];
 

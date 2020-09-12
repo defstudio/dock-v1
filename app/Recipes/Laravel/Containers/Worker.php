@@ -8,17 +8,18 @@
     use App\Exceptions\ContainerException;
 
     class Worker extends Container{
-        protected $service_name = "worker";
+        protected string $service_name = "worker";
 
-        protected $service_definition = [
-            'restart' => 'always',
+        protected array $service_definition = [
+            'restart' => 'unless-stopped',
             'working_dir' => '/var/www',
             'build'       => [
                 'context' => 'https://gitlab.com/defstudio/docker/laravel-worker.git',
             ],
-            'volumes'     => [
-                './src/:/var/www',
-            ],
+        ];
+
+        protected array $volumes = [
+            self::HOST_SRC_VOLUME_PATH => '/var/www'
         ];
 
         /**

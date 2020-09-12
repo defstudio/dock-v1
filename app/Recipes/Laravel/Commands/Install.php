@@ -28,7 +28,7 @@
 
 
             if(!$this->task("Laravel Installation", function()use($docker_service, $terminal){
-                return $docker_service->service('composer')->execute($terminal, [
+                return $docker_service->service('composer')->run($terminal, [
                     "create-project",
                     '--prefer-dist',
                     'laravel/laravel',
@@ -38,8 +38,8 @@
 
 
 
-
-            $init_command = app()->make(Init::class);
+            $init_command = app()->make(Init::class, []);
+            $init_command->setOutput($this->output);
             $init_command->handle($docker_service, $terminal);
 
             return 0;

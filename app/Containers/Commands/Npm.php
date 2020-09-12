@@ -11,7 +11,7 @@
 
     class Npm extends Command{
         protected $signature = 'npm
-                                {commands* : npm commands to execute} ';
+                                {commands?* : npm commands to execute} ';
 
         protected $description = 'Executes an npm command';
 
@@ -26,15 +26,25 @@
 
             $terminal->init($this->output);
 
-            $commands = [
-                "npm",
-            ];
 
-            $composer_commands = $this->argument("commands");
-            if(!empty($composer_commands)){
-                $commands = array_merge($commands, $composer_commands);
+
+            $npm_commands = $this->argument("commands");
+            if(empty($npm_commands)){
+                $this->info('Log into Npm Shell');
+
+                return $terminal->execute([
+                    'docker-compose',
+                    'run',
+                    'node',
+                    'bash',
+                ]);
+            }else{
+
+                $commands = array_merge(['npm'], $npm_commands);
+
+                return $docker_service->service('node')->run($terminal, $commands);
             }
-            return $docker_service->service('node')->execute($terminal, $commands);
+
 
 
         }
