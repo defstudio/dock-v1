@@ -48,11 +48,9 @@
 
             $recipes = config('recipes', []);
 
-            $recipes_labels = array_keys($recipes);
 
-            $recipes_label = $this->choice("Select a recipe:", $recipes_labels);
+            $recipe_class = $this->menu("Select a recipe", $recipes)->open();
 
-            $recipe_class = $recipes[$recipes_label];
 
             /** @var DockerComposeRecipe $recipe */
             $recipe = $this->app->make($recipe_class);

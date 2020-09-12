@@ -40,10 +40,10 @@
 
                 $available_services = [];
                 foreach($docker_service->get_containers() as $service){
-                    $available_services[] = $service->service_name();
+                    $available_services[$service->service_name()] = $service->service_name();
                 }
 
-                $service_name = $this->choice("Select Service:", $available_services);
+                $service_name = $this->menu("Select Service", $available_services)->open;
             }else{
                 $service_name = $this->argument('service');
             }

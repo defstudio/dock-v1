@@ -23,7 +23,10 @@
 
             $this->title("New Proxy Wizard");
 
-            $creation_mode = $this->choice("Select proxy creation mode", ['standard', 'advanced'], 0);
+            $creation_mode = $this->menu("Select proxy creation mode", [
+                'standard' => 'Standard',
+                'advanced' => 'Advanced',
+            ])->open();
 
             switch($creation_mode){
                 case 'standard':

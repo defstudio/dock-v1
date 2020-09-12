@@ -19,7 +19,7 @@
 
         public function boot(){
             $recipes = Config::get('recipes', []);
-            $recipes[ReverseProxyRecipe::LABEL] = ReverseProxyRecipe::class;
+            $recipes[ReverseProxyRecipe::class] = ReverseProxyRecipe::LABEL;
             Config::set('recipes', $recipes);
         }
     }

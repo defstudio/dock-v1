@@ -9,6 +9,7 @@
     /**
      * Class Log
      * @package App\Commands
+     * @method menu(string $string, array $available_services)
      */
     class Log extends Command{
         protected $signature = 'log
@@ -29,10 +30,10 @@
             if($this->argument('service')==null){
                 $available_services = [];
                 foreach($docker_service->get_containers() as $service){
-                    $available_services[] = $service->service_name();
+                    $available_services[$service->service_name()] = $service->service_name();
                 }
 
-                $service = $this->choice("Select Service to log:", $available_services);
+                $service = $this->menu("Select Service to log", $available_services)->open();
             }else{
                 $service = $this->argument('service');
             }

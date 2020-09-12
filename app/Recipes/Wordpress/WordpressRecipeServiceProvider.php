@@ -18,7 +18,7 @@
 
         public function boot(){
             $recipes = Config::get('recipes', []);
-            $recipes[WordpressRecipe::LABEL] = WordpressRecipe::class;
+            $recipes[WordpressRecipe::class] = WordpressRecipe::LABEL;
             Config::set('recipes', $recipes);
         }
     }
