@@ -11,6 +11,7 @@
     use App\Containers\Php;
     use App\Containers\PhpMyAdmin;
     use App\Recipes\DockerComposeRecipe;
+    use App\Recipes\ReverseProxy\ReverseProxyRecipe;
     use App\Recipes\Wordpress\Containers\Wordpress;
     use App\Traits\InteractsWithEnvContent;
     use Illuminate\Console\Command;
@@ -46,6 +47,7 @@
                     $this->comment_env($env_content, 'MYSQL_PORT');
                     $this->comment_env($env_content, 'PHPMYADMIN_PORT');
                     $this->comment_env($env_content, 'MAILHOG_PORT');
+                    $this->set_env($env_content, 'REVERSE_PROXY_NETWORK', ReverseProxyRecipe::PROXY_NETWORK);
                 } else{
 
                     $parent_command->info("Exposed services selection (type x to skip)");
@@ -126,6 +128,14 @@
             return [];
         }
 
+        protected function host(): string{
+            return env('HOST', self::DEFAULT_HOST);
+        }
+
+        protected function internal_network(): string{
+            return "{$this->host()}_internal_network";
+        }
+
         /**
          * @inheritDoc
          * @throws BindingResolutionException
@@ -158,10 +168,15 @@
             $wordpress->set_db_tables_prefix(env('MYSQL_TABLES_PREFIX', 'wp_'));
             $wordpress->set_volume(Wordpress::HOST_SRC_VOLUME_PATH, '/var/www/html');
             $wordpress->set_service_definition('working_dir', '/var/www/html');
+            $wordpress->add_network($this->internal_network());
+
+            if(env('ENV', 'local') == 'local'){
+                $wordpress->enable_xdebug();
+            }
 
             /** @var Nginx $nginx */
-            $nginx = $this->add_container(Nginx::class, ['php_service' => $wordpress]);
-            $nginx->set_volume(Nginx::HOST_SRC_VOLUME_PATH, '/var/www/html');
+            $nginx = $this->add_container(Nginx::class)->add_network($this->internal_network());
+            $nginx->set_php_service($wordpress);
             $nginx->set_service_definition('working_dir', '/var/www/html');
 
             $nginx->add_site(env('HOST', self::DEFAULT_HOST), 80, '/var/www/html');
@@ -178,6 +193,11 @@
                 $this->add_exposed_address(self::LABEL." SSL", "https", env('HOST', self::DEFAULT_HOST), env('NGINX_PORT_SSL'));
             }
 
+            $proxy_network = env('REVERSE_PROXY_NETWORK');
+            if(!empty($proxy_network)){
+                $nginx->add_network($proxy_network);
+            }
+
             return $nginx;
         }
 
@@ -187,7 +207,7 @@
          */
         private function build_mysql(): MySql{
             /** @var MySql $mysql */
-            $mysql = $this->add_container(MySql::class);
+            $mysql = $this->add_container(MySql::class)->add_network($this->internal_network());
             $mysql->set_database(env('MYSQL_DATABASE', 'database'));
             $mysql->set_user(env('MYSQL_USER', 'dbuser'));
             $mysql->set_password(env('MYSQL_PASSWORD', 'dbpassword'));
@@ -215,7 +235,7 @@
 
 
             /** @var PhpMyAdmin $phpmyadmin */
-            $phpmyadmin = $this->add_container(PhpMyAdmin::class);
+            $phpmyadmin = $this->add_container(PhpMyAdmin::class)->add_network($this->internal_network());
             $phpmyadmin->set_database_service($mysql->service_name());
             $phpmyadmin->set_database_root_password($mysql->get_environment('MYSQL_ROOT_PASSWORD', 'root'));
             $phpmyadmin->depends_on($mysql->service_name());
@@ -231,7 +251,12 @@
                 $nginx->add_proxy($host, 80, $phpmyadmin->service_name(), 80);
                 $this->add_exposed_host($host);
                 $this->add_exposed_address("PhpMyAdmin ", "http", $host, 80);
+
+
             }
+
+
+
 
             return $phpmyadmin;
         }
@@ -248,7 +273,7 @@
 
 
             /** @var MailHog $mailhog */
-            $mailhog = $this->add_container(MailHog::class);
+            $mailhog = $this->add_container(MailHog::class)->add_network($this->internal_network());
 
             if(!empty(env("MAILHOG_PORT"))){
                 $mailhog->map_port(env("MAILHOG_PORT"), 8025);
@@ -273,7 +298,7 @@
          */
         public function build_composer(): ?Composer{
             /** @var Composer $composer */
-            $composer = $this->add_container(Composer::class);
+            $composer = $this->add_container(Composer::class)->add_network($this->internal_network());
             $composer->set_volume(Composer::HOST_SRC_VOLUME_PATH, '/var/www/html');
 
             return $composer;
