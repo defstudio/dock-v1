@@ -10,6 +10,9 @@
     use App\Containers\Nginx;
     use App\Containers\Php;
     use App\Containers\PhpMyAdmin;
+    use App\Exceptions\ContainerException;
+    use App\Exceptions\DuplicateNetworkException;
+    use App\Exceptions\DuplicateServiceException;
     use App\Recipes\DockerComposeRecipe;
     use App\Recipes\ReverseProxy\ReverseProxyRecipe;
     use App\Recipes\Wordpress\Containers\Wordpress;
@@ -302,5 +305,21 @@
             $composer->set_volume(Composer::HOST_SRC_VOLUME_PATH, '/var/www/html');
 
             return $composer;
+        }
+
+        /**
+         * @throws ContainerException
+         * @throws DuplicateNetworkException
+         * @throws DuplicateServiceException
+         */
+        public function setup(){
+            parent::setup();
+
+            $this->docker_service->add_network($this->internal_network(), $this->internal_network(), 'bridge');
+
+            $proxy_network = env('REVERSE_PROXY_NETWORK');
+            if(!empty($proxy_network)){
+                $this->docker_service->add_external_network($proxy_network);
+            }
         }
     }
