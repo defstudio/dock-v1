@@ -179,6 +179,7 @@
 
             /** @var Nginx $nginx */
             $nginx = $this->add_container(Nginx::class)->add_network($this->internal_network());
+            $nginx->set_volume(Nginx::HOST_SRC_VOLUME_PATH, '/var/www/html');
             $nginx->set_php_service($wordpress);
             $nginx->set_service_definition('working_dir', '/var/www/html');
 
