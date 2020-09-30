@@ -46,7 +46,6 @@
                         'php',
                         'artisan',
                         'down',
-                        "--message={$this->maintenance_message}",
                         "--retry=60",
                     ]);
                 }

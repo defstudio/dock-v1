@@ -91,6 +91,22 @@
                 ]);
             })) return false;
 
+            if(!$this->task("Database maintenance", function() use ($docker_service, $terminal){
+                $docker_service->service('php')->run($terminal, [
+                    'php',
+                    'artisan',
+                    'migrate',
+                    "--force",
+                ]);
+
+                $docker_service->service('php')->run($terminal, [
+                    'php',
+                    'artisan',
+                    'db:seed',
+                    "--force",
+                ]);
+            })) return false;
+
             if($this->get_env($env_content, "APP_KEY")==''){
                 if(!$this->task("Generating a new app key", function()use($docker_service, $terminal){
                     return $docker_service->service('php')->execute($terminal, [
@@ -148,6 +164,22 @@
                     "npm",
                     "run",
                     "prod",
+                ]);
+            })) return false;
+
+            if(!$this->task("Database maintenance", function() use ($docker_service, $terminal){
+                $docker_service->service('php')->run($terminal, [
+                    'php',
+                    'artisan',
+                    'migrate',
+                    "--force",
+                ]);
+
+                $docker_service->service('php')->run($terminal, [
+                    'php',
+                    'artisan',
+                    'db:seed',
+                    "--force",
                 ]);
             })) return false;
 
