@@ -57,7 +57,10 @@
             $target->subdomains = [];
 
             while(($subdomain = $this->ask('Enter a subdomain to bind (leave blank to skip)', '')) != ''){
-                $target->subdomains[] = $subdomain;
+
+                $public_visibility = $this->confirm("Should $subdomain.{$target->hostname} be visible outside local network?");
+
+                $target->subdomains[$subdomain] = $public_visibility?'public':'local';
             }
 
 

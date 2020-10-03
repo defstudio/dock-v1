@@ -101,8 +101,15 @@
 
                 $nginx->add_proxy($hostname, $port, $destination_hostname, $destination_port, $ssl_certificate, $ssl_certificate_key);
 
-                foreach($target->subdomains??[] as $subdomain){
-                    $nginx->add_proxy("$subdomain.$hostname", $port, $destination_hostname, $destination_port, $ssl_certificate, $ssl_certificate_key);
+                foreach($target->subdomains??[] as $subdomain => $visibility){
+
+                    if($visibility=='local'){
+                        $extra = "allow 192.168.1.1/24; \n deny all;";
+                    }else{
+                        $extra = '';
+                    }
+
+                    $nginx->add_proxy("$subdomain.$hostname", $port, $destination_hostname, $destination_port, $ssl_certificate, $ssl_certificate_key,$extra);
                 }
             }
         }
