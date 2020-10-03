@@ -53,6 +53,14 @@
             $target->hostname = $this->ask('Enter hostname');
             $target->port = $this->ask('Enter port');
 
+
+            $target->subdomains = [];
+
+            while(($subdomain = $this->ask('Enter a subdomain to bind (leave blank to skip)', '')) != ''){
+                $target->subdomains[] = $subdomain;
+            }
+
+
             if($target->port == 443){
                 /** @var SSLService $ssl_service */
                 $ssl_service = app(SSLService::class);
