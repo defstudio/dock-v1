@@ -88,12 +88,7 @@
                         $this->set_env($env_content, "PHPMYADMIN_PORT", $phpmyadmin_port);
                     }
 
-                    $phpmyadmin_subdomain = $parent_command->ask("Enter PhpMyAdmin exposed subdomain", "mysql");
-                    if($phpmyadmin_subdomain == 'x'){
-                        $this->comment_env($env_content, 'PHPMYADMIN_SUBDOMAIN');
-                    } else{
-                        $this->set_env($env_content, "PHPMYADMIN_SUBDOMAIN", $phpmyadmin_subdomain);
-                    }
+
 
                     $mailhog_port = $parent_command->ask("Enter MailHog exposed port", 8025);
                     if($mailhog_port == 'x'){
@@ -102,14 +97,30 @@
                         $this->set_env($env_content, "MAILHOG_PORT", $mailhog_port);
                     }
 
-                    $mailhog_subdomain = $parent_command->ask("Enter MailHog exposed subdomain", "mail");
-                    if($mailhog_subdomain == 'x'){
-                        $this->comment_env($env_content, 'MAILHOG_SUBDOMAIN');
-                    } else{
-                        $this->set_env($env_content, "MAILHOG_SUBDOMAIN", $mailhog_subdomain);
-                    }
+
                 }
                 //</editor-fold>
+
+
+
+                $phpmyadmin_subdomain = $parent_command->ask("Enter PhpMyAdmin exposed subdomain", "mysql");
+                if($phpmyadmin_subdomain == 'x'){
+                    $this->comment_env($env_content, 'PHPMYADMIN_SUBDOMAIN');
+                } else{
+                    $this->set_env($env_content, "PHPMYADMIN_SUBDOMAIN", $phpmyadmin_subdomain);
+                }
+
+
+
+
+                $mailhog_subdomain = $parent_command->ask("Enter MailHog exposed subdomain", "mail");
+                if($mailhog_subdomain == 'x'){
+                    $this->comment_env($env_content, 'MAILHOG_SUBDOMAIN');
+                } else{
+                    $this->set_env($env_content, "MAILHOG_SUBDOMAIN", $mailhog_subdomain);
+                }
+
+
 
                 //<editor-fold desc="MySql Configuration">
                 $parent_command->question("MySql configuration");

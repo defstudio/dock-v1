@@ -6,6 +6,7 @@
     use App\Providers\RecipesServiceProvider;
     use App\Providers\SSLServiceProvider;
     use App\Recipes\Laravel\LaravelRecipeServiceProvider;
+    use App\Recipes\PlainPhp\PlainPhpRecipeServiceProvider;
     use App\Recipes\ReverseProxy\ReverseProxyRecipeServiceProvider;
     use App\Recipes\Wordpress\WordpressRecipeServiceProvider;
 
@@ -63,13 +64,14 @@
     */
 
     'providers' => [
-        AppServiceProvider::class,
-        DockerComposeServiceProvider::class,
-        ReverseProxyRecipeServiceProvider::class,
-        LaravelRecipeServiceProvider::class,
-        WordpressRecipeServiceProvider::class,
-        EnvServiceProvider::class,
-        SSLServiceProvider::class,
+		AppServiceProvider::class,
+		DockerComposeServiceProvider::class,
+		ReverseProxyRecipeServiceProvider::class,
+		LaravelRecipeServiceProvider::class,
+		PlainPhpRecipeServiceProvider::class,
+		WordpressRecipeServiceProvider::class,
+		EnvServiceProvider::class,
+		SSLServiceProvider::class,
     ],
 
 ];

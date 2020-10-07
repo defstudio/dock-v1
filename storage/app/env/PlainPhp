@@ -1,0 +1,72 @@
+#######################
+#       General       #
+#######################
+
+#Name of the recipe to use
+RECIPE=PlainPhp
+
+#Host exposed to external environments
+HOST=php.ktm
+
+#working environment:
+#accepted values: production|local
+#default: local
+ENV=local
+
+
+
+#######################
+#         PHP         #
+#######################
+
+PHP_VERSION=latest
+
+
+
+#######################
+#        Nginx        #
+#######################
+
+#Nginx exposed ports
+NGINX_PORT=80
+NGINX_PORT_SSL=443
+
+NGINX_ROOT=/var/www
+
+
+
+#######################
+#        MySql        #
+#######################
+
+#MySql exposed ports
+#MYSQL_PORT=3306
+
+MYSQL_DATABASE=database
+MYSQL_USER=dbuser
+MYSQL_PASSWORD=dbpassword
+MYSQL_ROOT_PASSWORD=root
+
+
+
+
+#######################
+#     PhpMyAdmin      #
+#######################
+
+#PHPMYADMIN_PORT=8081
+#PHPMYADMIN_SUBDOMAIN=db
+
+
+
+
+
+#######################
+#       MailHog       #
+#######################
+
+#MAILHOG_PORT=8025
+#MAILHOG_SUBDOMAIN=mail
+
+
+

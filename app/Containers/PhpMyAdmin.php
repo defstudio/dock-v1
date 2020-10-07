@@ -15,6 +15,7 @@
             'environment' => [
                 'MYSQL_ROOT_PASSWORD'=>'root',
                 'PMA_HOST'=>'mysql',
+                'UPLOAD_LIMIT'=> 3000000000,
             ],
         ];
 

@@ -18,7 +18,7 @@
 
         public function boot(){
             $recipes = Config::get('recipes', []);
-            $recipes[LaravelRecipe::class] = LaravelRecipe::LABEL;
+			$recipes[LaravelRecipe::class] = LaravelRecipe::LABEL;
             Config::set('recipes', $recipes);
         }
     }

@@ -8,8 +8,14 @@
     use Illuminate\Contracts\Filesystem\Filesystem;
     use Illuminate\Support\Facades\Storage;
 
-    class
-    Php extends Container{
+    class Php extends Container{
+
+        const VERSIONS = [
+          '7.0' => 'https://gitlab.com/defstudio/docker/php-7.0.git',
+          '7.4' => 'https://gitlab.com/defstudio/docker/php.git',
+          'latest' => 'https://gitlab.com/defstudio/docker/php.git',
+        ];
+
 
         protected string $service_name = "php";
 
@@ -18,17 +24,23 @@
             'restart'     => 'unless-stopped',
             'working_dir' => '/var/www',
             'build'       => [
-                'context' => 'https://gitlab.com/defstudio/docker/php.git',
-                'args' => [
-                    'ENABLE_XDEBUG' => 0
-                ]
+                'context' => self::VERSIONS['latest'],
+                'args'    => [
+                    'ENABLE_XDEBUG' => 0,
+                ],
             ],
-            'expose' => [9000],
+            'expose'      => [9000],
         ];
 
         protected array $volumes = [
-          self::HOST_SRC_VOLUME_PATH => '/var/www'
+            self::HOST_SRC_VOLUME_PATH => '/var/www',
         ];
+
+        public function set_version($version){
+            if(empty(self::VERSIONS[$version])) return;
+
+            $this->set_service_definition('build.context', self::VERSIONS[$version]);
+        }
 
         public function enable_xdebug(): self{
             $this->set_service_definition('build.args.ENABLE_XDEBUG', 1);
@@ -42,6 +54,7 @@
 
         /**
          * Php constructor.
+         *
          * @throws ContainerException
          */
         public function __construct(){
