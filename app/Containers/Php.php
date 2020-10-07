@@ -11,7 +11,7 @@
     class Php extends Container{
 
         const VERSIONS = [
-          '7.0' => 'https://gitlab.com/defstudio/docker/php-7.0.git',
+          '7.1' => 'https://gitlab.com/defstudio/docker/php-7.1.git',
           '7.4' => 'https://gitlab.com/defstudio/docker/php.git',
           'latest' => 'https://gitlab.com/defstudio/docker/php.git',
         ];
