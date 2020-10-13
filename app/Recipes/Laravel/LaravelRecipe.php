@@ -58,6 +58,11 @@
                 //</editor-fold>
 
 
+                $php_version = $parent_command->ask("Enter PHP version", 'latest');
+                $this->set_env($env_content, "PHP_VERSION", $php_version);
+
+
+
                 //<editor-fold desc="Network Configuration">
                 $parent_command->question("Network configuration");
                 if($parent_command->confirm("Is the application behind a proxy?")){
@@ -208,6 +213,7 @@
                 $php->enable_xdebug();
             }
 
+            $php->set_version(env('PHP_VERSION', 'latest'));
 
             /** @var Nginx $nginx */
             $nginx = $this->add_container(Nginx::class)->add_network($this->internal_network());
