@@ -72,6 +72,7 @@
             if(!$this->task("Installing Composer packages", function()use($docker_service, $terminal){
                 return $docker_service->service('composer')->run($terminal, [
                     "install",
+                    "--ignore-platform-reqs",
                     "--no-interaction",
                 ]);
             })) return false;
@@ -149,6 +150,7 @@
                     "--no-interaction",
                     "--optimize-autoloader",
                     "--no-dev",
+                    "--ignore-platform-reqs",
                 ]);
             })) return false;
 

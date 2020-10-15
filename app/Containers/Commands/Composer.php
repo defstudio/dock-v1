@@ -11,13 +11,15 @@
 
     class Composer extends Command{
         protected $signature = 'composer
-                                {commands?* : composer command to execute} ';
+                                {commands?* : composer command to execute} ,
+                                {--ignore-platform-reqs : ignore platform requirements} ';
 
         protected $description = 'Executes Composer command';
 
         /**
-         * @param DockerService $docker_service
+         * @param DockerService   $docker_service
          * @param TerminalService $terminal
+         *
          * @return int
          * @throws DockerServiceNotFoundException
          * @throws BindingResolutionException
@@ -28,7 +30,9 @@
 
             $composer_commands = $this->argument("commands");
 
-
+            if($this->hasOption('--ignore-platform-reqs')){
+                $composer_commands .= " --ignore-platform-reqs";
+            }
 
             if(empty($composer_commands)){
                 $this->info('Log into Composer Shell');
@@ -39,11 +43,10 @@
                     'composer',
                     'bash',
                 ]);
-            }else{
+            } else{
                 $commands = array_merge(['composer'], $composer_commands);
                 return $docker_service->service('composer')->run($terminal, $commands);
             }
-
 
 
         }
