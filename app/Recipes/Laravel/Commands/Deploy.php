@@ -10,16 +10,12 @@
     use Illuminate\Support\Facades\Storage;
     use LaravelZero\Framework\Commands\Command;
 
-    class Update extends Command{
+    class Deploy extends Command{
         use InteractsWithEnvContent;
 
-        protected $signature = 'laravel:update
-                                {--message= : Message to show on 503 maintenance page}
-                               ';
+        protected $signature = 'laravel:deploy';
 
-        protected $description = 'Update Laravel codebase from git';
-
-        protected $maintenance_message = "Ongonig maintenance, system will be available soon...";
+        protected $description = 'Updates Laravel codebase from git';
 
         public function is_production(): bool{
             return env('ENV') == 'production';
@@ -36,9 +32,6 @@
 
             $this->title('Starting Laravel update procedure');
 
-            if($this->hasOption('message')){
-                $this->maintenance_message = $this->option('message');
-            }
 
             if(!$this->task("Going in Maintenance mode", function() use ($docker_service, $terminal){
                 if(!Storage::disk('src')->exists('storage/framework/down')){
@@ -111,7 +104,6 @@
             })) return false;
 
 
-
             if(!$this->task("Database maintenance", function() use ($docker_service, $terminal){
                 $docker_service->service('php')->run($terminal, [
                     'php',
@@ -127,8 +119,6 @@
                     "--force",
                 ]);
             })) return false;
-
-
 
 
             if(!$this->task("Cache setup", function() use ($docker_service, $terminal){

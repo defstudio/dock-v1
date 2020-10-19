@@ -18,7 +18,7 @@
     use App\Recipes\Laravel\Commands\Init;
     use App\Recipes\Laravel\Commands\Install;
     use App\Recipes\Laravel\Commands\Migrate;
-    use App\Recipes\Laravel\Commands\Update;
+    use App\Recipes\Laravel\Commands\Deploy;
     use App\Recipes\Laravel\Commands\Watch;
     use App\Recipes\Laravel\Containers\EchoServer;
     use App\Recipes\Laravel\Containers\Php;

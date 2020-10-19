@@ -18,7 +18,7 @@
     use App\Recipes\Laravel\Commands\Init;
     use App\Recipes\Laravel\Commands\Install;
     use App\Recipes\Laravel\Commands\Migrate;
-    use App\Recipes\Laravel\Commands\Update;
+    use App\Recipes\Laravel\Commands\Deploy;
     use App\Recipes\Laravel\Commands\Watch;
     use App\Recipes\Laravel\Containers\EchoServer;
     use App\Recipes\Laravel\Containers\Php;
@@ -158,12 +158,12 @@
 
         protected function recipe_commands(): array{
             return [
-                Install::class,
-                Init::class,
-                Artisan::class,
-                Migrate::class,
-                Watch::class,
-                Update::class,
+				Install::class,
+				Init::class,
+				Artisan::class,
+				Migrate::class,
+				Watch::class,
+				Deploy::class,
             ];
         }
 
