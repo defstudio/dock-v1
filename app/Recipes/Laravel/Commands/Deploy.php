@@ -179,6 +179,18 @@
             })) return false;
 
 
+            if(!$this->task("Restarting Queues", function() use ($docker_service, $terminal){
+
+                $commands = [
+                    "php",
+                    "/var/www/artisan",
+                    "queue:restart",
+                ];
+
+                return $docker_service->service('worker')->run($terminal, $commands);
+            })) return false;
+
+
             return true;
         }
 
