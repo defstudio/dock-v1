@@ -43,7 +43,7 @@
                     $available_services[$service->service_name()] = $service->service_name();
                 }
 
-                $service_name = $this->menu("Select Service", $available_services)->open;
+                $service_name = $this->menu("Select Service", $available_services)->open();
             }else{
                 $service_name = $this->argument('service');
             }
