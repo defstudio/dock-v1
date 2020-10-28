@@ -13,7 +13,8 @@
     class Deploy extends Command{
         use InteractsWithEnvContent;
 
-        protected $signature = 'laravel:deploy';
+        protected $signature = 'laravel:deploy
+                               {--hot : execute without using maintenance mode}';
 
         protected $description = 'Updates Laravel codebase from git';
 
@@ -32,17 +33,18 @@
 
             $this->title('Starting Laravel update procedure');
 
-
-            if(!$this->task("Going in Maintenance mode", function() use ($docker_service, $terminal){
-                if(!Storage::disk('src')->exists('storage/framework/down')){
-                    $docker_service->service('php')->run($terminal, [
-                        'php',
-                        'artisan',
-                        'down',
-                        "--retry=60",
-                    ]);
-                }
-            })) return false;
+            if(!$this->hasOption('hot')){
+                if(!$this->task("Going in Maintenance mode", function() use ($docker_service, $terminal){
+                    if(!Storage::disk('src')->exists('storage/framework/down')){
+                        $docker_service->service('php')->run($terminal, [
+                            'php',
+                            'artisan',
+                            'down',
+                            "--retry=60",
+                        ]);
+                    }
+                })) return false;
+            }
 
 
             if(!$this->task("Updating codebase from git", function() use ($docker_service, $terminal){
