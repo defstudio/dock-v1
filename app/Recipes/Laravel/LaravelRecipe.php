@@ -22,13 +22,13 @@
     use App\Recipes\Laravel\Commands\RestartQueue;
     use App\Recipes\Laravel\Commands\Watch;
     use App\Recipes\Laravel\Containers\EchoServer;
-    use App\Recipes\Laravel\Containers\Php;
+    use App\Containers\Php;
+    use App\Recipes\Laravel\Containers\Scheduler;
     use App\Recipes\Laravel\Containers\Worker;
     use App\Recipes\ReverseProxy\ReverseProxyRecipe;
     use App\Traits\InteractsWithEnvContent;
     use Illuminate\Console\Command;
     use Illuminate\Contracts\Container\BindingResolutionException;
-    use Illuminate\Support\Str;
 
     class LaravelRecipe extends DockerComposeRecipe{
         use InteractsWithEnvContent;
@@ -187,6 +187,8 @@
             $this->build_phpmyadmin($mysql, $nginx);
 
             $this->build_mailhog($nginx);
+
+            $this->add_container(Scheduler::class)->add_network($this->internal_network());
 
             $this->add_container(Worker::class)->add_network($this->internal_network());
 

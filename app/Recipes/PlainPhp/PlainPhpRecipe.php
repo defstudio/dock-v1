@@ -7,27 +7,17 @@
     use App\Containers\Nginx;
     use App\Containers\Node;
     use App\Containers\PhpMyAdmin;
-    use App\Containers\Redis;
     use App\Containers\Composer;
     use App\Containers\MySql;
     use App\Exceptions\ContainerException;
     use App\Exceptions\DuplicateNetworkException;
     use App\Exceptions\DuplicateServiceException;
     use App\Recipes\DockerComposeRecipe;
-    use App\Recipes\Laravel\Commands\Artisan;
-    use App\Recipes\Laravel\Commands\Init;
-    use App\Recipes\Laravel\Commands\Install;
-    use App\Recipes\Laravel\Commands\Migrate;
-    use App\Recipes\Laravel\Commands\Deploy;
-    use App\Recipes\Laravel\Commands\Watch;
-    use App\Recipes\Laravel\Containers\EchoServer;
-    use App\Recipes\Laravel\Containers\Php;
-    use App\Recipes\Laravel\Containers\Worker;
+    use App\Containers\Php;
     use App\Recipes\ReverseProxy\ReverseProxyRecipe;
     use App\Traits\InteractsWithEnvContent;
     use Illuminate\Console\Command;
     use Illuminate\Contracts\Container\BindingResolutionException;
-    use Illuminate\Support\Str;
 
     class PlainPhpRecipe extends DockerComposeRecipe{
         use InteractsWithEnvContent;
