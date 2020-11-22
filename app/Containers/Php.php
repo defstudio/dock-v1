@@ -28,6 +28,7 @@
                 'context' => self::VERSIONS['latest'],
                 'args'    => [
                     'ENABLE_XDEBUG' => 0,
+                    'ENABLE_LIBREOFFICE_WRITER' => '${ENABLE_LIBREOFFICE_WRITER:-0}',
                 ],
             ],
             'expose'      => [9000],

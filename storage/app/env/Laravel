@@ -20,7 +20,7 @@ ENV=local
 #######################
 
 PHP_VERSION=latest
-
+ENABLE_LIBREOFFICE_WRITER=0
 
 
 #######################
