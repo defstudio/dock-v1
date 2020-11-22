@@ -186,8 +186,13 @@
         private function build_nginx(): Nginx{
             /** @var Php $php */
             $php = app()->make(Php::class)->add_network($this->internal_network());
+
             if(env('ENV', 'local') == 'local'){
                 $php->enable_xdebug();
+            }
+
+            if(env('ENABLE_LIBREOFFICE_WRITER', 'local') == '1'){
+                $php->enable_libreoffice_writer();
             }
 
             $php->set_version(env('PHP_VERSION', 'latest'));

@@ -28,7 +28,7 @@
                 'context' => self::VERSIONS['latest'],
                 'args'    => [
                     'ENABLE_XDEBUG' => 0,
-                    'ENABLE_LIBREOFFICE_WRITER' => '${ENABLE_LIBREOFFICE_WRITER:-0}',
+                    'ENABLE_LIBREOFFICE_WRITER' => 0,
                 ],
             ],
             'expose'      => [9000],
@@ -44,15 +44,16 @@
             $this->set_service_definition('build.context', self::VERSIONS[$version]);
         }
 
-        public function enable_xdebug(): self{
-            $this->set_service_definition('build.args.ENABLE_XDEBUG', 1);
+        public function enable_xdebug(bool $enabled=true): self{
+            $this->set_service_definition('build.args.ENABLE_XDEBUG', $enabled?1:0);
             return $this;
         }
 
-        public function disable_xdebug(): self{
-            $this->set_service_definition('build.args.ENABLE_XDEBUG', 1);
+        public function enable_libreoffice_writer(bool $enabled=true): self{
+            $this->set_service_definition('build.args.ENABLE_LIBREOFFICE_WRITER', $enabled?1:0);
             return $this;
         }
+
 
         /**
          * Php constructor.
