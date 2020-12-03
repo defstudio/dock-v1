@@ -5,7 +5,6 @@
 
 
     use App\Containers\Commands\NginxReload;
-    use App\Exceptions\DuplicateNetworkException;
     use App\Exceptions\DuplicateServiceException;
     use App\Exceptions\ContainerException;
     use App\Services\DockerService;

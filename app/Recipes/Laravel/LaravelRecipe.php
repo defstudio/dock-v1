@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpUnhandledExceptionInspection */
 
 
     namespace App\Recipes\Laravel;
@@ -24,6 +24,7 @@
     use App\Recipes\Laravel\Containers\EchoServer;
     use App\Containers\Php;
     use App\Recipes\Laravel\Containers\Scheduler;
+    use App\Recipes\Laravel\Containers\Websocket;
     use App\Recipes\Laravel\Containers\Worker;
     use App\Recipes\ReverseProxy\ReverseProxyRecipe;
     use App\Traits\InteractsWithEnvContent;
@@ -61,7 +62,6 @@
 
                 $php_version = $parent_command->ask("Enter PHP version", 'latest');
                 $this->set_env($env_content, "PHP_VERSION", $php_version);
-
 
 
                 //<editor-fold desc="Network Configuration">
@@ -111,18 +111,22 @@
                     }
 
 
-
                     $mailhog_port = $parent_command->ask("Enter MailHog exposed port", 8025);
                     if($mailhog_port == 'x'){
                         $this->comment_env($env_content, 'MAILHOG_PORT');
                     } else{
                         $this->set_env($env_content, "MAILHOG_PORT", $mailhog_port);
                     }
-
                 }
                 //</editor-fold>
 
 
+                $websocket_port = $parent_command->ask("Enter Websocket exposed port (x to disable)", 6001);
+                if($websocket_port == 'x'){
+                    $this->comment_env($env_content, 'WEBSOCKET_PORT');
+                } else{
+                    $this->set_env($env_content, "WEBSOCKET_PORT", $websocket_port);
+                }
 
                 $phpmyadmin_subdomain = $parent_command->ask("Enter PhpMyAdmin exposed subdomain", "mysql");
                 if($phpmyadmin_subdomain == 'x'){
@@ -140,10 +144,6 @@
                 }
 
 
-
-
-
-
                 //<editor-fold desc="MySql Configuration">
                 $parent_command->question("MySql configuration");
                 $this->set_env($env_content, 'MYSQL_DATABASE', $parent_command->ask("Database Name", "database"));
@@ -159,13 +159,13 @@
 
         protected function recipe_commands(): array{
             return [
-				Install::class,
-				Init::class,
-				Artisan::class,
-				Migrate::class,
-				Watch::class,
-				Deploy::class,
-				RestartQueue::class,
+                Install::class,
+                Init::class,
+                Artisan::class,
+                Migrate::class,
+                Watch::class,
+                Deploy::class,
+                RestartQueue::class,
             ];
         }
 
@@ -197,10 +197,10 @@
             $this->add_container(Node::class)->add_network($this->internal_network());
 
             /** @var Redis $redis */
-            $redis = $this->add_container(Redis::class)->add_network($this->internal_network());
+            $this->add_container(Redis::class)->add_network($this->internal_network());
 
-            if(!empty($redis)){
-                $this->build_echo_server($redis, $nginx);
+            if(env('WEBSOCKET_PORT')){
+                $this->build_websocket();
             }
 
         }
@@ -221,7 +221,6 @@
             if(env('ENABLE_LIBREOFFICE_WRITER', 'local') == '1'){
                 $php->enable_libreoffice_writer();
             }
-
 
 
             $php->set_version(env('PHP_VERSION', 'latest'));
@@ -290,6 +289,25 @@
             return $mysql;
         }
 
+        public function build_websocket(): ?Websocket{
+            if(empty(env("WEBSOCKET_PORT"))) return null;
+
+            /** @var Websocket $websocket */
+            $websocket = $this->add_container(Websocket::class)->add_network($this->internal_network());
+
+            $proxy_network = env('REVERSE_PROXY_NETWORK');
+
+            if(empty($proxy_network)){
+                $websocket->map_port(env("WEBSOCKET_PORT"), 6001);
+                $this->add_exposed_host(env('HOST', self::DEFAULT_HOST));
+                $this->add_exposed_address("Websocket", "http", env('HOST', self::DEFAULT_HOST), env('WEBSOCKET_PORT'));
+            } else{
+                $websocket->add_network($proxy_network);
+            }
+
+            return $websocket;
+        }
+
         /**
          * @param MySql $mysql
          * @param Nginx $nginx
@@ -332,7 +350,6 @@
          * @throws BindingResolutionException
          */
         public function build_mailhog(Nginx $nginx): ?MailHog{
-
             if(env('ENV', 'local') != 'local') return null;
             if(empty(env("MAILHOG_PORT")) && empty(env("MAILHOG_SUBDOMAIN"))) return null;
 
@@ -352,8 +369,6 @@
                 $this->add_exposed_host($host);
                 $this->add_exposed_address("MailHog ", "http", $host, 80);
             }
-
-
             return $mailhog;
         }
 

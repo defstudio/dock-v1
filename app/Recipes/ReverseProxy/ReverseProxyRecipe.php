@@ -87,8 +87,9 @@
             /** @var Nginx $nginx */
             $nginx = $this->add_container(Nginx::class);
 
-            $nginx->map_port(80, 80);
-            $nginx->map_port(443, 443);
+            $nginx->map_port(80);
+            $nginx->map_port(443);
+            $nginx->map_port(6001);
 
             $nginx->unset_service_definition('working_dir');
             $nginx->unset_php_service();

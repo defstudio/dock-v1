@@ -74,4 +74,7 @@ MYSQL_ROOT_PASSWORD=root
 #REDIS_PASSWORD=
 
 
-
+#######################
+#      Websocket      #
+#######################
+WEBSOCKET_PORT=
