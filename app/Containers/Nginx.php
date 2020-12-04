@@ -24,6 +24,7 @@
         const PATH_SSL_SITE_TEMPLATE = 'nginx/templates/site-ssl.conf';
         const PATH_PROXY_TEMPLATE = 'nginx/templates/proxy.conf';
         const PATH_SSL_PROXY_TEMPLATE = 'nginx/templates/proxy-ssl.conf';
+        const PATH_WEBSOCKET_SSL_PROXY_TEMPLATE = 'nginx/templates/proxy-ssl-ws.conf';
 
         const PHP_SERVICE_NAME = 'php';
 
@@ -196,7 +197,12 @@
             if(empty($proxy_data['ssl_certificate'])){
                 $template = Storage::get(self::PATH_PROXY_TEMPLATE);
             } else{
-                $template = Storage::get(self::PATH_SSL_PROXY_TEMPLATE);
+                if($proxy_data['port']){
+                    $template = Storage::get(self::PATH_WEBSOCKET_SSL_PROXY_TEMPLATE);
+                }else{
+                    $template = Storage::get(self::PATH_SSL_PROXY_TEMPLATE);
+                }
+
             }
 
             $this->compile_template($template, $proxy_data);
