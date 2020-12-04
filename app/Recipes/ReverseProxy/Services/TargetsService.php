@@ -90,7 +90,7 @@
         public function make_proxies(Nginx &$nginx){
 
             foreach($this->get_targets() as $target){
-                if(!$this->target_active($target)) return;
+                if(!$this->target_active($target)) continue;
 
                 $destination_hostname = $target->destination_hostname ?? "{$target->project}_nginx_1";
                 $destination_port = $target->destination_port ?? $target->port;
