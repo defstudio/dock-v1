@@ -132,7 +132,6 @@
             return $this;
         }
 
-
         /**
          * Retrieve and environment value from the container
          * @param string $key
@@ -212,6 +211,7 @@
             $service_command = [
                 'docker-compose',
                 'run',
+                '--rm',
                 $this->service_name(),
             ];
 

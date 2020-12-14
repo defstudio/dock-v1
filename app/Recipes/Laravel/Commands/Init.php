@@ -93,14 +93,14 @@
             })) return false;
 
             if(!$this->task("Database maintenance", function() use ($docker_service, $terminal){
-                $docker_service->service('php')->run($terminal, [
+                $docker_service->service('php')->execute($terminal, [
                     'php',
                     'artisan',
                     'migrate',
                     "--force",
                 ]);
 
-                $docker_service->service('php')->run($terminal, [
+                $docker_service->service('php')->execute($terminal, [
                     'php',
                     'artisan',
                     'db:seed',
@@ -119,19 +119,19 @@
             }
 
             if(!$this->task("Cache setup", function()use($docker_service, $terminal){
-                $docker_service->service('php')->run($terminal, [
+                $docker_service->service('php')->execute($terminal, [
                     "php",
                     "artisan",
                     "config:clear",
                 ]);
 
-                $docker_service->service('php')->run($terminal, [
+                $docker_service->service('php')->execute($terminal, [
                     "php",
                     "artisan",
                     "route:clear",
                 ]);
 
-                $docker_service->service('php')->run($terminal, [
+                $docker_service->service('php')->execute($terminal, [
                     "php",
                     "artisan",
                     "view:clear",
@@ -170,14 +170,14 @@
             })) return false;
 
             if(!$this->task("Database maintenance", function() use ($docker_service, $terminal){
-                $docker_service->service('php')->run($terminal, [
+                $docker_service->service('php')->execute($terminal, [
                     'php',
                     'artisan',
                     'migrate',
                     "--force",
                 ]);
 
-                $docker_service->service('php')->run($terminal, [
+                $docker_service->service('php')->execute($terminal, [
                     'php',
                     'artisan',
                     'db:seed',

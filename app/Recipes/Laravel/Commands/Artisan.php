@@ -41,7 +41,7 @@
                 ]);
             }else{
                 $commands = array_merge(['php', 'artisan'], $artisan_commands);
-                return $docker_service->service('php')->run($terminal, $commands);
+                return $docker_service->service('php')->execute($terminal, $commands);
             }
 
 

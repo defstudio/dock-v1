@@ -36,7 +36,7 @@
             if(!$this->hasOption('hot')){
                 if(!$this->task("Going in Maintenance mode", function() use ($docker_service, $terminal){
                     if(!Storage::disk('src')->exists('storage/framework/down')){
-                        $docker_service->service('php')->run($terminal, [
+                        $docker_service->service('php')->execute($terminal, [
                             'php',
                             'artisan',
                             'down',
@@ -107,14 +107,14 @@
 
 
             if(!$this->task("Database maintenance", function() use ($docker_service, $terminal){
-                $docker_service->service('php')->run($terminal, [
+                $docker_service->service('php')->execute($terminal, [
                     'php',
                     'artisan',
                     'migrate',
                     "--force",
                 ]);
 
-                $docker_service->service('php')->run($terminal, [
+                $docker_service->service('php')->execute($terminal, [
                     'php',
                     'artisan',
                     'db:seed',
@@ -172,7 +172,7 @@
 
             if(!$this->task("Exit from Maintenance mode", function() use ($docker_service, $terminal){
                 if(Storage::disk('src')->exists('storage/framework/down')){
-                    $docker_service->service('php')->run($terminal, [
+                    $docker_service->service('php')->execute($terminal, [
                         'php',
                         'artisan',
                         'up',
@@ -189,7 +189,7 @@
                     "queue:restart",
                 ];
 
-                return $docker_service->service('worker')->run($terminal, $commands);
+                return $docker_service->service('worker')->execute($terminal, $commands);
             })) return false;
 
 

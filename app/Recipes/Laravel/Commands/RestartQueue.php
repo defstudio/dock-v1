@@ -32,7 +32,7 @@
             ];
 
 
-            return $docker_service->service('worker')->run($terminal, $commands);
+            return $docker_service->service('worker')->execute($terminal, $commands);
 
 
         }

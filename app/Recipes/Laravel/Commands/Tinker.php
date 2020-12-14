@@ -33,6 +33,6 @@
                 'artisan',
                 'tinker',
             ]);
-            return $docker_service->service('php')->run($terminal, $commands);
+            return $docker_service->service('php')->execute($terminal, $commands);
         }
     }
