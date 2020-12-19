@@ -1,9 +1,10 @@
-<?php /** @noinspection PhpUnhandledExceptionInspection */
+<?php /** @noinspection DuplicatedCode */
+
+/** @noinspection PhpUnhandledExceptionInspection */
 
 
     namespace App\Recipes\Laravel;
 
-    use App\Containers\Container;
     use App\Containers\MailHog;
     use App\Containers\Nginx;
     use App\Containers\Node;
@@ -24,9 +25,6 @@
     use App\Recipes\Laravel\Commands\Watch;
     use App\Recipes\Laravel\Containers\EchoServer;
     use App\Containers\Php;
-    use App\Recipes\Laravel\Containers\Scheduler;
-    use App\Recipes\Laravel\Containers\Websocket;
-    use App\Recipes\Laravel\Containers\Worker;
     use App\Recipes\ReverseProxy\ReverseProxyRecipe;
     use App\Traits\InteractsWithEnvContent;
     use Illuminate\Console\Command;
@@ -189,18 +187,21 @@
 
             $this->build_mailhog($nginx);
 
-            $scheduler = $this->build_php('scheduler')->set_target('scheduler');
-            $this->add_container($scheduler)->add_network($this->internal_network());
+            $this->build_php('scheduler')
+                ->set_target('scheduler');
 
-            $worker = $this->build_php('worker')->set_target('worker');
-            $this->add_container($worker)->add_network($this->internal_network());
+            $this->build_php('worker')
+                ->set_target('worker');
 
-            $this->add_container(Composer::class)->add_network($this->internal_network());
+            $this->add_container(Composer::class)
+                ->add_network($this->internal_network());
 
-            $this->add_container(Node::class)->add_network($this->internal_network());
+            $this->add_container(Node::class)
+                ->add_network($this->internal_network());
 
             /** @var Redis $redis */
-            $this->add_container(Redis::class)->add_network($this->internal_network());
+            $this->add_container(Redis::class)
+                ->add_network($this->internal_network());
 
             if(env('WEBSOCKET_PORT')){
                 $this->build_websocket();
@@ -208,10 +209,11 @@
 
         }
 
-        private function build_php($service_name = 'php'): Php
+        private function build_php($service_name): Php
         {
             /** @var Php $php */
-            $php = app()->make(Php::class, [$service_name])->add_network($this->internal_network());
+            $php = $this->add_container(Php::class, ['service_name' => $service_name])
+                ->add_network($this->internal_network());
 
             if(env('ENV', 'local') == 'local'){
                 $php->enable_xdebug();
@@ -234,9 +236,25 @@
          */
         private function build_nginx(): Nginx{
 
+            /** @var Php $php */
+            $php = app()->make(Php::class)->add_network($this->internal_network());
+
+            if(env('ENV', 'local') == 'local'){
+                $php->enable_xdebug();
+            }
+
+            if(env('ENABLE_LIBREOFFICE_WRITER', 'local') == '1'){
+                $php->enable_libreoffice_writer();
+            }
+
+            if(!empty(env('PHP_VERSION'))){
+                $php->set_version(env('PHP_VERSION', 'latest'));
+            }
+
+
             /** @var Nginx $nginx */
             $nginx = $this->add_container(Nginx::class)->add_network($this->internal_network());
-            $nginx->set_php_service($this->build_php());
+            $nginx->set_php_service($php);
 
 
             $nginx->add_site($this->host(), 80, '/var/www/public', null, null, '
@@ -302,11 +320,7 @@
         {
             if(empty(env("WEBSOCKET_PORT"))) return null;
 
-
             $websocket = $this->build_php('websocket')->set_target('websocket');
-
-            /** @var Php $websocket */
-            $websocket = $this->add_container($websocket)->add_network($this->internal_network());
 
             $proxy_network = env('REVERSE_PROXY_NETWORK');
 
@@ -385,36 +399,6 @@
             return $mailhog;
         }
 
-        /**
-         * @param Redis $redis
-         * @param Nginx $nginx
-         *
-         * @return EchoServer
-         * @throws BindingResolutionException
-         */
-        public function build_echo_server(Redis $redis, Nginx $nginx): EchoServer{
-            /** @var EchoServer $echo_server */
-            $echo_server = $this->add_container(EchoServer::class)->add_network($this->internal_network());
-
-            $echo_server->depends_on($redis->service_name());
-            $echo_server->set_auth_host($nginx->service_name());
-            $echo_server->set_debug(false);
-            $echo_server->set_devmode(true);
-            $echo_server->set_allow_cors(true);
-            $echo_server->set_allow_origin("http://" . env('HOST', self::DEFAULT_HOST));
-            $echo_server->set_allow_methods();
-            $echo_server->set_allow_headers();
-            $echo_server->set_clients();
-            $echo_server->set_redis_port();
-            $echo_server->set_redis_service($redis->service_name());
-            $echo_server->set_protocol();
-            $echo_server->set_ssl_cert_path();
-            $echo_server->set_ssl_key_path();
-            $echo_server->set_ssl_chain_path();
-            $echo_server->set_ssl_passphrase();
-
-            return $echo_server;
-        }
 
         /**
          * @throws ContainerException
