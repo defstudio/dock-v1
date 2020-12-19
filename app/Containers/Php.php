@@ -10,23 +10,13 @@
 
     class Php extends Container{
 
-        const VERSIONS = [
-          '7.0' => 'https://gitlab.com/defstudio/docker/php-7.0.git',
-          '7.1' => 'https://gitlab.com/defstudio/docker/php-7.1.git',
-          '7.4' => 'https://gitlab.com/defstudio/docker/php-7.4.git',
-          '8.0' => 'https://gitlab.com/defstudio/docker/php-8.0.git',
-          'latest' => 'https://gitlab.com/defstudio/docker/php-7.4.git',
-        ];
-
-
         protected string $service_name = "php";
-
 
         protected array $service_definition = [
             'restart'     => 'unless-stopped',
             'working_dir' => '/var/www',
             'build'       => [
-                'context' => self::VERSIONS['latest'],
+                'context' => 'https://gitlab.com/defstudio/docker/php.git',
                 'args'    => [
                     'ENABLE_XDEBUG' => 0,
                     'ENABLE_LIBREOFFICE_WRITER' => 0,
@@ -40,9 +30,7 @@
         ];
 
         public function set_version($version){
-            if(empty(self::VERSIONS[$version])) return;
-
-            $this->set_service_definition('build.context', self::VERSIONS[$version]);
+            $this->set_service_definition('build.args.PHP_VERSION', $version);
         }
 
         public function enable_xdebug(bool $enabled=true): self{
