@@ -17,6 +17,7 @@
             'working_dir' => '/var/www',
             'build'       => [
                 'context' => 'https://gitlab.com/defstudio/docker/php.git',
+                'target' => 'php',
                 'args'    => [
                     'ENABLE_XDEBUG' => 0,
                     'ENABLE_LIBREOFFICE_WRITER' => 0,
@@ -29,8 +30,14 @@
             self::HOST_SRC_VOLUME_PATH => '/var/www',
         ];
 
-        public function set_version($version){
+        public function set_target($target): self{
+            $this->set_service_definition('build.target', $target);
+            return $this;
+        }
+
+        public function set_version($version): self{
             $this->set_service_definition('build.args.PHP_VERSION', $version);
+            return $this;
         }
 
         public function enable_xdebug(bool $enabled=true): self{
@@ -44,13 +51,9 @@
         }
 
 
-        /**
-         * Php constructor.
-         *
-         * @throws ContainerException
-         */
-        public function __construct(){
+        public function __construct(string $service_name = 'php'){
             parent::__construct();
+            $this->service_name = $service_name;
             $this->set_user_uid();
         }
 

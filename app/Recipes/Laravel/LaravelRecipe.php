@@ -3,6 +3,7 @@
 
     namespace App\Recipes\Laravel;
 
+    use App\Containers\Container;
     use App\Containers\MailHog;
     use App\Containers\Nginx;
     use App\Containers\Node;
@@ -188,9 +189,11 @@
 
             $this->build_mailhog($nginx);
 
-            $this->add_container(Scheduler::class)->add_network($this->internal_network());
+            $scheduler = $this->build_php('scheduler')->set_target('scheduler');
+            $this->add_container($scheduler)->add_network($this->internal_network());
 
-            $this->add_container(Worker::class)->add_network($this->internal_network());
+            $worker = $this->build_php('worker')->set_target('worker');
+            $this->add_container($worker)->add_network($this->internal_network());
 
             $this->add_container(Composer::class)->add_network($this->internal_network());
 
@@ -205,14 +208,10 @@
 
         }
 
-
-        /**
-         * @return Nginx
-         * @throws BindingResolutionException
-         */
-        private function build_nginx(): Nginx{
+        private function build_php($service_name = 'php'): Php
+        {
             /** @var Php $php */
-            $php = app()->make(Php::class)->add_network($this->internal_network());
+            $php = app()->make(Php::class, [$service_name])->add_network($this->internal_network());
 
             if(env('ENV', 'local') == 'local'){
                 $php->enable_xdebug();
@@ -222,12 +221,22 @@
                 $php->enable_libreoffice_writer();
             }
 
+            if(!empty(env('PHP_VERSION'))){
+                $php->set_version(env('PHP_VERSION', 'latest'));
+            }
 
-            $php->set_version(env('PHP_VERSION', 'latest'));
+            return $php;
+        }
+
+        /**
+         * @return Nginx
+         * @throws BindingResolutionException
+         */
+        private function build_nginx(): Nginx{
 
             /** @var Nginx $nginx */
             $nginx = $this->add_container(Nginx::class)->add_network($this->internal_network());
-            $nginx->set_php_service($php);
+            $nginx->set_php_service($this->build_php());
 
 
             $nginx->add_site($this->host(), 80, '/var/www/public', null, null, '
@@ -289,11 +298,15 @@
             return $mysql;
         }
 
-        public function build_websocket(): ?Websocket{
+        public function build_websocket(): ?Php
+        {
             if(empty(env("WEBSOCKET_PORT"))) return null;
 
-            /** @var Websocket $websocket */
-            $websocket = $this->add_container(Websocket::class)->add_network($this->internal_network());
+
+            $websocket = $this->build_php('websocket')->set_target('websocket');
+
+            /** @var Php $websocket */
+            $websocket = $this->add_container($websocket)->add_network($this->internal_network());
 
             $proxy_network = env('REVERSE_PROXY_NETWORK');
 
