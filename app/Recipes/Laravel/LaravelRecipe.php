@@ -25,6 +25,9 @@
     use App\Recipes\Laravel\Commands\Watch;
     use App\Recipes\Laravel\Containers\EchoServer;
     use App\Containers\Php;
+    use App\Recipes\Laravel\Containers\Scheduler;
+    use App\Recipes\Laravel\Containers\Websocket;
+    use App\Recipes\Laravel\Containers\Worker;
     use App\Recipes\ReverseProxy\ReverseProxyRecipe;
     use App\Traits\InteractsWithEnvContent;
     use Illuminate\Console\Command;
@@ -187,11 +190,12 @@
 
             $this->build_mailhog($nginx);
 
-            $this->build_php('scheduler')
-                ->set_target('scheduler');
+            $this->add_container(Scheduler::class)
+                ->add_network($this->internal_network());
 
-            $this->build_php('worker')
-                ->set_target('worker');
+            $this->add_container(Worker::class)
+                ->add_network($this->internal_network());
+
 
             $this->add_container(Composer::class)
                 ->add_network($this->internal_network());
@@ -215,18 +219,6 @@
             $php = $this->add_container(Php::class, ['service_name' => $service_name])
                 ->add_network($this->internal_network());
 
-            if(env('ENV', 'local') == 'local'){
-                $php->enable_xdebug();
-            }
-
-            if(env('ENABLE_LIBREOFFICE_WRITER', 'local') == '1'){
-                $php->enable_libreoffice_writer();
-            }
-
-            if(!empty(env('PHP_VERSION'))){
-                $php->set_version(env('PHP_VERSION', 'latest'));
-            }
-
             return $php;
         }
 
@@ -238,18 +230,6 @@
 
             /** @var Php $php */
             $php = app()->make(Php::class)->add_network($this->internal_network());
-
-            if(env('ENV', 'local') == 'local'){
-                $php->enable_xdebug();
-            }
-
-            if(env('ENABLE_LIBREOFFICE_WRITER', 'local') == '1'){
-                $php->enable_libreoffice_writer();
-            }
-
-            if(!empty(env('PHP_VERSION'))){
-                $php->set_version(env('PHP_VERSION', 'latest'));
-            }
 
 
             /** @var Nginx $nginx */
@@ -320,7 +300,8 @@
         {
             if(empty(env("WEBSOCKET_PORT"))) return null;
 
-            $websocket = $this->build_php('websocket')->set_target('websocket');
+            $websocket = $this->add_container(Websocket::class)
+                ->add_network($this->internal_network());
 
             $proxy_network = env('REVERSE_PROXY_NETWORK');
 

@@ -51,10 +51,22 @@
         }
 
 
-        public function __construct(string $service_name = 'php'){
+        public function __construct(){
             parent::__construct();
-            $this->service_name = $service_name;
+
             $this->set_user_uid();
+
+            if(env('ENV', 'local') == 'local'){
+                $this->enable_xdebug();
+            }
+
+            if(env('ENABLE_LIBREOFFICE_WRITER', 'local') == '1'){
+                $this->enable_libreoffice_writer();
+            }
+
+            if(!empty(env('PHP_VERSION'))){
+                $this->set_version(env('PHP_VERSION'));
+            }
         }
 
     }
