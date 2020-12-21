@@ -19,6 +19,7 @@
     use App\Recipes\Laravel\Commands\Artisan;
     use App\Recipes\Laravel\Commands\Init;
     use App\Recipes\Laravel\Commands\Install;
+    use App\Recipes\Laravel\Commands\Larastan;
     use App\Recipes\Laravel\Commands\Migrate;
     use App\Recipes\Laravel\Commands\Deploy;
     use App\Recipes\Laravel\Commands\RestartQueue;
@@ -168,6 +169,7 @@
                 Watch::class,
                 Deploy::class,
                 RestartQueue::class,
+                Larastan::class,
             ];
         }
 
@@ -179,6 +181,7 @@
             return "{$this->host()}_internal_network";
         }
 
+        //region Build Steps
         /**
          * @throws BindingResolutionException
          */
@@ -379,6 +382,8 @@
             }
             return $mailhog;
         }
+
+        //endregion
 
 
         /**
