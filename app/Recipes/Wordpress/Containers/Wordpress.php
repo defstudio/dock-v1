@@ -17,6 +17,8 @@
             $service_definition = parent::get_service_definition();
 
             $service_definition['build']['context'] = 'https://gitlab.com/defstudio/docker/wordpress.git';
+            unset($service_definition['build']['target']);
+
             $service_definition['volumes'][] = './configs/' . self::UPLOADS_INI_CONF . ":/usr/local/etc/php/custom.d";
 
 
