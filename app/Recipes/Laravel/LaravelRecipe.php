@@ -22,6 +22,7 @@
     use App\Recipes\Laravel\Commands\Larastan;
     use App\Recipes\Laravel\Commands\Migrate;
     use App\Recipes\Laravel\Commands\Deploy;
+    use App\Recipes\Laravel\Commands\PhpCs;
     use App\Recipes\Laravel\Commands\RestartQueue;
     use App\Recipes\Laravel\Commands\Watch;
     use App\Recipes\Laravel\Containers\EchoServer;
@@ -170,6 +171,7 @@
                 Deploy::class,
                 RestartQueue::class,
                 Larastan::class,
+                PhpCs::class,
             ];
         }
 
