@@ -30,9 +30,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-php-
 
-        - name: Install dependencies
-          if: steps.composer-cache.outputs.cache-hit != 'true'
-          run: composer install --prefer-dist --no-progress --no-suggest
+      - name: Install dependencies
+        if: steps.composer-cache.outputs.cache-hit != 'true'
+        run: composer install --prefer-dist --no-progress --no-suggest
 
-        - name: Build
-          run: php dock app:build
+      - name: Build
+        run: php dock app:build
