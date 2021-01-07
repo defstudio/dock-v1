@@ -1,6 +1,6 @@
 {
     "name": "defstudio/dock",
-    "version": "1.16.7",
+    "version": "1.16.9",
     "description": "Docker Manager",
     "keywords": ["docker", "docker-compose", "recipes", "automation", "console", "cli"],
     "homepage": "https://defstudio.it",
@@ -21,7 +21,7 @@
         "ext-json": "*",
         "illuminate/log": "^8.0",
         "laminas/laminas-text": "^2.7",
-        "laravel-zero/framework": "^8.0",
+        "laravel-zero/framework": "^8.4",
         "nunomaduro/laravel-console-menu": "^3.1",
         "padraic/phar-updater": "^1.0.6",
         "symfony/yaml": "^5.1"
