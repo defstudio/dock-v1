@@ -3,7 +3,7 @@ name: PHP Composer
 on:
   push:
     branches: [master]
-    tags: [*]
+    tags: [v*]
 
 jobs:
   build:
