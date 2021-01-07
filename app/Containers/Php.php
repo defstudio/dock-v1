@@ -16,8 +16,8 @@
             'restart'     => 'unless-stopped',
             'working_dir' => '/var/www',
             'build'       => [
-                'context' => 'https://gitlab.com/defstudio/docker/php.git',
-                'target' => 'php',
+                'context' => 'https://github.com/def-studio/docker-php.git',
+                'target' => 'fpm',
                 'args'    => [
                     'ENABLE_XDEBUG' => 0,
                     'ENABLE_LIBREOFFICE_WRITER' => 0,
