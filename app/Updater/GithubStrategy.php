@@ -29,8 +29,9 @@ final class GithubStrategy extends \Humbug\SelfUpdate\Strategy\GithubStrategy im
 
     public function getCurrentRemoteVersion(Updater $updater)
     {
-        dd('test');
+
         $this->remote_version = parent::getCurrentRemoteVersion($updater);
+        dd('test remote version', $this->remote_version);
         return $this->remote_version;
     }
 
