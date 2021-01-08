@@ -1,13 +1,13 @@
 {
-    "name": "defstudio/dock",
+    "name": "def-studio/dock",
     "description": "Docker Manager",
     "keywords": ["docker", "docker-compose", "recipes", "automation", "console", "cli"],
     "homepage": "https://defstudio.it",
     "type": "project",
     "license": "MIT",
     "support": {
-        "issues": "https://gitlab.com/defstudio/dock/-/issues",
-        "source": "https://gitlab.com/defstudio/dock/"
+        "issues": "https://github.com/def-studio/dock/issues",
+        "source": "https://github.com/def-studio/dock"
     },
     "authors": [
         {
