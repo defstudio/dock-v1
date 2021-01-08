@@ -2,8 +2,7 @@ name: PHP Composer
 
 on:
   push:
-    branches: [master]
-    tags: [v*]
+    tags: [ v* ]
 
 jobs:
   build:
@@ -37,8 +36,24 @@ jobs:
       - name: Build
         run: php dock app:build
 
-      - name: Store
-        uses: actions/upload-artifact@v2
+      - name: Create release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
         with:
-          name: dock
-          path: builds/dock
+          tag_name: ${{github.ref}}
+          release_name: Release ${{github.ref}}
+          draft: false
+          prerelease: false
+
+      - name: Upload release asset
+        id: upload_release_asset
+        uses: actions/upload-release-asset@v2
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        with:
+          upload_url: ${{steps.create_release.outputs.upload_url}}
+          asset_path: ./bulds/dock
+          asset_name: dock
+          asset_content_type: application/zip
