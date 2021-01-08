@@ -54,6 +54,6 @@ jobs:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
         with:
           upload_url: ${{steps.create_release.outputs.upload_url}}
-          asset_path: ./bulds/dock
+          asset_path: ./builds/dock
           asset_name: dock
           asset_content_type: application/zip
