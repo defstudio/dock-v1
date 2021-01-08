@@ -36,3 +36,9 @@ jobs:
 
       - name: Build
         run: php dock app:build
+
+      - name: Store
+        uses: actions/upload-artifact@v2
+        with:
+          name: dock
+          path: builds/dock
