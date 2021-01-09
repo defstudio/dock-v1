@@ -4,8 +4,8 @@
 namespace App\Updater;
 
 use Humbug\SelfUpdate\Updater;
+use Illuminate\Support\Str;
 use LaravelZero\Framework\Components\Updater\Strategy\StrategyInterface;
-use Str;
 
 final class GithubStrategy extends \Humbug\SelfUpdate\Strategy\GithubStrategy implements StrategyInterface
 {
