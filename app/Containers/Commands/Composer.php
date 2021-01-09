@@ -13,6 +13,4 @@ class Composer extends Command
 
     protected $signature = 'composer';
     protected $description = 'Runs a composer command';
-
-    protected string $target_command = 'composer';
 }

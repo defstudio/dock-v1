@@ -31,7 +31,7 @@ trait ExecutesShellCommands
 
         $arguments = (string) $this->input;
 
-        if (empty($arguments)) {
+        if ($arguments==$target_command) {
             $this->info('Log into Shell');
 
             return $terminal->execute([

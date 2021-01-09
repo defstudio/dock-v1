@@ -15,5 +15,4 @@ class Npm extends Command
     protected $description = 'Runs an npm command';
 
     protected string $target_service = 'node';
-    protected string $target_command = 'npm';
 }

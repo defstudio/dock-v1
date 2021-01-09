@@ -27,7 +27,6 @@
 
             $terminal->init($this->output);
 
-
             $commands = array_merge([
                 'php',
                 './vendor/bin/phpstan',
