@@ -3,9 +3,7 @@
 
 namespace App\Updater;
 
-use Humbug\SelfUpdate\Exception\JsonParsingException;
 use Humbug\SelfUpdate\Updater;
-use Humbug\SelfUpdate\VersionParser;
 use LaravelZero\Framework\Components\Updater\Strategy\StrategyInterface;
 use Str;
 
