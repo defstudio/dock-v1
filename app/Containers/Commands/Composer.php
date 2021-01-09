@@ -10,11 +10,15 @@
     use LaravelZero\Framework\Commands\Command;
 
     class Composer extends Command{
-        protected $signature = 'composer
-                                {commands?* : composer command to execute} ,
-                                {--ignore-platform-reqs : ignore platform requirements} ';
+        protected $signature = 'composer';
 
-        protected $description = 'Executes Composer command';
+        protected $description = 'Runs a composer command';
+
+        public function __construct()
+        {
+            parent::__construct();
+            $this->ignoreValidationErrors();
+        }
 
         /**
          * @param DockerService   $docker_service
@@ -28,22 +32,20 @@
 
             $terminal->init($this->output);
 
-            $composer_commands = $this->argument("commands");
+            $arguments = (string) $this->input;
 
-            if($this->hasOption('--ignore-platform-reqs')){
-                $composer_commands .= " --ignore-platform-reqs";
-            }
-
-            if(empty($composer_commands)){
+            if(empty($arguments)){
                 $this->info('Log into Composer Shell');
 
                 return $terminal->execute([
                     'docker-compose',
                     'run',
+                    '--rm',
                     'composer',
                     'bash',
                 ]);
             } else{
+                $composer_commands = explode(' ', $arguments);
                 $commands = array_merge(['composer'], $composer_commands);
                 return $docker_service->service('composer')->run($terminal, $commands);
             }
