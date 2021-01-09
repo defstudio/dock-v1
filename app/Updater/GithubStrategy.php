@@ -5,6 +5,7 @@ namespace App\Updater;
 
 use Humbug\SelfUpdate\Updater;
 use LaravelZero\Framework\Components\Updater\Strategy\StrategyInterface;
+use Str;
 
 final class GithubStrategy extends \Humbug\SelfUpdate\Strategy\GithubStrategy implements StrategyInterface
 {
@@ -24,10 +25,8 @@ final class GithubStrategy extends \Humbug\SelfUpdate\Strategy\GithubStrategy im
 
     protected function getDownloadUrl(array $package)
     {
-        $url = parent::getDownloadUrl($package)."dock";
-
-        dump("Download url: $url");
-        return $url;
+        $url = parent::getDownloadUrl($package);
+        return Str::of($url)->append('dock');
     }
 
 
