@@ -47,9 +47,7 @@ jobs:
 
       - name: Build
         run: |
-          echo ${GITHUB_REF#refs/tags/}
-          echo ${{github.event.ref}}
-          php dock app:build --build-version=${{github.ref}}
+          php dock app:build --build-version=${GITHUB_REF#refs/tags/}
 
 
 
