@@ -12,14 +12,15 @@ final class GithubStrategy extends \Humbug\SelfUpdate\Strategy\GithubStrategy im
     public function getCurrentLocalVersion(Updater $updater): string
     {
         $version = parent::getCurrentLocalVersion($updater);
-        echo "Local version: $version";
+
+        echo "Local version: {$version}\n";
         return $version;
     }
 
     public function getCurrentRemoteVersion(Updater $updater): string
     {
         $version = parent::getCurrentRemoteVersion($updater);
-        echo "Remote version: $version";
+        echo "Remote version: {$version}\n";
         return $version;
     }
 

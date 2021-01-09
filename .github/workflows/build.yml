@@ -33,6 +33,10 @@ jobs:
         run: composer install --prefer-dist --no-progress
 
 
+      - name: Build
+        run: |
+          php dock app:build --build-version=${GITHUB_REF#refs/tags/}
+
       - name: Create release
         id: create_release
         uses: actions/create-release@v1
@@ -43,12 +47,6 @@ jobs:
           release_name: Release ${{github.ref}}
           draft: false
           prerelease: false
-
-
-      - name: Build
-        run: |
-          php dock app:build --build-version=${GITHUB_REF#refs/tags/}
-
 
 
       - name: Upload release asset
