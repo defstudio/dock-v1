@@ -9,7 +9,7 @@ defstudio/dock is an autonomous docker development configurator
    <summary><strong>Requirements</strong></summary>
    
    **dock** is a laravel-zero system packed in a .phar file, that uses docker and docker-compose in order to build a development environment. In order to work properly it needs a working installation of:
-   - php (^7.3)
+   - php (^7.4)
    - docker
    - docker-compose
 
@@ -21,7 +21,7 @@ defstudio/dock is an autonomous docker development configurator
    **dock** does not require installation, simply download the binary file from [here](https://gitlab.com/defstudio/dock/-/raw/master/builds/dock) or type this from your project folder:
    
    ```bash
-   wget --no-cache https://gitlab.com/defstudio/dock/-/raw/master/builds/dock
+   wget --no-cache https://github.com/def-studio/dock/releases/latest/download/foo.zip
    ```
 </details>
 
