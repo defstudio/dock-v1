@@ -32,8 +32,6 @@ jobs:
         if: steps.composer-cache.outputs.cache-hit != 'true'
         run: composer install --prefer-dist --no-progress
 
-      - name: Build
-        run: php dock app:build --build-version=${{github.ref}}
 
       - name: Create release
         id: create_release
@@ -45,6 +43,14 @@ jobs:
           release_name: Release ${{github.ref}}
           draft: false
           prerelease: false
+
+
+      - name: Build
+        run: |
+          echo ${{github.event.ref}}
+          php dock app:build --build-version=${{github.ref}}
+
+
 
       - name: Upload release asset
         id: upload_release_asset
