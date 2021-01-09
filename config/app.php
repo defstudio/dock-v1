@@ -3,7 +3,6 @@
     use App\Providers\AppServiceProvider;
     use App\Providers\DockerComposeServiceProvider;
     use App\Providers\EnvServiceProvider;
-    use App\Providers\RecipesServiceProvider;
     use App\Providers\SSLServiceProvider;
     use App\Recipes\Laravel\LaravelRecipeServiceProvider;
     use App\Recipes\PlainPhp\PlainPhpRecipeServiceProvider;
@@ -50,7 +49,7 @@
     |
     */
 
-    'env' => 'development',
+    'env' => env('APP_ENV', 'production'),
 
     /*
     |--------------------------------------------------------------------------
