@@ -33,7 +33,7 @@ jobs:
         run: composer install --prefer-dist --no-progress
 
       - name: Build
-        run: php dock app:build
+        run: php dock app:build --build-version=${{github.ref}}
 
       - name: Create release
         id: create_release
