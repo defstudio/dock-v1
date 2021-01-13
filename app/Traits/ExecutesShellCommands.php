@@ -29,7 +29,8 @@ trait ExecutesShellCommands
 
         $terminal->init($this->output);
 
-        $arguments = (string) $this->input;
+        $arguments = $this->input->__toString();
+
 
         if ($arguments==$target_command) {
             $this->info('Log into Shell');
@@ -42,8 +43,7 @@ trait ExecutesShellCommands
                 'bash',
             ]);
         } else {
-            $commands = explode(' ', $arguments);
-
+            $commands = collect (explode(' ', $arguments))->map(fn($command) => trim($command, "'"))->toArray();
             if(!empty($target_command)){
                 $commands = array_merge([$target_command], $commands);
             }
