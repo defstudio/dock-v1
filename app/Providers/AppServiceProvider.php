@@ -8,6 +8,7 @@
     use Illuminate\Contracts\Foundation\Application;
     use Illuminate\Support\ServiceProvider;
     use Illuminate\Support\Str;
+    use LaravelZero\Framework\Commands\BuildCommand;
     use Symfony\Component\Process\Process;
 
     class AppServiceProvider extends ServiceProvider{
@@ -35,6 +36,8 @@
          *
          */
         public function register(){
-
+            $this->commands([
+                BuildCommand::class,
+            ]);
         }
     }
