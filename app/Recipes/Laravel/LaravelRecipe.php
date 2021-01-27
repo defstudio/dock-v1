@@ -17,6 +17,7 @@
     use App\Exceptions\DuplicateServiceException;
     use App\Recipes\DockerComposeRecipe;
     use App\Recipes\Laravel\Commands\Artisan;
+    use App\Recipes\Laravel\Commands\Check;
     use App\Recipes\Laravel\Commands\Init;
     use App\Recipes\Laravel\Commands\Install;
     use App\Recipes\Laravel\Commands\Larastan;
@@ -171,6 +172,7 @@
                 RestartQueue::class,
                 Larastan::class,
                 PhpCs::class,
+                Check::class,
             ];
         }
 
