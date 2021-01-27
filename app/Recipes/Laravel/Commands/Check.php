@@ -8,9 +8,9 @@
     use LaravelZero\Framework\Commands\Command;
 
     class Check extends Command{
-        protected string $signature = 'check';
+        protected $signature = 'check';
 
-        protected string $description = 'Execute a laravel application complete check using PhpCS, Larastan and Laravel Test Suite';
+        protected $description = 'Execute a laravel application complete check using PhpCS, Larastan and Laravel Test Suite';
 
         public function handle(TerminalService $terminal): int
         {
