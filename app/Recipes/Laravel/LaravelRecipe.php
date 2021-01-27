@@ -25,7 +25,6 @@
     use App\Recipes\Laravel\Commands\PhpCs;
     use App\Recipes\Laravel\Commands\RestartQueue;
     use App\Recipes\Laravel\Commands\Watch;
-    use App\Recipes\Laravel\Containers\EchoServer;
     use App\Containers\Php;
     use App\Recipes\Laravel\Containers\Scheduler;
     use App\Recipes\Laravel\Containers\Websocket;
@@ -183,7 +182,7 @@
             return "{$this->host()}_internal_network";
         }
 
-        //region Build Steps
+
         /**
          * @throws BindingResolutionException
          */
@@ -212,19 +211,10 @@
             $this->add_container(Redis::class)
                 ->add_network($this->internal_network());
 
-            if(env('WEBSOCKET_PORT')){
+            if(!empty(env('WEBSOCKET_PORT'))){
                 $this->build_websocket();
             }
 
-        }
-
-        private function build_php($service_name): Php
-        {
-            /** @var Php $php */
-            $php = $this->add_container(Php::class, ['service_name' => $service_name])
-                ->add_network($this->internal_network());
-
-            return $php;
         }
 
         /**
@@ -301,10 +291,11 @@
             return $mysql;
         }
 
-        public function build_websocket(): ?Php
+        public function build_websocket(): ?Websocket
         {
             if(empty(env("WEBSOCKET_PORT"))) return null;
 
+            /** @var Websocket $websocket */
             $websocket = $this->add_container(Websocket::class)
                 ->add_network($this->internal_network());
 
@@ -385,7 +376,6 @@
             return $mailhog;
         }
 
-        //endregion
 
 
         /**
