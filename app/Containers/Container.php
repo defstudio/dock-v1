@@ -198,6 +198,7 @@
             $service_command = [
                 'docker-compose',
                 'exec',
+                '-T',
                 $this->service_name(),
             ];
 
