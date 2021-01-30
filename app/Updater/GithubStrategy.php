@@ -29,11 +29,11 @@ final class GithubStrategy extends \Humbug\SelfUpdate\Strategy\GithubStrategy im
         $versions = array_keys($package['packages'][$this->getPackageName()]);
         $versionParser = new VersionParser($versions);
         if ($this->getStability() === self::STABLE) {
-            echo 'remote version: ' .  $versionParser->getMostRecentStable();
+            echo 'remote version: ' .  $versionParser->getMostRecentStable() . PHP_EOL. PHP_EOL;
         } elseif ($this->getStability() === self::UNSTABLE) {
-            echo 'remote version: ' . $versionParser->getMostRecentUnstable();
+            echo 'remote version: ' . $versionParser->getMostRecentUnstable() . PHP_EOL. PHP_EOL;
         } else {
-            echo 'remote version: ' . $versionParser->getMostRecentAll();
+            echo 'remote version: ' . $versionParser->getMostRecentAll() . PHP_EOL. PHP_EOL;
         }
 
         return parent::getCurrentRemoteVersion($updater);
