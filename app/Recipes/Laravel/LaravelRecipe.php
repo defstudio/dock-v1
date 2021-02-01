@@ -31,20 +31,14 @@
     use App\Recipes\Laravel\Containers\Websocket;
     use App\Recipes\Laravel\Containers\Worker;
     use App\Recipes\ReverseProxy\ReverseProxyRecipe;
-    use App\Traits\InteractsWithEnvContent;
     use Illuminate\Console\Command;
     use Illuminate\Contracts\Container\BindingResolutionException;
 
     class LaravelRecipe extends DockerComposeRecipe{
-        use InteractsWithEnvContent;
 
         const LABEL = 'Laravel';
 
         const DEFAULT_HOST = 'laravel.ktm';
-
-        public function label(): string{
-            return self::LABEL;
-        }
 
         public function customize_init(Command $parent_command, string $env_content): string{
 

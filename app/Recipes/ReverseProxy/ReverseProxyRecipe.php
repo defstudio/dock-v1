@@ -27,8 +27,6 @@
 
     class ReverseProxyRecipe extends DockerComposeRecipe{
 
-        use InteractsWithEnvContent;
-
         const LABEL = 'ReverseProxy';
 
         const PROXY_NETWORK = 'reverse_proxy_network';

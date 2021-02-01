@@ -1,13 +1,16 @@
-<?php
+<?php /** @noinspection PhpUnused */
+
+/** @noinspection PhpRedundantCatchClauseInspection */
 
 
-	namespace App\Recipes;
+namespace App\Recipes;
 
 
 	use App\Containers\Container;
     use App\Exceptions\ContainerException;
     use App\Exceptions\DuplicateServiceException;
     use App\Services\DockerService;
+    use App\Traits\InteractsWithEnvContent;
     use Illuminate\Console\Command;
     use Illuminate\Contracts\Container\BindingResolutionException;
     use Illuminate\Contracts\Filesystem\FileNotFoundException;
@@ -15,18 +18,20 @@
 
     abstract class DockerComposeRecipe{
 
+        use InteractsWithEnvContent;
+
 	    const LABEL = null;
 
 	    const ENV_FILE_TEMPLATE = null;
 
-        protected $docker_service;
+        protected DockerService $docker_service;
 
         /** @var Container[] $services */
-        private $containers = [];
+        private array $containers = [];
 
-        private $exposed_hosts = [];
+        private array $exposed_hosts = [];
 
-        private $exposed_addresses = [];
+        private array $exposed_addresses = [];
 
 
         public function __construct(DockerService $docker_service){

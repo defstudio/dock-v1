@@ -1,7 +1,7 @@
-<?php
+<?php /** @noinspection DuplicatedCode */
 
 
-    namespace App\Recipes\PlainPhp;
+namespace App\Recipes\PlainPhp;
 
     use App\Containers\MailHog;
     use App\Containers\Nginx;
@@ -15,20 +15,13 @@
     use App\Recipes\DockerComposeRecipe;
     use App\Containers\Php;
     use App\Recipes\ReverseProxy\ReverseProxyRecipe;
-    use App\Traits\InteractsWithEnvContent;
     use Illuminate\Console\Command;
     use Illuminate\Contracts\Container\BindingResolutionException;
 
     class PlainPhpRecipe extends DockerComposeRecipe{
-        use InteractsWithEnvContent;
-
         const LABEL = 'PlainPhp';
 
         const DEFAULT_HOST = 'php.ktm';
-
-        public function label(): string{
-            return self::LABEL;
-        }
 
         public function customize_init(Command $parent_command, string $env_content): string{
 

@@ -22,8 +22,6 @@
 
     class WordpressRecipe extends DockerComposeRecipe{
 
-        use InteractsWithEnvContent;
-
         const LABEL = 'Wordpress';
         const DEFAULT_HOST = 'wordpress.ktm';
 
