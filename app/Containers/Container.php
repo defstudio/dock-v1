@@ -212,6 +212,7 @@
             $service_command = [
                 'docker-compose',
                 'run',
+                '-T',
                 '--rm',
                 $this->service_name(),
             ];
