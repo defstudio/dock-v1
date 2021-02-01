@@ -1,15 +1,16 @@
 <?php
 
-    use App\Providers\AppServiceProvider;
-    use App\Providers\DockerComposeServiceProvider;
-    use App\Providers\EnvServiceProvider;
-    use App\Providers\SSLServiceProvider;
-    use App\Recipes\Laravel\LaravelRecipeServiceProvider;
-    use App\Recipes\PlainPhp\PlainPhpRecipeServiceProvider;
-    use App\Recipes\ReverseProxy\ReverseProxyRecipeServiceProvider;
-    use App\Recipes\Wordpress\WordpressRecipeServiceProvider;
+use App\Providers\AppServiceProvider;
+use App\Providers\DockerComposeServiceProvider;
+use App\Providers\EnvServiceProvider;
+use App\Providers\SSLServiceProvider;
+use App\Recipes\Angular\AngularRecipeServiceProvider;
+use App\Recipes\Laravel\LaravelRecipeServiceProvider;
+use App\Recipes\PlainPhp\PlainPhpRecipeServiceProvider;
+use App\Recipes\ReverseProxy\ReverseProxyRecipeServiceProvider;
+use App\Recipes\Wordpress\WordpressRecipeServiceProvider;
 
-    return [
+return [
 
     /*
     |--------------------------------------------------------------------------
@@ -63,14 +64,15 @@
     */
 
     'providers' => [
-		AppServiceProvider::class,
-		DockerComposeServiceProvider::class,
-		ReverseProxyRecipeServiceProvider::class,
-		LaravelRecipeServiceProvider::class,
-		PlainPhpRecipeServiceProvider::class,
-		WordpressRecipeServiceProvider::class,
-		EnvServiceProvider::class,
-		SSLServiceProvider::class,
+        AppServiceProvider::class,
+        DockerComposeServiceProvider::class,
+        ReverseProxyRecipeServiceProvider::class,
+        LaravelRecipeServiceProvider::class,
+        PlainPhpRecipeServiceProvider::class,
+        WordpressRecipeServiceProvider::class,
+        AngularRecipeServiceProvider::class,
+        EnvServiceProvider::class,
+        SSLServiceProvider::class,
     ],
 
 ];

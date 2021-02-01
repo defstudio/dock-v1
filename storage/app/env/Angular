@@ -1,0 +1,6 @@
+#######################
+#       General       #
+#######################
+
+#Name of the recipe to use
+RECIPE=Angular
