@@ -1,4 +1,7 @@
-<?php /** @noinspection DuplicatedCode */
+<?php /** @noinspection PhpMissingFieldTypeInspection */
+/** @noinspection PhpHierarchyChecksInspection */
+
+/** @noinspection DuplicatedCode */
 
 
     namespace App\Recipes\Laravel\Commands;
@@ -18,7 +21,7 @@
 
         protected $description = 'Updates Laravel codebase from git';
 
-        public function is_production(): bool{
+        public function is_prodction(): bool{
             return env('ENV') == 'production';
         }
 
@@ -41,7 +44,7 @@
                             'artisan',
                             'down',
                             "--retry=60",
-                        ]);
+                        ], null, false);
                     }
                 })) return false;
             }
@@ -75,7 +78,7 @@
                         "--ignore-platform-reqs",
                     ];
                 }
-                return $docker_service->service('composer')->run($terminal, $commands);
+                return $docker_service->service('composer')->run($terminal, $commands, null, false);
             })) return false;
 
             if(!$this->task("Installing NPM packages", function() use ($docker_service, $terminal){
@@ -85,7 +88,7 @@
                     "install",
                 ];
 
-                return $docker_service->service('node')->run($terminal, $commands);
+                return $docker_service->service('node')->run($terminal, $commands, null, false);
             })) return false;
 
             if(!$this->task("Compiling Assets", function() use ($docker_service, $terminal){
@@ -102,7 +105,7 @@
                         "dev",
                     ];
                 }
-                return $docker_service->service('node')->run($terminal, $commands);
+                return $docker_service->service('node')->run($terminal, $commands, null, false);
             })) return false;
 
 
@@ -112,14 +115,14 @@
                     'artisan',
                     'migrate',
                     "--force",
-                ]);
+                ], null, false);
 
                 $docker_service->service('php')->execute($terminal, [
                     'php',
                     'artisan',
                     'db:seed',
                     "--force",
-                ]);
+                ], null, false);
             })) return false;
 
 
@@ -128,42 +131,42 @@
                     "php",
                     "artisan",
                     "config:clear",
-                ]);
+                ], null, false);
 
                 if($this->is_production()){
                     $docker_service->service('php')->execute($terminal, [
                         "php",
                         "artisan",
                         "config:cache",
-                    ]);
+                    ], null, false);
                 }
 
                 $docker_service->service('php')->execute($terminal, [
                     "php",
                     "artisan",
                     "route:clear",
-                ]);
+                ], null, false);
 
                 if($this->is_production()){
                     $docker_service->service('php')->execute($terminal, [
                         "php",
                         "artisan",
                         "route:cache",
-                    ]);
+                    ], null, false);
                 }
 
                 $docker_service->service('php')->execute($terminal, [
                     "php",
                     "artisan",
                     "view:clear",
-                ]);
+                ], null, false);
 
                 if($this->is_production()){
                     $docker_service->service('php')->execute($terminal, [
                         "php",
                         "artisan",
                         "view:cache",
-                    ]);
+                    ], null, false);
                 }
 
                 return true;
@@ -176,7 +179,7 @@
                         'php',
                         'artisan',
                         'up',
-                    ]);
+                    ], null, false);
                 }
             })) return false;
 

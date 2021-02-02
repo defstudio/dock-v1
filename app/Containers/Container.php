@@ -193,29 +193,37 @@
 
         }
 
-        public function execute(TerminalService $terminal, array $commands, string $input=null){
+        public function execute(TerminalService $terminal, array $commands, string $input=null, bool $with_pseudo_terminal = true){
 
             $service_command = [
                 'docker-compose',
                 'exec',
-                '-T',
-                $this->service_name(),
             ];
+
+            if(!$with_pseudo_terminal){
+                $service_command[] = '-T';
+            }
+
+            $service_command[] = $this->service_name;
 
             $commands = array_merge($service_command, $commands);
 
             return $terminal->execute($commands, $input);
         }
 
-        public function run(TerminalService $terminal, array $commands, string $input=null){
+        public function run(TerminalService $terminal, array $commands, string $input=null, bool $with_pseudo_terminal = true){
 
             $service_command = [
                 'docker-compose',
                 'run',
-                '-T',
                 '--rm',
-                $this->service_name(),
             ];
+
+            if(!$with_pseudo_terminal){
+                $service_command[] = '-T';
+            }
+
+            $service_command[] = $this->service_name;
 
             $commands = array_merge($service_command, $commands);
 
