@@ -30,7 +30,6 @@
          * @param TerminalService $terminal
          *
          * @return int
-         * @throws FileNotFoundException
          */
         public function handle(DockerService $docker_service, TerminalService $terminal){
 
