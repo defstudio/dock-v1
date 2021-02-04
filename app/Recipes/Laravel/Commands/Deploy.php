@@ -68,13 +68,11 @@
                         "--no-interaction",
                         "--no-dev",
                         "--optimize-autoloader",
-                        "--ignore-platform-reqs",
                     ];
                 } else{
                     $commands = [
                         "install",
                         "--no-interaction",
-                        "--ignore-platform-reqs",
                     ];
                 }
                 return $docker_service->service('composer')->run($terminal, $commands, null, false);
