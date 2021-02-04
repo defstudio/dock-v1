@@ -21,7 +21,7 @@
 
         protected $description = 'Updates Laravel codebase from git';
 
-        public function is_prodction(): bool{
+        public function is_production(): bool{
             return env('ENV') == 'production';
         }
 
