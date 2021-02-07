@@ -65,7 +65,6 @@
                 if($this->is_production()){
                     $commands = [
                         "install",
-                        "--no-interaction",
                         "--no-dev",
                         "--optimize-autoloader",
                         "--ignore-platform-reqs",
@@ -73,7 +72,6 @@
                 } else{
                     $commands = [
                         "install",
-                        "--no-interaction",
                         "--ignore-platform-reqs",
                     ];
                 }
