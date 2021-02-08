@@ -65,14 +65,12 @@
                 if($this->is_production()){
                     $commands = [
                         "install",
-                        "--no-interaction",
                         "--no-dev",
                         "--optimize-autoloader",
                     ];
                 } else{
                     $commands = [
                         "install",
-                        "--no-interaction",
                     ];
                 }
                 return $docker_service->service('composer')->run($terminal, $commands, null, false);
