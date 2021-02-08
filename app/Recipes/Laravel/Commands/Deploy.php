@@ -64,14 +64,16 @@
             if(!$this->task("Installing Composer packages", function() use ($docker_service, $terminal){
                 if($this->is_production()){
                     $commands = [
-                        "install --no-dev --optimize-autoloader",
+                        "install",
+                        "--no-dev",
+                        "--optimize-autoloader",
                     ];
                 } else{
                     $commands = [
                         "install",
                     ];
                 }
-                return $this->runCommand('composer', $commands, $this->output);
+                return $docker_service->service('composer')->run($terminal, $commands, null, false);
             })) return false;
 
             if(!$this->task("Installing NPM packages", function() use ($docker_service, $terminal){
