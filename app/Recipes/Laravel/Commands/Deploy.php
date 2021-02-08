@@ -64,9 +64,7 @@
             if(!$this->task("Installing Composer packages", function() use ($docker_service, $terminal){
                 if($this->is_production()){
                     $commands = [
-                        "install",
-                        "--no-dev",
-                        "--optimize-autoloader",
+                        "install --no-dev --optimize-autoloader",
                     ];
                 } else{
                     $commands = [
