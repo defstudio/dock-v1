@@ -9,7 +9,6 @@
     use App\Services\DockerService;
     use App\Services\TerminalService;
     use App\Traits\InteractsWithEnvContent;
-    use Illuminate\Contracts\Filesystem\FileNotFoundException;
     use Illuminate\Support\Facades\Storage;
     use LaravelZero\Framework\Commands\Command;
 
