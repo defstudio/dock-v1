@@ -72,7 +72,7 @@
                         "install",
                     ];
                 }
-                return $docker_service->service('composer')->run($terminal, $commands, null, false);
+                return $docker_service->service('composer')->run($terminal, $commands);
             })) return false;
 
             if(!$this->task("Installing NPM packages", function() use ($docker_service, $terminal){

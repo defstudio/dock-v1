@@ -227,6 +227,7 @@
 
             $commands = array_merge($service_command, $commands);
 
+            dump("Execute in terminal", $commands);
             return $terminal->execute($commands, $input);
         }
 
