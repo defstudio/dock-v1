@@ -182,6 +182,13 @@
                 }
             }
 
+            $service_definition['logging'] = [
+                'options' => [
+                    'max-size' => '10m',
+                    'max-file' => '3'
+                ]
+            ];
+
             return $service_definition;
         }
 

@@ -104,7 +104,7 @@
                 foreach($target->subdomains??[] as $subdomain => $visibility){
 
                     if($visibility=='local'){
-                        $extra = "allow 192.168.1.0/16; \n deny all;";
+                        $extra = "allow 192.168.1.0/24; \n deny all;";
                     }else{
                         $extra = '';
                     }
