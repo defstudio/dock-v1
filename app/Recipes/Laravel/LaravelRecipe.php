@@ -1,4 +1,5 @@
-<?php /** @noinspection DuplicatedCode */
+<?php /** @noinspection LaravelFunctionsInspection */
+/** @noinspection DuplicatedCode */
 
 /** @noinspection PhpUnhandledExceptionInspection */
 

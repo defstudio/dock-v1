@@ -1,4 +1,6 @@
-<?php /** @noinspection DuplicatedCode */
+<?php /** @noinspection LaravelFunctionsInspection */
+
+/** @noinspection DuplicatedCode */
 
 
 namespace App\Recipes\PlainPhp;
@@ -184,7 +186,7 @@ namespace App\Recipes\PlainPhp;
                 $php->enable_xdebug();
             }
 
-            if(env('ENABLE_LIBREOFFICE_WRITER', 'local') == '1'){
+            if(env('ENABLE_LIBREOFFICE_WRITER', '0') == '1'){
                 $php->enable_libreoffice_writer();
             }
 
