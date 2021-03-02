@@ -71,9 +71,8 @@
         private function init_development(DockerService $docker_service, TerminalService $terminal, string $env_content): bool{
             if(!$this->task("Installing Composer packages", function()use($docker_service, $terminal){
                 return $docker_service->service('composer')->run($terminal, [
+                    "composer",
                     "install",
-                    "--ignore-platform-reqs",
-                    "--no-interaction",
                 ]);
             })) return false;
 
@@ -146,11 +145,10 @@
         private function init_production(DockerService $docker_service, TerminalService $terminal, string $env_content): bool{
             if(!$this->task("Installing Composer packages", function()use($docker_service, $terminal){
                 return $docker_service->service('composer')->run($terminal, [
+                    "composer",
                     "install",
-                    "--no-interaction",
-                    "--optimize-autoloader",
                     "--no-dev",
-                    "--ignore-platform-reqs",
+                    "--optimize-autoloader",
                 ]);
             })) return false;
 
