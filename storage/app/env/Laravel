@@ -21,6 +21,7 @@ ENV=local
 
 PHP_VERSION=latest
 ENABLE_LIBREOFFICE_WRITER=0
+ENABLE_BACKUP_TOOLS=0
 
 
 #######################
