@@ -645,16 +645,16 @@
         },
         {
             "name": "illuminate/collections",
-            "version": "v8.31.0",
+            "version": "v8.34.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/collections.git",
-                "reference": "ecc881c6dce66e22f2c236374f342d41c7ebeb67"
+                "reference": "e18d6e4cf03dd597bc3ecd86fefc2023d0c7a5e8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/illuminate/collections/zipball/ecc881c6dce66e22f2c236374f342d41c7ebeb67",
-                "reference": "ecc881c6dce66e22f2c236374f342d41c7ebeb67",
+                "url": "https://api.github.com/repos/illuminate/collections/zipball/e18d6e4cf03dd597bc3ecd86fefc2023d0c7a5e8",
+                "reference": "e18d6e4cf03dd597bc3ecd86fefc2023d0c7a5e8",
                 "shasum": ""
             },
             "require": {
@@ -691,7 +691,7 @@
             ],
             "description": "The Illuminate Collections package.",
             "homepage": "https://laravel.com",
-            "time": "2021-03-02T13:34:56+00:00"
+            "time": "2021-03-19T00:05:33+00:00"
         },
         {
             "name": "illuminate/config",
@@ -842,16 +842,16 @@
         },
         {
             "name": "illuminate/contracts",
-            "version": "v8.31.0",
+            "version": "v8.34.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/contracts.git",
-                "reference": "9c7a9868d7485a82663d67109429094c8e4ed56d"
+                "reference": "121cea1d8b8772bc7fee99c71ecf0f57c1d77b3b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/illuminate/contracts/zipball/9c7a9868d7485a82663d67109429094c8e4ed56d",
-                "reference": "9c7a9868d7485a82663d67109429094c8e4ed56d",
+                "url": "https://api.github.com/repos/illuminate/contracts/zipball/121cea1d8b8772bc7fee99c71ecf0f57c1d77b3b",
+                "reference": "121cea1d8b8772bc7fee99c71ecf0f57c1d77b3b",
                 "shasum": ""
             },
             "require": {
@@ -882,7 +882,7 @@
             ],
             "description": "The Illuminate Contracts package.",
             "homepage": "https://laravel.com",
-            "time": "2021-02-26T13:17:03+00:00"
+            "time": "2021-03-12T14:45:30+00:00"
         },
         {
             "name": "illuminate/events",
@@ -995,16 +995,16 @@
         },
         {
             "name": "illuminate/log",
-            "version": "v8.31.0",
+            "version": "v8.34.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/log.git",
-                "reference": "e2f6fe6476b8f09236956582c3f18a330c8b1c17"
+                "reference": "34b9a55133d2ce166005ba7e61feb793dea3b01f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/illuminate/log/zipball/e2f6fe6476b8f09236956582c3f18a330c8b1c17",
-                "reference": "e2f6fe6476b8f09236956582c3f18a330c8b1c17",
+                "url": "https://api.github.com/repos/illuminate/log/zipball/34b9a55133d2ce166005ba7e61feb793dea3b01f",
+                "reference": "34b9a55133d2ce166005ba7e61feb793dea3b01f",
                 "shasum": ""
             },
             "require": {
@@ -1036,11 +1036,11 @@
             ],
             "description": "The Illuminate Log package.",
             "homepage": "https://laravel.com",
-            "time": "2020-11-16T22:35:48+00:00"
+            "time": "2021-03-15T13:48:56+00:00"
         },
         {
             "name": "illuminate/macroable",
-            "version": "v8.31.0",
+            "version": "v8.34.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/macroable.git",
@@ -1126,16 +1126,16 @@
         },
         {
             "name": "illuminate/support",
-            "version": "v8.31.0",
+            "version": "v8.34.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/support.git",
-                "reference": "978e64ffb68189b70fea77e4d401f43e88fa54ca"
+                "reference": "b7b27e758b68aad44558c62e7374328835895386"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/illuminate/support/zipball/978e64ffb68189b70fea77e4d401f43e88fa54ca",
-                "reference": "978e64ffb68189b70fea77e4d401f43e88fa54ca",
+                "url": "https://api.github.com/repos/illuminate/support/zipball/b7b27e758b68aad44558c62e7374328835895386",
+                "reference": "b7b27e758b68aad44558c62e7374328835895386",
                 "shasum": ""
             },
             "require": {
@@ -1186,7 +1186,7 @@
             ],
             "description": "The Illuminate Support package.",
             "homepage": "https://laravel.com",
-            "time": "2021-03-04T14:09:31+00:00"
+            "time": "2021-03-21T13:37:37+00:00"
         },
         {
             "name": "illuminate/testing",
@@ -1905,16 +1905,16 @@
         },
         {
             "name": "nesbot/carbon",
-            "version": "2.45.1",
+            "version": "2.46.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/briannesbitt/Carbon.git",
-                "reference": "528783b188bdb853eb21239b1722831e0f000a8d"
+                "reference": "2fd2c4a77d58a4e95234c8a61c5df1f157a91bf4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/528783b188bdb853eb21239b1722831e0f000a8d",
-                "reference": "528783b188bdb853eb21239b1722831e0f000a8d",
+                "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/2fd2c4a77d58a4e95234c8a61c5df1f157a91bf4",
+                "reference": "2fd2c4a77d58a4e95234c8a61c5df1f157a91bf4",
                 "shasum": ""
             },
             "require": {
@@ -1990,7 +1990,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-02-11T18:30:17+00:00"
+            "time": "2021-02-24T17:30:44+00:00"
         },
         {
             "name": "nunomaduro/collision",
@@ -2627,27 +2627,22 @@
         },
         {
             "name": "psr/container",
-            "version": "1.0.0",
+            "version": "1.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-fig/container.git",
-                "reference": "b7ce3b176482dbbc1245ebf52b181af44c2cf55f"
+                "reference": "8622567409010282b7aeebe4bb841fe98b58dcaf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-fig/container/zipball/b7ce3b176482dbbc1245ebf52b181af44c2cf55f",
-                "reference": "b7ce3b176482dbbc1245ebf52b181af44c2cf55f",
+                "url": "https://api.github.com/repos/php-fig/container/zipball/8622567409010282b7aeebe4bb841fe98b58dcaf",
+                "reference": "8622567409010282b7aeebe4bb841fe98b58dcaf",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.3.0"
+                "php": ">=7.2.0"
             },
             "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.0.x-dev"
-                }
-            },
             "autoload": {
                 "psr-4": {
                     "Psr\\Container\\": "src/"
@@ -2660,7 +2655,7 @@
             "authors": [
                 {
                     "name": "PHP-FIG",
-                    "homepage": "http://www.php-fig.org/"
+                    "homepage": "https://www.php-fig.org/"
                 }
             ],
             "description": "Common Container Interface (PHP FIG PSR-11)",
@@ -2672,7 +2667,7 @@
                 "container-interop",
                 "psr"
             ],
-            "time": "2017-02-14T16:28:37+00:00"
+            "time": "2021-03-05T17:36:06+00:00"
         },
         {
             "name": "psr/log",
@@ -3892,16 +3887,16 @@
         },
         {
             "name": "symfony/translation",
-            "version": "v5.2.4",
+            "version": "v5.2.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/translation.git",
-                "reference": "74b0353ab34ff4cca827a2cf909e325d96815e60"
+                "reference": "0947ab1e3aabd22a6bef393874b2555d2bb976da"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/translation/zipball/74b0353ab34ff4cca827a2cf909e325d96815e60",
-                "reference": "74b0353ab34ff4cca827a2cf909e325d96815e60",
+                "url": "https://api.github.com/repos/symfony/translation/zipball/0947ab1e3aabd22a6bef393874b2555d2bb976da",
+                "reference": "0947ab1e3aabd22a6bef393874b2555d2bb976da",
                 "shasum": ""
             },
             "require": {
@@ -3978,7 +3973,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-03-04T15:41:09+00:00"
+            "time": "2021-03-06T07:59:01+00:00"
         },
         {
             "name": "symfony/translation-contracts",
