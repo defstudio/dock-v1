@@ -1,10 +1,12 @@
-<?php
+<?php /** @noinspection LaravelFunctionsInspection */
 
 
 namespace App\Recipes\Angular\Containers;
 
 
-class AngularCli extends \App\Containers\Container
+use App\Containers\Container;
+
+class AngularCli extends Container
 {
     protected string $service_name = 'angular-cli';
 
@@ -19,6 +21,6 @@ class AngularCli extends \App\Containers\Container
 
     public function __construct(){
         parent::__construct();
-        $this->set_user_uid();
+        $this->set_user_uid(env('USER_ID'));
     }
 }

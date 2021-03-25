@@ -1,7 +1,7 @@
-<?php
+<?php /** @noinspection LaravelFunctionsInspection */
 
 
-	namespace App\Containers;
+namespace App\Containers;
 
 
 	use App\Exceptions\ContainerException;
@@ -20,7 +20,7 @@
 
         public function __construct(){
             parent::__construct();
-            $this->set_user_uid();
+            $this->set_user_uid(env('USER_ID'));
         }
 
         public function commands(): array{

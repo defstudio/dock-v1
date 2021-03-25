@@ -69,7 +69,8 @@
          * @param string|null $user (default value current_user_id:current_group_id
          * @return Container
          */
-        public function set_user_uid(string $user=null){
+        public function set_user_uid(string $user=null): Container
+        {
             if(empty($user)){
                 $current_uid = getmyuid();
                 $user = "$current_uid:$current_uid";

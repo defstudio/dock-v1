@@ -63,7 +63,7 @@ class Php extends Container
     {
         parent::__construct();
 
-        $this->set_user_uid();
+        $this->set_user_uid(env('USER_ID'));
 
         if (env('ENV', 'local') == 'local') {
             $this->enable_xdebug();
