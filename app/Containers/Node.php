@@ -11,7 +11,7 @@ namespace App\Containers;
 
         protected array $service_definition = [
             'working_dir' => '/var/www',
-            'image'       => 'node:13.8.0-alpine',
+            'image'       => 'defstudio/node:alpine-lts',
         ];
 
         protected array $volumes = [
