@@ -20,7 +20,6 @@ class Node extends Container
     public function __construct()
     {
         parent::__construct();
-        $this->set_user_uid(env('USER_ID'));
     }
 
     public function commands(): array
