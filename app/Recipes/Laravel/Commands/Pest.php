@@ -11,9 +11,15 @@
     use LaravelZero\Framework\Commands\Command;
 
     class Pest extends Command{
-        protected $signature = 'pest';
+        protected string $signature = 'pest';
 
-        protected $description = 'Starts Laravel tests with Pest';
+        protected string $description = 'Starts Laravel tests with Pest';
+
+        public function __construct()
+        {
+            parent::__construct();
+            $this->ignoreValidationErrors();
+        }
 
         /**
          * @param DockerService $docker_service
@@ -21,16 +27,18 @@
          *
          * @return int
          * @throws DockerServiceNotFoundException
-         * @throws BindingResolutionException
          */
         public function handle(DockerService $docker_service, TerminalService $terminal){
 
             $terminal->init($this->output);
 
+            $arguments = $this->input->__toString();
+
             $commands = array_merge([
                 'php',
                 './vendor/bin/pest',
-            ]);
+            ], collect (explode(' ', $arguments))->map(fn($command) => trim($command, "'"))->toArray());
+
             return $docker_service->service('php')->run($terminal, $commands);
         }
     }
