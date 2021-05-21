@@ -9,9 +9,9 @@ namespace App\Recipes\Laravel\Commands;
     use LaravelZero\Framework\Commands\Command;
 
     class PestCoverage extends Command{
-        protected string $signature = 'pest:coverage';
+        protected $signature = 'pest:coverage';
 
-        protected string $description = 'Starts Laravel tests with Pest and records coverage';
+        protected $description = 'Starts Laravel tests with Pest and records coverage';
 
         public function handle(DockerService $docker_service, TerminalService $terminal): int
         {

@@ -11,9 +11,9 @@
     use LaravelZero\Framework\Commands\Command;
 
     class Pest extends Command{
-        protected string $signature = 'pest';
+        protected $signature = 'pest';
 
-        protected string $description = 'Starts Laravel tests with Pest';
+        protected $description = 'Starts Laravel tests with Pest';
 
         public function __construct()
         {
