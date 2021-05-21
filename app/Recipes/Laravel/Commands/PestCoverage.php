@@ -23,7 +23,8 @@ namespace App\Recipes\Laravel\Commands;
                 'php',
                 './vendor/bin/pest',
                 '--coverage',
-                '--coverage-html coverage'
+                '--coverage-html',
+                'coverage'
             ]);
 
             return $docker_service->service('php')->run($terminal, $commands);
