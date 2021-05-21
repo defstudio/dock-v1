@@ -15,12 +15,6 @@
 
         protected $description = 'Starts Laravel tests with Pest';
 
-        public function __construct()
-        {
-            parent::__construct();
-            $this->ignoreValidationErrors();
-        }
-
         /**
          * @param DockerService $docker_service
          * @param TerminalService $terminal
@@ -32,12 +26,10 @@
 
             $terminal->init($this->output);
 
-            $arguments = $this->input->__toString();
-
             $commands = array_merge([
                 'php',
                 './vendor/bin/pest',
-            ], collect (explode(' ', $arguments))->map(fn($command) => trim($command, "'"))->toArray());
+            ]);
 
             return $docker_service->service('php')->run($terminal, $commands);
         }
