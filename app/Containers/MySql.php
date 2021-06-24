@@ -17,7 +17,7 @@ class MySql extends Container
 
     protected array $service_definition = [
         'restart'     => 'unless-stopped',
-        'command'     => '--character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --default-authentication-plugin=mysql_native_password',
+        'command'     => '--character-set-server=utf8 --collation-server=utf8_general_ci --default-authentication-plugin=mysql_native_password',
         'image'       => 'mysql:8',
         'environment' => [
             'MYSQL_DATABASE'      => 'database',
