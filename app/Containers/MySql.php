@@ -16,9 +16,12 @@ class MySql extends Container
     protected string $service_name = 'mysql';
 
     protected array $service_definition = [
-        'restart'     => 'unless-stopped',
-        'command'     => '--character-set-server=utf8 --collation-server=utf8_general_ci --default-authentication-plugin=mysql_native_password',
-        'image'       => 'mysql:8',
+        'restart' => 'unless-stopped',
+        'command' => '--character-set-server=utf8 --collation-server=utf8_general_ci --default-authentication-plugin=mysql_native_password',
+        'image' => 'mysql:8',
+        'cap_add' => [
+            'SYS_NICE',
+        ],
         'environment' => [
             'MYSQL_DATABASE'      => 'database',
             'MYSQL_USER'          => 'dbuser',
@@ -39,7 +42,7 @@ class MySql extends Container
     }
 
     /**
-     * @param  string  $name
+     * @param string $name
      */
     public function set_user($name = 'dbuser')
     {
@@ -47,7 +50,7 @@ class MySql extends Container
     }
 
     /**
-     * @param  string  $password
+     * @param string $password
      */
     public function set_password(string $password = 'dbpassword')
     {
@@ -55,7 +58,7 @@ class MySql extends Container
     }
 
     /**
-     * @param  string  $password
+     * @param string $password
      */
     public function set_root_password(string $password = 'root')
     {
@@ -73,7 +76,7 @@ class MySql extends Container
         /** @var TerminalService $terminal */
         $terminal = app()->make(TerminalService::class);
 
-        $backup_file = config('filesystems.disks.backup.root')."/$backup_folder/mysql.sql";
+        $backup_file = config('filesystems.disks.backup.root') . "/$backup_folder/mysql.sql";
 
         $result = $this->execute_in_shell_command_line($terminal, [
             "mysqldump",
@@ -122,7 +125,7 @@ class MySql extends Container
 
     public function disable_strict_mode()
     {
-        $this->service_definition['command'] = $this->service_definition['command'].' --sql_mode=""';
+        $this->service_definition['command'] = $this->service_definition['command'] . ' --sql_mode=""';
     }
 
     public function __construct()
