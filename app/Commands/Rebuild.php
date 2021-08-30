@@ -53,17 +53,21 @@ class Rebuild extends Command
 
         $this->info("Rebuilding service: $service_name");
 
-        return $terminal->execute([
-                'docker-compose',
-                'pull',
-            ]) && $terminal->execute([
-                'docker-compose',
-                'up',
-                '-d',
-                '--no-deps',
-                '--build',
-                $service_name,
-            ]);
+        $terminal->execute([
+            'docker-compose',
+            'pull',
+            $service_name,
+        ]);
 
+        $terminal->execute([
+            'docker-compose',
+            'up',
+            '-d',
+            '--no-deps',
+            '--build',
+            $service_name,
+        ]);
+
+        return 0;
     }
 }
