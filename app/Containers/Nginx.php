@@ -41,6 +41,7 @@
             'depends_on'  => [
                 self::PHP_SERVICE_NAME,
             ],
+            'extra_hosts' => ['host.docker.internal:host-gateway'],
         ];
 
 

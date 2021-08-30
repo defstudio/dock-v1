@@ -22,6 +22,7 @@ class Php extends Container
             ],
         ],
         'expose'      => [9000],
+        'extra_hosts' => ['host.docker.internal:host-gateway'],
     ];
 
     protected array $volumes = [
