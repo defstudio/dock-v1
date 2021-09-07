@@ -16,7 +16,7 @@ use Illuminate\Support\Str;
 
 class GithubStrategy implements StrategyInterface
 {
-    const API_URL = 'https://packagist.org/packages/%s.json';
+    const API_URL = 'https://repo.packagist.org/p2/%s.json';
 
     const STABLE = 'stable';
 
@@ -86,6 +86,7 @@ class GithubStrategy implements StrategyInterface
         /** Switch remote request errors to HttpRequestExceptions */
         set_error_handler(array($updater, 'throwHttpRequestException'));
         $packageUrl = $this->getApiUrl();
+
         $package = json_decode(humbug_get_contents($packageUrl), true);
         restore_error_handler();
 
@@ -96,15 +97,7 @@ class GithubStrategy implements StrategyInterface
             );
         }
 
-        $versions = array_keys($package['package']['versions']);
-        $versionParser = new VersionParser($versions);
-        if ($this->getStability() === self::STABLE) {
-            $this->remoteVersion = $versionParser->getMostRecentStable();
-        } elseif ($this->getStability() === self::UNSTABLE) {
-            $this->remoteVersion = $versionParser->getMostRecentUnstable();
-        } else {
-            $this->remoteVersion = $versionParser->getMostRecentAll();
-        }
+        $this->remoteVersion = $package['packages'][$this->getPackageName()][0]['version'];
 
         echo 'remote version: ' .   $this->remoteVersion  . PHP_EOL. PHP_EOL;
 
@@ -214,7 +207,7 @@ class GithubStrategy implements StrategyInterface
         $baseUrl = preg_replace(
             '{\.git$}',
             '',
-            $package['package']['versions'][$this->remoteVersion]['source']['url']
+            $package['packages'][$this->getPackageName()][0]['source']['url']
         );
         $downloadUrl = sprintf(
             '%s/releases/download/%s/%s',
