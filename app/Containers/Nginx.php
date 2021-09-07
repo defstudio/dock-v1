@@ -32,7 +32,7 @@
             'restart'     => 'unless-stopped',
             'working_dir' => '/var/www',
             'build'       => [
-                'context' => 'https://github.com/def-studio/docker-nginx.git',
+                'context' => 'https://github.com/def-studio/docker-nginx.git#main',
             ],
             'expose'      => [
                 80,
