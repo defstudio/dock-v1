@@ -96,37 +96,6 @@ class Deploy extends Command
             return false;
         }
 
-        if (!$this->task("Installing NPM packages", function () use ($docker_service, $terminal) {
-
-            $commands = [
-                "npm",
-                "install",
-            ];
-
-            return $docker_service->service('node')->run($terminal, $commands, null, false);
-        })) {
-            return false;
-        }
-
-        if (!$this->task("Compiling Assets", function () use ($docker_service, $terminal) {
-            if ($this->is_production()) {
-                $commands = [
-                    "npm",
-                    "run",
-                    "prod",
-                ];
-            } else {
-                $commands = [
-                    "npm",
-                    "run",
-                    "dev",
-                ];
-            }
-            return $docker_service->service('node')->run($terminal, $commands, null, false);
-        })) {
-            return false;
-        }
-
 
         if (!$this->task("Database maintenance", function () use ($docker_service, $terminal) {
             $docker_service->service('php')->execute($terminal, [
@@ -191,6 +160,37 @@ class Deploy extends Command
             }
 
             return true;
+        })) {
+            return false;
+        }
+
+        if (!$this->task("Installing NPM packages", function () use ($docker_service, $terminal) {
+
+            $commands = [
+                "npm",
+                "install",
+            ];
+
+            return $docker_service->service('node')->run($terminal, $commands, null, false);
+        })) {
+            return false;
+        }
+
+        if (!$this->task("Compiling Assets", function () use ($docker_service, $terminal) {
+            if ($this->is_production()) {
+                $commands = [
+                    "npm",
+                    "run",
+                    "prod",
+                ];
+            } else {
+                $commands = [
+                    "npm",
+                    "run",
+                    "dev",
+                ];
+            }
+            return $docker_service->service('node')->run($terminal, $commands, null, false);
         })) {
             return false;
         }
