@@ -22,7 +22,6 @@ class Php extends Container
             ],
         ],
         'expose'      => [9000],
-        'extra_hosts' => ['host.docker.internal:host-gateway'],
     ];
 
     protected array $volumes = [
@@ -59,6 +58,11 @@ class Php extends Container
         return $this;
     }
 
+    public function expose_internal_host(): self
+    {
+        $this->set_service_definition('extra_hosts', ['host.docker.internal:host-gateway']);
+        return $this;
+    }
 
     public function __construct()
     {
@@ -81,6 +85,9 @@ class Php extends Container
         if (!empty(env('PHP_VERSION'))) {
             $this->set_version(env('PHP_VERSION'));
         }
-    }
 
+        if (!empty(env('EXPOSE_INTERNAL_HOST'))) {
+            $this->expose_internal_host();
+        }
+    }
 }
