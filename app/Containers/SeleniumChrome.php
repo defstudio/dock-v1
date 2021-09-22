@@ -14,6 +14,6 @@
         ];
 
         protected array $volumes = [
-            '/dev/shm:/dev/shm'
+            '/dev/shm' => '/dev/shm'
         ];
     }
