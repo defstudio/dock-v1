@@ -11,6 +11,7 @@
         protected array $service_definition = [
             'restart'     => 'unless-stopped',
             'image'       => 'selenium/standalone-chrome',
+            'links'       => ['php:dusk.test'],
         ];
 
         protected array $volumes = [
