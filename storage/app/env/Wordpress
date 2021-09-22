@@ -10,11 +10,12 @@ HOST=wordpress.ktm
 
 #working environment:
 #accepted values: production|local
-#default: local
 ENV=local
 
-
-
+#internal host exposure, enable to let
+#containers to reach docker host system
+#requires Docker version > 20.04
+EXPOSE_INTERNAL_HOST=0
 
 #######################
 #        Nginx        #
