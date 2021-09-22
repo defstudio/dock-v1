@@ -1,4 +1,6 @@
-<?php /** @noinspection LaravelFunctionsInspection */
+<?php /** @noinspection PhpUnnecessaryLocalVariableInspection */
+/** @noinspection PhpReturnValueOfMethodIsNeverUsedInspection */
+/** @noinspection LaravelFunctionsInspection */
 /** @noinspection DuplicatedCode */
 
 /** @noinspection PhpUnhandledExceptionInspection */
@@ -13,6 +15,7 @@ use App\Containers\PhpMyAdmin;
 use App\Containers\Redis;
 use App\Containers\Composer;
 use App\Containers\MySql;
+use App\Containers\SeleniumChrome;
 use App\Recipes\DockerComposeRecipe;
 use App\Recipes\Laravel\Commands\Artisan;
 use App\Recipes\Laravel\Commands\Check;
@@ -214,6 +217,10 @@ class LaravelRecipe extends DockerComposeRecipe
             $this->build_websocket();
         }
 
+        if (!empty(env('ENABLE_BROWSER_TESTS'))) {
+            $this->build_selenium_chrome();
+        }
+
     }
 
     private function build_nginx(): Nginx
@@ -254,7 +261,7 @@ class LaravelRecipe extends DockerComposeRecipe
         if (!empty(env('NGINX_PORT_SSL'))) {
             $nginx->map_port(env('NGINX_PORT_SSL'), 443);
             $this->add_exposed_host(env('HOST', self::DEFAULT_HOST));
-            $this->add_exposed_address(self::LABEL . " SSL", "https", env('HOST', self::DEFAULT_HOST), env('NGINX_PORT_SSL'));
+            $this->add_exposed_address(self::LABEL." SSL", "https", env('HOST', self::DEFAULT_HOST), env('NGINX_PORT_SSL'));
         }
 
         $proxy_network = env('REVERSE_PROXY_NETWORK');
@@ -284,9 +291,24 @@ class LaravelRecipe extends DockerComposeRecipe
         return $mysql;
     }
 
+    private function build_selenium_chrome(): ?SeleniumChrome
+    {
+        if (empty(env("ENABLE_BROWSER_TESTS"))) {
+            return null;
+        }
+
+        /** @var SeleniumChrome $selenium */
+        $selenium = $this->add_container(SeleniumChrome::class)
+            ->add_network($this->internal_network());
+
+        return $selenium;
+    }
+
     public function build_websocket(): ?Websocket
     {
-        if (empty(env("WEBSOCKET_PORT"))) return null;
+        if (empty(env("WEBSOCKET_PORT"))) {
+            return null;
+        }
 
         /** @var Websocket $websocket */
         $websocket = $this->add_container(Websocket::class)
@@ -308,8 +330,12 @@ class LaravelRecipe extends DockerComposeRecipe
     public function build_phpmyadmin(MySql $mysql, Nginx $nginx): ?PhpMyAdmin
     {
 
-        if (env('ENV', 'local') != 'local') return null;
-        if (empty(env("PHPMYADMIN_PORT")) && empty(env("PHPMYADMIN_SUBDOMAIN"))) return null;
+        if (env('ENV', 'local') != 'local') {
+            return null;
+        }
+        if (empty(env("PHPMYADMIN_PORT")) && empty(env("PHPMYADMIN_SUBDOMAIN"))) {
+            return null;
+        }
 
 
         /** @var PhpMyAdmin $phpmyadmin */
@@ -325,7 +351,7 @@ class LaravelRecipe extends DockerComposeRecipe
         }
 
         if (!empty(env("PHPMYADMIN_SUBDOMAIN"))) {
-            $host = env('PHPMYADMIN_SUBDOMAIN') . "." . env('HOST');
+            $host = env('PHPMYADMIN_SUBDOMAIN').".".env('HOST');
             $nginx->add_proxy($host, 80, $phpmyadmin->service_name(), 80);
             $this->add_exposed_host($host);
             $this->add_exposed_address("PhpMyAdmin ", "http", $host, 80);
@@ -336,8 +362,12 @@ class LaravelRecipe extends DockerComposeRecipe
 
     public function build_mailhog(Nginx $nginx): ?MailHog
     {
-        if (env('ENV', 'local') != 'local') return null;
-        if (empty(env("MAILHOG_PORT")) && empty(env("MAILHOG_SUBDOMAIN"))) return null;
+        if (env('ENV', 'local') != 'local') {
+            return null;
+        }
+        if (empty(env("MAILHOG_PORT")) && empty(env("MAILHOG_SUBDOMAIN"))) {
+            return null;
+        }
 
 
         /** @var MailHog $mailhog */
@@ -350,7 +380,7 @@ class LaravelRecipe extends DockerComposeRecipe
         }
 
         if (!empty(env("MAILHOG_SUBDOMAIN"))) {
-            $host = env('MAILHOG_SUBDOMAIN') . "." . env('HOST');
+            $host = env('MAILHOG_SUBDOMAIN').".".env('HOST');
             $nginx->add_proxy($host, 80, $mailhog->service_name(), 8025);
             $this->add_exposed_host($host);
             $this->add_exposed_address("MailHog ", "http", $host, 80);
