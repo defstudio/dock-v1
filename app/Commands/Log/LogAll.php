@@ -28,6 +28,7 @@
                 'docker-compose',
                 'logs',
                 '-f',
+                '-n 20',
             ]);
 
         }
