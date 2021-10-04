@@ -44,7 +44,7 @@
                 'docker-compose',
                 'logs',
                 '--follow',
-                '--tail=20',
+                '--tail=50',
                 $service,
             ]);
 
