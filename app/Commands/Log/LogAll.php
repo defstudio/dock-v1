@@ -27,8 +27,8 @@
             return $terminal->execute([
                 'docker-compose',
                 'logs',
-                '-f',
-                '-n 20',
+                '--follow',
+                '--tail=20',
             ]);
 
         }
