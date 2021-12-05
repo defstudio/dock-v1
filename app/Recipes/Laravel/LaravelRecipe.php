@@ -186,7 +186,10 @@ class LaravelRecipe extends DockerComposeRecipe
 
     public function build()
     {
-        $nginx = $this->build_nginx();
+        $php = $this->build_php();
+
+        $nginx = $this->build_nginx($php);
+
         $mysql = $this->build_mysql();
 
         $this->build_phpmyadmin($mysql, $nginx);
@@ -194,10 +197,14 @@ class LaravelRecipe extends DockerComposeRecipe
         $this->build_mailhog($nginx);
 
         $this->add_container(Scheduler::class)
-            ->add_network($this->internal_network());
+            ->add_network($this->internal_network())
+            ->depends_on('mysql')
+            ->depends_on('redis');
 
         $this->add_container(Worker::class)
-            ->add_network($this->internal_network());
+            ->add_network($this->internal_network())
+            ->depends_on('mysql')
+            ->depends_on('redis');
 
 
         $this->add_container(Composer::class)
@@ -206,7 +213,6 @@ class LaravelRecipe extends DockerComposeRecipe
         $this->add_container(Node::class)
             ->add_network($this->internal_network());
 
-        /** @var Redis $redis */
         $this->add_container(Redis::class)
             ->add_network($this->internal_network());
 
@@ -216,13 +222,16 @@ class LaravelRecipe extends DockerComposeRecipe
 
     }
 
-    private function build_nginx(): Nginx
+    private function build_php(): Php
     {
+        return app()->make(Php::class)
+            ->add_network($this->internal_network())
+            ->depends_on('mysql')
+            ->depends_on('redis');
+    }
 
-        /** @var Php $php */
-        $php = app()->make(Php::class)->add_network($this->internal_network());
-
-
+    private function build_nginx(Php $php): Nginx
+    {
         /** @var Nginx $nginx */
         $nginx = $this->add_container(Nginx::class)->add_network($this->internal_network());
         $nginx->set_php_service($php);
@@ -290,7 +299,8 @@ class LaravelRecipe extends DockerComposeRecipe
 
         /** @var Websocket $websocket */
         $websocket = $this->add_container(Websocket::class)
-            ->add_network($this->internal_network());
+            ->add_network($this->internal_network())
+            ->depends_on('php');
 
         $proxy_network = env('REVERSE_PROXY_NETWORK');
 
@@ -369,5 +379,4 @@ class LaravelRecipe extends DockerComposeRecipe
             $this->docker_service->add_external_network($proxy_network);
         }
     }
-
 }
