@@ -76,3 +76,9 @@ MYSQL_ROOT_PASSWORD=root
 #######################
 
 WEBSOCKET_PORT=
+
+
+#######################
+#    Browser Tests    #
+#######################
+ENABLE_BROWSER_TESTS=
