@@ -621,16 +621,16 @@
         },
         {
             "name": "illuminate/collections",
-            "version": "v8.74.0",
+            "version": "v8.75.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/collections.git",
-                "reference": "f292b77824b42cd28decc7327e7c2e24c3806371"
+                "reference": "5a018387352afa2af30fd2be0a78c31e93295720"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/illuminate/collections/zipball/f292b77824b42cd28decc7327e7c2e24c3806371",
-                "reference": "f292b77824b42cd28decc7327e7c2e24c3806371",
+                "url": "https://api.github.com/repos/illuminate/collections/zipball/5a018387352afa2af30fd2be0a78c31e93295720",
+                "reference": "5a018387352afa2af30fd2be0a78c31e93295720",
                 "shasum": ""
             },
             "require": {
@@ -671,7 +671,7 @@
                 "issues": "https://github.com/laravel/framework/issues",
                 "source": "https://github.com/laravel/framework"
             },
-            "time": "2021-11-30T14:29:03+00:00"
+            "time": "2021-12-07T14:48:29+00:00"
         },
         {
             "name": "illuminate/config",
@@ -834,16 +834,16 @@
         },
         {
             "name": "illuminate/contracts",
-            "version": "v8.74.0",
+            "version": "v8.75.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/contracts.git",
-                "reference": "b0886ec05a63b204634d64d0b39d5b78a7c06f81"
+                "reference": "b07755f7c456cf587dfbfd6f0854f9f7c1a34b2f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/illuminate/contracts/zipball/b0886ec05a63b204634d64d0b39d5b78a7c06f81",
-                "reference": "b0886ec05a63b204634d64d0b39d5b78a7c06f81",
+                "url": "https://api.github.com/repos/illuminate/contracts/zipball/b07755f7c456cf587dfbfd6f0854f9f7c1a34b2f",
+                "reference": "b07755f7c456cf587dfbfd6f0854f9f7c1a34b2f",
                 "shasum": ""
             },
             "require": {
@@ -878,7 +878,7 @@
                 "issues": "https://github.com/laravel/framework/issues",
                 "source": "https://github.com/laravel/framework"
             },
-            "time": "2021-11-17T15:04:30+00:00"
+            "time": "2021-12-07T08:18:44+00:00"
         },
         {
             "name": "illuminate/events",
@@ -999,7 +999,7 @@
         },
         {
             "name": "illuminate/log",
-            "version": "v8.74.0",
+            "version": "v8.75.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/log.git",
@@ -1048,7 +1048,7 @@
         },
         {
             "name": "illuminate/macroable",
-            "version": "v8.74.0",
+            "version": "v8.75.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/macroable.git",
@@ -1142,16 +1142,16 @@
         },
         {
             "name": "illuminate/support",
-            "version": "v8.74.0",
+            "version": "v8.75.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/support.git",
-                "reference": "79bb5570274d6abbfaac736992c6b5f5cbcc17c1"
+                "reference": "f542bb78a8a1013ab33fbe14974c45b2a88993d0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/illuminate/support/zipball/79bb5570274d6abbfaac736992c6b5f5cbcc17c1",
-                "reference": "79bb5570274d6abbfaac736992c6b5f5cbcc17c1",
+                "url": "https://api.github.com/repos/illuminate/support/zipball/f542bb78a8a1013ab33fbe14974c45b2a88993d0",
+                "reference": "f542bb78a8a1013ab33fbe14974c45b2a88993d0",
                 "shasum": ""
             },
             "require": {
@@ -1206,7 +1206,7 @@
                 "issues": "https://github.com/laravel/framework/issues",
                 "source": "https://github.com/laravel/framework"
             },
-            "time": "2021-11-30T14:13:40+00:00"
+            "time": "2021-12-03T15:33:45+00:00"
         },
         {
             "name": "illuminate/testing",
@@ -1988,16 +1988,16 @@
         },
         {
             "name": "nesbot/carbon",
-            "version": "2.54.0",
+            "version": "2.55.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/briannesbitt/Carbon.git",
-                "reference": "eed83939f1aed3eee517d03a33f5ec587ac529b5"
+                "reference": "8c2a18ce3e67c34efc1b29f64fe61304368259a2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/eed83939f1aed3eee517d03a33f5ec587ac529b5",
-                "reference": "eed83939f1aed3eee517d03a33f5ec587ac529b5",
+                "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/8c2a18ce3e67c34efc1b29f64fe61304368259a2",
+                "reference": "8c2a18ce3e67c34efc1b29f64fe61304368259a2",
                 "shasum": ""
             },
             "require": {
@@ -2005,7 +2005,7 @@
                 "php": "^7.1.8 || ^8.0",
                 "symfony/polyfill-mbstring": "^1.0",
                 "symfony/polyfill-php80": "^1.16",
-                "symfony/translation": "^3.4 || ^4.0 || ^5.0"
+                "symfony/translation": "^3.4 || ^4.0 || ^5.0 || ^6.0"
             },
             "require-dev": {
                 "doctrine/dbal": "^2.0 || ^3.0",
@@ -2066,6 +2066,7 @@
                 "time"
             ],
             "support": {
+                "docs": "https://carbon.nesbot.com/docs",
                 "issues": "https://github.com/briannesbitt/Carbon/issues",
                 "source": "https://github.com/briannesbitt/Carbon"
             },
@@ -2079,7 +2080,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-11-01T21:22:20+00:00"
+            "time": "2021-12-03T14:59:52+00:00"
         },
         {
             "name": "nunomaduro/collision",
