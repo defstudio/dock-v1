@@ -7,7 +7,7 @@
 namespace App\Containers;
 
 
-use App\Containers\Commands\NginxReload;
+use App\Containers\Commands\NginxRestart;
 use App\Exceptions\DuplicateServiceException;
 use App\Exceptions\ContainerException;
 use App\Services\DockerService;
@@ -246,7 +246,7 @@ class Nginx extends Container
     public function commands(): array
     {
         return [
-            NginxReload::class,
+            NginxRestart::class,
         ];
     }
 }

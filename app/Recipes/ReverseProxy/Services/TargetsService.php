@@ -1,7 +1,7 @@
-<?php
+<?php /** @noinspection PhpUnhandledExceptionInspection */
 
 
-    namespace App\Recipes\ReverseProxy\Services;
+namespace App\Recipes\ReverseProxy\Services;
 
 
     use App\Containers\Nginx;
@@ -33,7 +33,6 @@
                 'ssl_certificate_key' => '/etc/letsencrypt/live/example.ktm/privkey.pem',
             ],
         ];
-
 
         private function disk(): Filesystem{
             return Storage::disk('cwd');
@@ -76,7 +75,7 @@
             $this->set_targets($targets);
         }
 
-        private function get_targets(): array{
+        public function get_targets(): array{
             $targets = json_decode($this->disk()->get(self::TARGETS_FILE));
             if(empty($targets)) throw new ProxyTargetInvalidException("targets.json file is invalid");
 
@@ -114,16 +113,17 @@
             }
         }
 
-        private function target_active(object $target){
+        private function target_active(object $target): bool
+        {
             return ($target->active ?? 1) == 1;
         }
 
-        public function reload_targets(Nginx $nginx, Command $parent_command){
+        public function reload_targets(Nginx $nginx, Command $parent_command): int
+        {
             $nginx->reset_proxies();
             $this->make_proxies($nginx);
             $nginx->publish_assets();
 
-            return $parent_command->call('nginx:reload');
+            return $parent_command->call('nginx:restart');
         }
-
     }

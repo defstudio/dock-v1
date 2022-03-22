@@ -25,4 +25,8 @@
         public function compute_certificate_key_location(string $hostname): string{
             return '/etc/nginx/ssl/nginx.key';
         }
+
+        public function reserved_ports(): array{
+            return [];
+        }
     }

@@ -1,7 +1,7 @@
-<?php
+<?php /** @noinspection LaravelFunctionsInspection */
 
 
-    namespace App\Recipes\ReverseProxy;
+namespace App\Recipes\ReverseProxy;
 
 
     use App\Containers\CertbotCloudflare;
@@ -37,9 +37,12 @@
             $targets = app()->make(TargetsService::class);
             $targets->init_targets_file();
 
-            $env_content = $this->init_ssl_configuration($parent_command, $env_content);
+            return $this->init_ssl_configuration($parent_command, $env_content);
+        }
 
-            return $env_content;
+        private function ssl_provider(): SSLService
+        {
+            return app()->make(env('SSL_PROVIDER'));
         }
 
         private function init_ssl_configuration(Command $parent_command, string $env_content): string{
@@ -52,12 +55,7 @@
 
             $this->set_env($env_content, 'SSL_PROVIDER', $ssl_provider_class);
 
-            /** @var SSLService $ssl_provider */
-            $ssl_provider = app()->make($ssl_provider_class);
-
-            $env_content = $ssl_provider->init_recipe($parent_command, $env_content);
-
-            return $env_content;
+            return $this->ssl_provider()->init_recipe($parent_command, $env_content);
         }
 
 
@@ -69,7 +67,7 @@
          */
         public function build(){
 
-            $nginx = $this->build_nginx();
+            $nginx = $this->build_nginx($this->ssl_provider()->reserved_ports());
 
             $this->build_targets($nginx);
 
@@ -77,22 +75,19 @@
 
         }
 
-        /**
-         * @return Nginx
-         * @throws BindingResolutionException
-         */
-        private function build_nginx(): Nginx{
+        private function build_nginx(array $reserved_ports): Nginx{
             /** @var Nginx $nginx */
             $nginx = $this->add_container(Nginx::class);
 
-            $nginx->map_port(80);
-            $nginx->map_port(443);
-            $nginx->map_port(6001);
+            foreach ([80, 443, 6001] as $port){
+                if(!in_array($port, $reserved_ports)){
+                    $nginx->map_port($port);
+                }
+            }
 
             $nginx->unset_service_definition('working_dir');
             $nginx->unset_php_service();
 
-            // TODO: verificare come mai genera errore per certificato mancante
             $nginx->enable_backend_not_found_page();
 
             $nginx->set_volume(Container::HOST_CONFIG_VOLUME_PATH . 'certbot/letsencrypt', '/etc/letsencrypt');
@@ -112,9 +107,14 @@
             /** @var TargetsService $targets */
             $targets = app()->make(TargetsService::class);
 
+            collect($targets->get_targets())
+                ->each(function($target){
+                    if(in_array($target->port, $this->ssl_provider()->reserved_ports())){
+                        throw new ProxyTargetInvalidException("Target in target.json can't use port [$target->port]: it is reserved from ssl provider");
+                    }
+                });
+
             $targets->make_proxies($nginx);
-
-
         }
 
         /**

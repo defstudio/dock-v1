@@ -16,4 +16,6 @@
         public function compute_certificate_location(string $hostname): string;
 
         public function compute_certificate_key_location(string $hostname): string;
+
+        public function reserved_ports(): array;
     }

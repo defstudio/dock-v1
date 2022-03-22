@@ -11,9 +11,9 @@
     use Illuminate\Contracts\Container\BindingResolutionException;
     use LaravelZero\Framework\Commands\Command;
 
-    class NginxReload extends Command{
-        protected $signature = 'nginx:reload';
-        protected $description = 'Soft reloads Nginx configuration';
+    class NginxRestart extends Command{
+        protected $signature = 'nginx:restart';
+        protected $description = 'Restart Nginx';
 
         /**
          * @param DockerService $docker_service
@@ -24,15 +24,12 @@
          */
         public function handle(DockerService $docker_service, TerminalService $terminal){
 
-                return $this->task('Executing Nginx soft reload', function() use ($docker_service, $terminal){
+                return $this->task('Executing Nginx restart', function() use ($docker_service, $terminal){
                     return $docker_service->service('nginx')->execute($terminal, [
+                        'service',
                         'nginx',
-                        '-s',
-                        'reload',
+                        'restart',
                      ]);
                 });
-
-
-
         }
 	}
