@@ -92,8 +92,10 @@
             if(empty($internal)) $internal = $external;
 
             $this->service_definition['ports'][] = "$external:$internal";
+            $this->service_definition['expose'][] = "$external";
 
             $this->service_definition['ports'] = array_unique($this->service_definition['ports']);
+            $this->service_definition['expose'] = array_unique($this->service_definition['expose']);
 
             return $this;
         }

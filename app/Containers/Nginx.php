@@ -38,10 +38,6 @@ class Nginx extends Container
         'build'       => [
             'context' => 'https://github.com/def-studio/docker-nginx.git#main',
         ],
-        'expose'      => [
-            80,
-            443,
-        ],
         'depends_on'  => [
             self::PHP_SERVICE_NAME,
         ],

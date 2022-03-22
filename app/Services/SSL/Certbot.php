@@ -93,7 +93,8 @@ class Certbot implements SSLService
 
     private function build_certbot_standalone(DockerComposeRecipe $recipe): void
     {
-        $recipe->add_container(CertbotStandalone::class);
+        $container = $recipe->add_container(CertbotStandalone::class);
+        $container->map_port(80);
     }
 
     public function compute_certificate_location(string $hostname): string
