@@ -226,6 +226,7 @@
             $service_command = [
                 'docker-compose',
                 'run',
+                '--service-ports',
                 '--rm',
             ];
 

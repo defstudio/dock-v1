@@ -1,6 +1,6 @@
-<?php
+<?php /** @noinspection LaravelFunctionsInspection */
 
-    namespace App\Recipes\ReverseProxy;
+namespace App\Recipes\ReverseProxy;
 
     use App\Recipes\DockerComposeRecipe;
     use App\Recipes\ReverseProxy\ReverseProxyRecipe;
