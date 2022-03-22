@@ -55,7 +55,9 @@ namespace App\Recipes\ReverseProxy;
 
             $this->set_env($env_content, 'SSL_PROVIDER', $ssl_provider_class);
 
-            return $this->ssl_provider()->init_recipe($parent_command, $env_content);
+            /** @var SSLService $ssl_service */
+            $ssl_service = app()->make($ssl_provider_class);
+            return $ssl_service->init_recipe($parent_command, $env_content);
         }
 
 

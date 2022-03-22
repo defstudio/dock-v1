@@ -23,11 +23,10 @@ class Certbot implements SSLService
     public function init_recipe(Command $parent_command, string $env_content): string
     {
 
-        $challenge_modes = $parent_command->choice('Certbot challenge mode', [
-            'dns-cloudflare',
-            'standalone',
-        ], 'dns-cloudflare', multiple: true);
-
+        $challenge_modes = $parent_command->choice('Certbot challenge mode (can select multiple, comma separated)', [
+            'dns-cloudflare' => 'Couldflare DNS',
+            'standalone' => 'Standalone (on http port 80)',
+        ], 'dns-cloudflare, standalone', multiple: true);
         $this->set_env($env_content, 'CERTBOT_CHALLENGE_MODE', implode(",", $challenge_modes));
 
         if (in_array('dns-cloudflare', $challenge_modes)) {
