@@ -234,6 +234,7 @@ class Nginx extends Container
             }
 
         }
+        dump("Proxy Template: $template");
 
         $this->compile_template($template, $proxy_data);
         $this->disk()->put(self::PATH_SITES_AVAILABLE . "/{$proxy_data['host']}.{$proxy_data['port']}.conf", $template);
