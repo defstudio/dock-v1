@@ -12,6 +12,7 @@ use App\Exceptions\DuplicateServiceException;
 use App\Exceptions\ContainerException;
 use App\Services\DockerService;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class Nginx extends Container
 {
@@ -227,17 +228,17 @@ class Nginx extends Container
         if (empty($proxy_data['ssl_certificate'])) {
             $template = Storage::get(self::PATH_PROXY_TEMPLATE);
         } else {
-            if ($proxy_data['port']) {
-                $template = Storage::get(self::PATH_WEBSOCKET_SSL_PROXY_TEMPLATE);
-            } else {
-                $template = Storage::get(self::PATH_SSL_PROXY_TEMPLATE);
-            }
-
+            $template = Storage::get(self::PATH_SSL_PROXY_TEMPLATE);
         }
-        dump("Proxy Template: $template");
 
         $this->compile_template($template, $proxy_data);
-        $this->disk()->put(self::PATH_SITES_AVAILABLE . "/{$proxy_data['host']}.{$proxy_data['port']}.conf", $template);
+        $this->disk()->put(
+            Str::of( self::PATH_SITES_AVAILABLE)
+            ->append("/", $proxy_data['host'])
+            ->append(".", $proxy_data['port'])
+            ->append('.conf')
+            , $template
+        );
 
     }
 

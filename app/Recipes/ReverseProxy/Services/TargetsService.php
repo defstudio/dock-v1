@@ -106,7 +106,7 @@ class TargetsService
                 continue;
             }
 
-dump("Found active target:", $target);
+            dump("Found active target:", $target);
 
             $destination_hostname = $target->destination_hostname ?? "{$target->project}_nginx_1";
             $destination_port = $target->destination_port ?? $target->port;
@@ -116,8 +116,6 @@ dump("Found active target:", $target);
             $ssl_certificate = $target->ssl_certificate ?? '';
             $ssl_certificate_key = $target->ssl_certificate_key ?? '';
 
-            dump("proxy protocol: ". $proxy_protocol);
-            
             $nginx->add_proxy(
                 host               : $hostname,
                 port               : $port,
