@@ -274,7 +274,7 @@ class LaravelRecipe extends DockerComposeRecipe
         if(env('NGINX_CUSTOM_CERTIFICATES_HOSTNAME')){
             $certificate_hostname = env('NGINX_CUSTOM_CERTIFICATES_HOSTNAME', $this->host());
             $ssl_certificate = "/etc/letsencrypt/live/$certificate_hostname/fullchain.pem";
-            $ssl_certificate_key = "/etc/letsencrypt/$certificate_hostname/privkey.pem";
+            $ssl_certificate_key = "/etc/letsencrypt/live/$certificate_hostname/privkey.pem";
         }
 
         $nginx->add_site($this->host(), 443, '/var/www/public', $ssl_certificate ?? null, $ssl_certificate_key ?? null, '
