@@ -106,8 +106,6 @@ class TargetsService
                 continue;
             }
 
-            dump("Found active target:", $target);
-
             $destination_hostname = $target->destination_hostname ?? "{$target->project}_nginx_1";
             $destination_port = $target->destination_port ?? $target->port;
             $hostname = $target->hostname;
