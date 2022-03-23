@@ -10,18 +10,19 @@ class Php extends Container
     protected string $service_name = "php";
 
     protected array $service_definition = [
-        'restart'     => 'unless-stopped',
+        'restart' => 'unless-stopped',
         'working_dir' => '/var/www',
-        'build'       => [
+        'build' => [
             'context' => 'https://github.com/def-studio/docker-php.git',
-            'target'  => 'fpm',
-            'args'    => [
-                'ENABLE_XDEBUG'             => 0,
+            'target' => 'fpm',
+            'args' => [
+                'ENABLE_XDEBUG' => 0,
                 'ENABLE_LIBREOFFICE_WRITER' => 0,
-                'ENABLE_BACKUP_TOOLS'       => 0,
+                'ENABLE_BACKUP_TOOLS' => 0,
+                'PRODUCTION' => 0,
             ],
         ],
-        'expose'      => [9000],
+        'expose' => [9000],
     ];
 
     protected array $volumes = [
@@ -37,6 +38,12 @@ class Php extends Container
     public function set_version($version): self
     {
         $this->set_service_definition('build.args.PHP_VERSION', $version);
+        return $this;
+    }
+
+    public function enable_production(bool $enabled = true): self
+    {
+        $this->set_service_definition('build.args.PRODUCTION', $enabled ? 1 : 0);
         return $this;
     }
 
@@ -69,6 +76,10 @@ class Php extends Container
         parent::__construct();
 
         $this->set_user_uid(env('USER_ID'));
+
+        if (env('ENV', 'local') == 'production') {
+            $this->enable_production();
+        }
 
         if (env('ENV', 'local') == 'local') {
             $this->enable_xdebug();

@@ -30,10 +30,12 @@ ENABLE_BACKUP_TOOLS=0
 #        Nginx        #
 #######################
 
-#Nginx exposed ports
+# Nginx exposed ports
 NGINX_PORT=80
 NGINX_PORT_SSL=443
 
+#NGINX_CUSTOM_CERTIFICATES_FOLDER=
+#NGINX_CUSTOM_CERTIFICATES_HOSTNAME=
 
 #######################
 #        MySql        #

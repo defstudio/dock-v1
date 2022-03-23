@@ -120,6 +120,20 @@ class LaravelRecipe extends DockerComposeRecipe
                     $this->set_env($env_content, "MAILHOG_PORT", $mailhog_port);
                 }
             }
+
+            if($parent_command->confirm("Do you want to setup a custom ssl certificate?")){
+                $parent_command->info("This setup will allow you to define an external folder to load ssl certificates into nginx setup");
+                $parent_command->info("Note: the folder must contain at least the following files:");
+                $parent_command->info(" - live/[hostname]/fullchain.pem");
+                $parent_command->info(" - live/[hostname]/privkey.pem");
+
+                $ssl_certificates_folder = $parent_command->ask("Enter the path to the ssl certificates folder (absolute or relative to dock folder)");
+                $this->set_env($env_content, 'NGINX_CUSTOM_CERTIFICATES_FOLDER', $ssl_certificates_folder);
+
+                $ssl_certificate_hostname = $parent_command->ask("Enter the hostname contained in the certificate", $application_host);
+                $this->set_env($env_content, 'NGINX_CUSTOM_CERTIFICATES_HOSTNAME', $ssl_certificate_hostname);
+
+            }
             //</editor-fold>
 
 
@@ -243,6 +257,10 @@ class LaravelRecipe extends DockerComposeRecipe
         $nginx = $this->add_container(Nginx::class)->add_network($this->internal_network());
         $nginx->set_php_service($php);
 
+        if($custom_certificates_folder = env('NGINX_CUSTOM_CERTIFICATES_FOLDER')){
+            $nginx->set_volume($custom_certificates_folder, '/etc/letsencrypt');
+        }
+
 
         $nginx->add_site($this->host(), 80, '/var/www/public', null, null, '
                 location /socket.io {
@@ -252,7 +270,14 @@ class LaravelRecipe extends DockerComposeRecipe
                     proxy_set_header Connection "Upgrade";
                 }
             ');
-        $nginx->add_site($this->host(), 443, '/var/www/public', null, null, '
+
+        if(env('NGINX_CUSTOM_CERTIFICATES_HOSTNAME')){
+            $certificate_hostname = env('NGINX_CUSTOM_CERTIFICATES_HOSTNAME', $this->host());
+            $ssl_certificate = "/etc/letsencrypt/live/$certificate_hostname/fullchain.pem";
+            $ssl_certificate_key = "/etc/letsencrypt/$certificate_hostname/privkey.pem";
+        }
+
+        $nginx->add_site($this->host(), 443, '/var/www/public', $ssl_certificate ?? null, $ssl_certificate_key ?? null, '
                 location /socket.io {
                     proxy_pass http://localhost:6001;
                     proxy_http_version 1.1;

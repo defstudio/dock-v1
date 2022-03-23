@@ -1,4 +1,6 @@
-<?php /** @noinspection DuplicatedCode */
+<?php /** @noinspection LaravelFunctionsInspection */
+
+/** @noinspection DuplicatedCode */
 
 
     namespace App\Recipes\Wordpress;
@@ -181,6 +183,11 @@
             $wordpress->set_volume(Wordpress::HOST_SRC_VOLUME_PATH, '/var/www/html');
             $wordpress->set_service_definition('working_dir', '/var/www/html');
             $wordpress->add_network($this->internal_network());
+
+
+            if (env('ENV', 'local') == 'production') {
+                $wordpress->enable_production();
+            }
 
             if(env('ENV', 'local') == 'local'){
                 $wordpress->enable_xdebug();
