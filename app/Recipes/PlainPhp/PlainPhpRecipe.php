@@ -50,7 +50,6 @@ namespace App\Recipes\PlainPhp;
                 //<editor-fold desc="Network Configuration">
                 $parent_command->question("Network configuration");
                 if($parent_command->confirm("Is the application behind a proxy?")){
-
                     $nginx_root = $parent_command->ask("Enter Nginx root", '/var/www');
                     $this->set_env($env_content, "NGINX_ROOT", $nginx_root);
 
@@ -110,6 +109,20 @@ namespace App\Recipes\PlainPhp;
 
 
                 }
+
+                if($parent_command->confirm("Do you want to setup a custom ssl certificate?")){
+                    $parent_command->info("This setup will allow you to define an external folder to load ssl certificates into nginx setup");
+                    $parent_command->info("Note: the folder must contain at least the following files:");
+                    $parent_command->info(" - live/[hostname]/fullchain.pem");
+                    $parent_command->info(" - live/[hostname]/privkey.pem");
+
+                    $ssl_certificates_folder = $parent_command->ask("Enter the path to the ssl certificates folder (absolute or relative to dock folder)");
+                    $this->set_env($env_content, 'NGINX_CUSTOM_CERTIFICATES_FOLDER', $ssl_certificates_folder);
+
+                    $ssl_certificate_hostname = $parent_command->ask("Enter the hostname contained in the certificate", $application_host);
+                    $this->set_env($env_content, 'NGINX_CUSTOM_CERTIFICATES_HOSTNAME', $ssl_certificate_hostname);
+
+                }
                 //</editor-fold>
 
 
@@ -129,14 +142,19 @@ namespace App\Recipes\PlainPhp;
                 }
 
 
-                //<editor-fold desc="MySql Configuration">
                 $parent_command->question("MySql configuration");
                 $this->set_env($env_content, 'MYSQL_DATABASE', $parent_command->ask("Database Name", "database"));
                 $this->set_env($env_content, 'MYSQL_USER', $parent_command->ask("Database User", "dbuser"));
                 $this->set_env($env_content, 'MYSQL_PASSWORD', $parent_command->ask("Database Password", "dbpassword"));
                 $this->set_env($env_content, 'MYSQL_ROOT_PASSWORD', $parent_command->ask("Database Root Password", "root"));
-                //</editor-fold>
 
+                if(!$parent_command->confirm("Should I enable Composer?")){
+                    $this->comment_env($env_content, 'COMPOSER_ENABLED');
+                }
+
+                if(!$parent_command->confirm("Should I enable Node?")){
+                    $this->comment_env($env_content, 'NODE_ENABLED');
+                }
             }
 
             return $env_content;
@@ -167,10 +185,13 @@ namespace App\Recipes\PlainPhp;
 
             $this->build_mailhog($nginx);
 
-            $this->add_container(Composer::class)->add_network($this->internal_network());
+            if(env('COMPOSER_ENABLED', '0') == '1'){
+                $this->add_container(Composer::class)->add_network($this->internal_network());
+            }
 
-            $this->add_container(Node::class)->add_network($this->internal_network());
-
+            if(env('NODE_ENABLED', '0') == '1'){
+                $this->add_container(Node::class)->add_network($this->internal_network());
+            }
         }
 
 
@@ -181,6 +202,10 @@ namespace App\Recipes\PlainPhp;
         private function build_nginx(): Nginx{
             /** @var Php $php */
             $php = app()->make(Php::class)->add_network($this->internal_network());
+
+            if (env('ENV', 'local') == 'production') {
+                $php->enable_production();
+            }
 
             if(env('ENV', 'local') == 'local'){
                 $php->enable_xdebug();
@@ -193,29 +218,50 @@ namespace App\Recipes\PlainPhp;
             $php->set_version(env('PHP_VERSION', 'latest'));
 
 
+
+
             /** @var Nginx $nginx */
             $nginx = $this->add_container(Nginx::class)->add_network($this->internal_network());
             $nginx->set_php_service($php);
 
+            if($custom_certificates_folder = env('NGINX_CUSTOM_CERTIFICATES_FOLDER')){
+                $nginx->set_volume($custom_certificates_folder, '/etc/letsencrypt');
+            }
 
             $nginx_root = env('NGINX_ROOT', '/var/www');
 
-            $nginx->add_site($this->host(), 80, $nginx_root, null, null, '
-                location /socket.io {
+
+            $nginx->add_site(
+                $this->host(),
+                80,
+                $nginx_root,
+                null,
+                null,
+                'location /socket.io {
                     proxy_pass http://localhost:6001;
                     proxy_http_version 1.1;
                     proxy_set_header Upgrade $http_upgrade;
                     proxy_set_header Connection "Upgrade";
-                }
-            ');
-            $nginx->add_site($this->host(), 443, $nginx_root, null, null, '
-                location /socket.io {
+                }');
+
+            if(env('NGINX_CUSTOM_CERTIFICATES_HOSTNAME')){
+                $certificate_hostname = env('NGINX_CUSTOM_CERTIFICATES_HOSTNAME', $this->host());
+                $ssl_certificate = "/etc/letsencrypt/live/$certificate_hostname/fullchain.pem";
+                $ssl_certificate_key = "/etc/letsencrypt/$certificate_hostname/privkey.pem";
+            }
+
+            $nginx->add_site(
+                $this->host(),
+                443,
+                $nginx_root,
+                $ssl_certificate ?? null,
+                $ssl_certificate_key ?? null,
+                'location /socket.io {
                     proxy_pass http://localhost:6001;
                     proxy_http_version 1.1;
                     proxy_set_header Upgrade $http_upgrade;
                     proxy_set_header Connection "Upgrade";
-                }
-            ');
+                }');
 
 
             if(!empty(env('NGINX_PORT'))){

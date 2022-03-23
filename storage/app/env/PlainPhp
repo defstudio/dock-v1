@@ -30,13 +30,14 @@ ENABLE_LIBREOFFICE_WRITER=0
 #        Nginx        #
 #######################
 
-#Nginx exposed ports
+# Nginx exposed ports
 NGINX_PORT=80
 NGINX_PORT_SSL=443
 
 NGINX_ROOT=/var/www
 
-
+#NGINX_CUSTOM_CERTIFICATES_FOLDER=
+#NGINX_CUSTOM_CERTIFICATES_HOSTNAME=
 
 #######################
 #        MySql        #
@@ -71,5 +72,19 @@ MYSQL_ROOT_PASSWORD=root
 #MAILHOG_PORT=8025
 #MAILHOG_SUBDOMAIN=mail
 
+
+
+#######################
+#      Composer       #
+#######################
+
+COMPOSER_ENABLED=1
+
+
+#######################
+#        Node         #
+#######################
+
+NODE_ENABLED=1
 
 
