@@ -8,6 +8,7 @@ use LaravelZero\Framework\Commands\Command;
 
 /**
  * Class Shell
+ *
  * @package App\Commands
  */
 class Rebuild extends Command
@@ -33,6 +34,7 @@ class Rebuild extends Command
      *
      * @param TerminalService $terminal
      * @param DockerService $docker_service
+     *
      * @return mixed
      */
     public function handle(TerminalService $terminal, DockerService $docker_service)
@@ -49,12 +51,13 @@ class Rebuild extends Command
             $service_name = $this->argument('service');
         }
 
-        if (empty($service_name)) return 0;
+        if (empty($service_name)) {
+            return 0;
+        }
 
         $this->info("Rebuilding service: $service_name");
 
         $terminal->execute([
-            'COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1',
             'docker-compose',
             'pull',
             $service_name,
@@ -67,6 +70,9 @@ class Rebuild extends Command
             '--no-deps',
             '--build',
             $service_name,
+        ], environment_variables: [
+            'COMPOSE_DOCKER_CLI_BUILD' => 1,
+            'DOCKER_BUILDKIT' => 1,
         ]);
 
         return 0;

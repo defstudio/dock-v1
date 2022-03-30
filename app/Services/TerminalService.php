@@ -16,8 +16,8 @@
         }
 
 
-        public function execute(array $commands, string $input=null): int{
-            $process = new Process($commands);
+        public function execute(array $commands, string $input=null, array $environment_variables = null): int{
+            $process = new Process(command: $commands, env: $environment_variables);
 
             if(!empty($input)) $process->setInput($process);
 
