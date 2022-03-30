@@ -54,6 +54,7 @@ class Rebuild extends Command
         $this->info("Rebuilding service: $service_name");
 
         $terminal->execute([
+            'COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1',
             'docker-compose',
             'pull',
             $service_name,
