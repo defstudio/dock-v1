@@ -30,7 +30,7 @@
                 "run",
                 "--rm",
                 "--workdir=/var/www",
-                "--volume=\"$cwd/src:/var/www\"",
+                '--volume=$(pwd)/src:/var/www',
                 '--publish=127.0.0.1:3000:3000',
                 'defstudio/node:alpine-lts',
                 'npm run dev',
