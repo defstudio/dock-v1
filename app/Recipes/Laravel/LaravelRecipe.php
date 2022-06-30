@@ -188,6 +188,7 @@ class LaravelRecipe extends DockerComposeRecipe
             Check::class,
             Pest::class,
             PestCoverage::class,
+            Vite::class,
         ];
     }
 
