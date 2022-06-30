@@ -28,6 +28,7 @@ use App\Recipes\Laravel\Commands\Pest;
 use App\Recipes\Laravel\Commands\PestCoverage;
 use App\Recipes\Laravel\Commands\PhpCs;
 use App\Recipes\Laravel\Commands\RestartQueue;
+use App\Recipes\Laravel\Commands\Vite;
 use App\Recipes\Laravel\Commands\Watch;
 use App\Containers\Php;
 use App\Recipes\Laravel\Containers\Scheduler;
