@@ -176,7 +176,7 @@ class LaravelRecipe extends DockerComposeRecipe
 
     protected function recipe_commands(): array
     {
-        return [
+        $commands = [
             Install::class,
             Init::class,
             Artisan::class,
@@ -189,8 +189,13 @@ class LaravelRecipe extends DockerComposeRecipe
             Check::class,
             Pest::class,
             PestCoverage::class,
-            Vite::class,
         ];
+
+        if(env('ENV') != 'production'){
+            $commands[] = Vite::class;
+        }
+
+        return $commands;
     }
 
     protected function host(): string
