@@ -37,6 +37,6 @@
             ];
 
 
-            return $terminal->execute($commands);
+            return $terminal->execute_in_shell_command_line($commands);
         }
     }
