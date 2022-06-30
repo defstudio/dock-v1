@@ -30,13 +30,13 @@
                 "run",
                 "--rm",
                 "-workdir /var/www",
-                "--volume $cwd/src:/var/www",
+                "--volume /home/fabio/projects/membrane/src:/var/www",
                 '--publish 127.0.0.1:3000:3000',
                 'defstudio/node:alpine-lts',
                 'npm run dev',
             ];
 
 
-            return $terminal->execute_in_shell_command_line($commands);
+            return $terminal->execute($commands);
         }
     }
