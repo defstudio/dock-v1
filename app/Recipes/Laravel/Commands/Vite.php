@@ -36,7 +36,7 @@
                 'npm run dev',
             ];
 
-
+            dump(implode(" ", $commands));
             return $terminal->execute($commands);
         }
     }
