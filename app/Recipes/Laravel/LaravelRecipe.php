@@ -230,7 +230,8 @@ class LaravelRecipe extends DockerComposeRecipe
             ->add_network($this->internal_network());
 
         $this->add_container(Node::class)
-            ->add_network($this->internal_network());
+            ->add_network($this->internal_network())
+            ->map_port(3000);
 
         $this->add_container(Redis::class)
             ->add_network($this->internal_network());
