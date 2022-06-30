@@ -29,7 +29,7 @@
                 "docker",
                 "run",
                 "--rm",
-                "--workdir=\"/var/www\"",
+                "--workdir=/var/www",
                 "--volume=\"$cwd/src:/var/www\"",
                 '--publish=127.0.0.1:3000:3000',
                 'defstudio/node:alpine-lts',
