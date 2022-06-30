@@ -24,13 +24,13 @@
         public function handle(DockerService $docker_service, TerminalService $terminal){
 
             $terminal->init($this->output);
-
+            $cwd = getcwd();
             $commands = [
                 "docker",
                 "run",
                 "--rm",
                 "-workdir /var/www",
-                '--volume $PWD/src:/var/www',
+                "--volume $cwd/src:/var/www",
                 '--publish 127.0.0.1:3000:3000',
                 'defstudio/node:alpine-lts',
                 'npm run dev',
