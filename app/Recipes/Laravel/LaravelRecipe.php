@@ -31,6 +31,7 @@ use App\Recipes\Laravel\Commands\RestartQueue;
 use App\Recipes\Laravel\Commands\Vite;
 use App\Recipes\Laravel\Commands\Watch;
 use App\Containers\Php;
+use App\Recipes\Laravel\Containers\Dusk;
 use App\Recipes\Laravel\Containers\Scheduler;
 use App\Recipes\Laravel\Containers\Websocket;
 use App\Recipes\Laravel\Containers\Worker;
@@ -122,7 +123,7 @@ class LaravelRecipe extends DockerComposeRecipe
                 }
             }
 
-            if($parent_command->confirm("Do you want to setup a custom ssl certificate?")){
+            if ($parent_command->confirm("Do you want to setup a custom ssl certificate?")) {
                 $parent_command->info("This setup will allow you to define an external folder to load ssl certificates into nginx setup");
                 $parent_command->info("Note: the folder must contain at least the following files:");
                 $parent_command->info(" - live/[hostname]/fullchain.pem");
@@ -191,7 +192,7 @@ class LaravelRecipe extends DockerComposeRecipe
             PestCoverage::class,
         ];
 
-        if(env('ENV') != 'production'){
+        if (env('ENV') != 'production') {
             $commands[] = Vite::class;
         }
 
@@ -234,6 +235,9 @@ class LaravelRecipe extends DockerComposeRecipe
         $this->add_container(Composer::class)
             ->add_network($this->internal_network());
 
+        $this->add_container(Dusk::class)
+            ->add_network($this->internal_network());
+
         $this->add_container(Node::class)
             ->add_network($this->internal_network())
             ->map_port(3000);
@@ -265,7 +269,7 @@ class LaravelRecipe extends DockerComposeRecipe
         $nginx = $this->add_container(Nginx::class)->add_network($this->internal_network());
         $nginx->set_php_service($php);
 
-        if($custom_certificates_folder = env('NGINX_CUSTOM_CERTIFICATES_FOLDER')){
+        if ($custom_certificates_folder = env('NGINX_CUSTOM_CERTIFICATES_FOLDER')) {
             $nginx->set_volume($custom_certificates_folder, '/etc/letsencrypt');
         }
 
@@ -279,7 +283,7 @@ class LaravelRecipe extends DockerComposeRecipe
                 }
             ');
 
-        if(env('NGINX_CUSTOM_CERTIFICATES_HOSTNAME')){
+        if (env('NGINX_CUSTOM_CERTIFICATES_HOSTNAME')) {
             $certificate_hostname = env('NGINX_CUSTOM_CERTIFICATES_HOSTNAME', $this->host());
             $ssl_certificate = "/etc/letsencrypt/live/$certificate_hostname/fullchain.pem";
             $ssl_certificate_key = "/etc/letsencrypt/live/$certificate_hostname/privkey.pem";
@@ -303,7 +307,7 @@ class LaravelRecipe extends DockerComposeRecipe
         if (!empty(env('NGINX_PORT_SSL'))) {
             $nginx->map_port(env('NGINX_PORT_SSL'), 443);
             $this->add_exposed_host(env('HOST', self::DEFAULT_HOST));
-            $this->add_exposed_address(self::LABEL." SSL", "https", env('HOST', self::DEFAULT_HOST), env('NGINX_PORT_SSL'));
+            $this->add_exposed_address(self::LABEL . " SSL", "https", env('HOST', self::DEFAULT_HOST), env('NGINX_PORT_SSL'));
         }
 
         $proxy_network = env('REVERSE_PROXY_NETWORK');
@@ -394,7 +398,7 @@ class LaravelRecipe extends DockerComposeRecipe
         }
 
         if (!empty(env("PHPMYADMIN_SUBDOMAIN"))) {
-            $host = env('PHPMYADMIN_SUBDOMAIN').".".env('HOST');
+            $host = env('PHPMYADMIN_SUBDOMAIN') . "." . env('HOST');
             $nginx->add_proxy($host, 80, $phpmyadmin->service_name(), 80);
             $this->add_exposed_host($host);
             $this->add_exposed_address("PhpMyAdmin ", "http", $host, 80);
@@ -423,7 +427,7 @@ class LaravelRecipe extends DockerComposeRecipe
         }
 
         if (!empty(env("MAILHOG_SUBDOMAIN"))) {
-            $host = env('MAILHOG_SUBDOMAIN').".".env('HOST');
+            $host = env('MAILHOG_SUBDOMAIN') . "." . env('HOST');
             $nginx->add_proxy($host, 80, $mailhog->service_name(), 8025);
             $this->add_exposed_host($host);
             $this->add_exposed_address("MailHog ", "http", $host, 80);
