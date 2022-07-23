@@ -1,11 +1,10 @@
-<?php
+<?php /** @noinspection PhpUnused */
 
 
 namespace App\Recipes\Laravel\Containers;
 
 
 use App\Containers\Container;
-use App\Containers\Php;
 
 class Dusk extends Container
 {
@@ -27,7 +26,7 @@ class Dusk extends Container
     public function commands(): array
     {
         return [
-            \App\Containers\Commands\Dusk::class,
+            // \App\Containers\Commands\Dusk::class,
         ];
     }
 }
