@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Containers\Commands;
+namespace App\Recipes\Laravel\Commands;
 
 use App\Traits\ExecutesShellCommands;
 use LaravelZero\Framework\Commands\Command;
