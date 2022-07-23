@@ -26,7 +26,7 @@ class Dusk extends Container
     public function commands(): array
     {
         return [
-            // \App\Containers\Commands\Dusk::class,
+            \App\Containers\Commands\Dusk::class,
         ];
     }
 }
