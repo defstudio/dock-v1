@@ -17,11 +17,6 @@ class Node extends Container
         self::HOST_SRC_VOLUME_PATH => '/var/www',
     ];
 
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
     public function commands(): array
     {
         return [

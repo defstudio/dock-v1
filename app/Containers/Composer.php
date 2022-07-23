@@ -23,6 +23,4 @@
                 Commands\Composer::class
             ];
         }
-
-
     }
