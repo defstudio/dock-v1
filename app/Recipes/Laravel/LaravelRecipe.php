@@ -1,4 +1,5 @@
-<?php /** @noinspection PhpUnnecessaryLocalVariableInspection */
+<?php /** @noinspection HttpUrlsUsage */
+/** @noinspection PhpUnnecessaryLocalVariableInspection */
 /** @noinspection PhpReturnValueOfMethodIsNeverUsedInspection */
 /** @noinspection LaravelFunctionsInspection */
 /** @noinspection DuplicatedCode */
@@ -15,7 +16,6 @@ use App\Containers\PhpMyAdmin;
 use App\Containers\Redis;
 use App\Containers\Composer;
 use App\Containers\MySql;
-use App\Containers\SeleniumChrome;
 use App\Recipes\DockerComposeRecipe;
 use App\Recipes\Laravel\Commands\Artisan;
 use App\Recipes\Laravel\Commands\Check;
@@ -37,6 +37,7 @@ use App\Recipes\Laravel\Containers\Websocket;
 use App\Recipes\Laravel\Containers\Worker;
 use App\Recipes\ReverseProxy\ReverseProxyRecipe;
 use Illuminate\Console\Command;
+use Illuminate\Support\Str;
 
 class LaravelRecipe extends DockerComposeRecipe
 {
@@ -235,9 +236,6 @@ class LaravelRecipe extends DockerComposeRecipe
         $this->add_container(Composer::class)
             ->add_network($this->internal_network());
 
-        $this->add_container(Dusk::class)
-            ->add_network($this->internal_network());
-
         $this->add_container(Node::class)
             ->add_network($this->internal_network())
             ->map_port(3000);
@@ -250,7 +248,8 @@ class LaravelRecipe extends DockerComposeRecipe
         }
 
         if (!empty(env('ENABLE_BROWSER_TESTS'))) {
-            $this->build_selenium_chrome();
+            $dusk = $this->build_dusk();
+            $dusk->set_link($nginx->service_name(), Str::of(env('APP_URL'))->remove('http://')->remove('https://'));
         }
 
     }
@@ -258,6 +257,7 @@ class LaravelRecipe extends DockerComposeRecipe
     private function build_php(): Php
     {
         return app()->make(Php::class)
+            ->set_environment('DOCK', 1)
             ->add_network($this->internal_network())
             ->depends_on('mysql')
             ->depends_on('redis');
@@ -337,17 +337,17 @@ class LaravelRecipe extends DockerComposeRecipe
         return $mysql;
     }
 
-    private function build_selenium_chrome(): ?SeleniumChrome
+    private function build_dusk(): ?Dusk
     {
         if (empty(env("ENABLE_BROWSER_TESTS"))) {
             return null;
         }
 
-        /** @var SeleniumChrome $selenium */
-        $selenium = $this->add_container(SeleniumChrome::class)
+        /** @var Dusk $dusk */
+        $dusk = $this->add_container(Dusk::class)
             ->add_network($this->internal_network());
 
-        return $selenium;
+        return $dusk;
     }
 
     public function build_websocket(): ?Websocket

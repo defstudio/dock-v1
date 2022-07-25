@@ -15,7 +15,11 @@ class Dusk extends Container
     protected string $service_name = 'dusk';
 
     protected array $service_definition = [
+        'restart' => 'unless-stopped',
         'working_dir' => '/var/www',
+        'environment' => [
+            'JAVA_OPTS' => '-Dwebdriver.chrome.whitelistedIps='
+        ],
         'image' => 'selenium/standalone-' . self::BROWSER_CHROME,
     ];
 
