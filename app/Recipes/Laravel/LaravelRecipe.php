@@ -249,7 +249,7 @@ class LaravelRecipe extends DockerComposeRecipe
 
         if (!empty(env('ENABLE_BROWSER_TESTS'))) {
             $dusk = $this->build_dusk();
-            $dusk->set_link($nginx->service_name(), Str::of(env('APP_URL'))->remove('http://')->remove('https://'));
+            $dusk->set_link($nginx->service_name(), env('HOST'));
         }
 
     }
