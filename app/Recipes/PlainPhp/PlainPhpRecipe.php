@@ -207,7 +207,7 @@ namespace App\Recipes\PlainPhp;
                 $php->enable_production();
             }
 
-            if(env('ENV', 'local') == 'local'){
+            if(env('ENV', 'local') == 'local' && env('XDEBUG', 1)){
                 $php->enable_xdebug();
             }
 

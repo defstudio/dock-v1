@@ -189,7 +189,7 @@
                 $wordpress->enable_production();
             }
 
-            if(env('ENV', 'local') == 'local'){
+            if(env('ENV', 'local') == 'local' && env('XDEBUG', 1)){
                 $wordpress->enable_xdebug();
             }
 
