@@ -6,6 +6,8 @@
 
     use App\Services\DockerService;
     use App\Services\TerminalService;
+    use Illuminate\Support\Facades\Storage;
+    use Illuminate\Support\Str;
     use LaravelZero\Framework\Commands\Command;
 
     class CertbotCloudflare extends Command{
@@ -77,20 +79,30 @@
         private function renew_certificates(DockerService $docker_service, TerminalService $terminal): bool{
             $this->title('Certbot certificate renewal');
 
-            $command = [
-                'renew',
-                '--dns-cloudflare',
-                '--dns-cloudflare-credentials',
-                '/root/cloudflare.ini',
-                '--dns-cloudflare-propagation-seconds',
-                60,
-                "--agree-tos",
-                "--no-eff-email",
-                "--force-renewal",
-            ];
+            collect(Storage::disk('configs')->files('certbot/letsencrypt/renewal'))
+                ->filter(function (string $file) {
+                    $content = Storage::disk('configs')->get($file);
+                    return Str::of($content)->contains("authenticator = dns-cloudflare");
+                })->map(fn (string $file): string => Str::of($file)->afterLast("/")->before('.conf'))
+                ->each(function (string $domain) use ($terminal, $docker_service) {
+                    $command = [
+                        'renew',
+                        '--dns-cloudflare',
+                        '--dns-cloudflare-credentials',
+                        '/root/cloudflare.ini',
+                        '--dns-cloudflare-propagation-seconds',
+                        60,
+                        "--agree-tos",
+                        "--no-eff-email",
+                        "--force-renewal",
+                        "--cert",
+                        $domain,
+                    ];
 
-            return $docker_service->service('certbot-cloudflare')->run($terminal, $command);
+                    $docker_service->service('certbot-cloudflare')->run($terminal, $command);
+                });
 
+
+            return self::SUCCESS;
         }
-
     }
