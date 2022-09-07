@@ -37,7 +37,6 @@ use App\Recipes\Laravel\Containers\Websocket;
 use App\Recipes\Laravel\Containers\Worker;
 use App\Recipes\ReverseProxy\ReverseProxyRecipe;
 use Illuminate\Console\Command;
-use Illuminate\Support\Str;
 
 class LaravelRecipe extends DockerComposeRecipe
 {

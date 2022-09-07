@@ -15,6 +15,4 @@ class Worker extends Php
         parent::__construct();
         $this->set_target('worker');
     }
-
-
 }
