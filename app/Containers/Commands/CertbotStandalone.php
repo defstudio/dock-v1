@@ -88,7 +88,7 @@ class CertbotStandalone extends Command
                     "--agree-tos",
                     "--no-eff-email",
                     "--force-renewal",
-                    "--cert",
+                    "--cert-name",
                     $domain,
                 ];
 
