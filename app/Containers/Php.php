@@ -13,7 +13,7 @@ class Php extends Container
         'restart' => 'unless-stopped',
         'working_dir' => '/var/www',
         'build' => [
-            'context' => 'https://github.com/def-studio/docker-php.git',
+            'context' => 'https://github.com/defstudio/docker-php.git',
             'target' => 'fpm',
             'args' => [
                 'ENABLE_XDEBUG' => 0,
