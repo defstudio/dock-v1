@@ -37,7 +37,7 @@ class Nginx extends Container
         'restart' => 'unless-stopped',
         'working_dir' => '/var/www',
         'build' => [
-            'context' => 'https://github.com/def-studio/docker-nginx.git#main',
+            'context' => 'https://github.com/defstudio/docker-nginx.git#main',
         ],
         'depends_on' => [
             self::PHP_SERVICE_NAME,
