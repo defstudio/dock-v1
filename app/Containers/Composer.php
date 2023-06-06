@@ -33,15 +33,9 @@ class Composer extends Php
     public function publish_assets(): void
     {
         if ($this->disk()->exists('composer/auth.json')) {
-            dump('auth.json already exists');
             return;
         }
 
-
-        if ($this->disk()->put('composer/auth.json', '{}')) {
-            dump('auth.json created');
-        } else {
-            dump('auth.json creation error');
-        }
+        $this->disk()->put('composer/auth.json', '{}');
     }
 }
