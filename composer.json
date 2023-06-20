@@ -45,7 +45,8 @@
         "sort-packages": true,
         "optimize-autoloader": true,
         "platform": {
-            "ext-posix": "0"
+            "ext-posix": "0",
+            "php": "8.1"
         }
     },
     "scripts": {
