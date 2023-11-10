@@ -221,12 +221,12 @@ abstract class Container
             }
         }
 
-        $service_definition['logging'] = [
-            'options' => [
-                'max-size' => '10m',
-                'max-file' => '3',
-            ],
-        ];
+        // $service_definition['logging'] = [
+        //     'options' => [
+        //         'max-size' => '10m',
+        //         'max-file' => '3',
+        //     ],
+        // ];
 
         return $service_definition;
     }
