@@ -32,6 +32,7 @@ use App\Recipes\Laravel\Commands\Vite;
 use App\Recipes\Laravel\Commands\Watch;
 use App\Containers\Php;
 use App\Recipes\Laravel\Containers\Dusk;
+use App\Recipes\Laravel\Containers\Pulse;
 use App\Recipes\Laravel\Containers\Scheduler;
 use App\Recipes\Laravel\Containers\Websocket;
 use App\Recipes\Laravel\Containers\Worker;
@@ -251,6 +252,14 @@ class LaravelRecipe extends DockerComposeRecipe
             $dusk->set_link($nginx->service_name(), env('HOST'));
         }
 
+
+
+        if(!empty(env('ENABLE_PULSE'))){
+            $this->add_container(Pulse::class)
+                ->add_network($this->internal_network())
+                ->depends_on('mysql')
+                ->depends_on('redis');
+        }
     }
 
     private function build_php(): Php

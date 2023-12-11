@@ -83,4 +83,12 @@ WEBSOCKET_PORT=
 #######################
 #    Browser Tests    #
 #######################
+
 ENABLE_BROWSER_TESTS=
+
+
+#######################
+# Pulse Server Checks #
+#######################
+
+ENABLE_PULSE=
