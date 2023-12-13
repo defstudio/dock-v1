@@ -281,15 +281,27 @@ class LaravelRecipe extends DockerComposeRecipe
             $nginx->set_volume($custom_certificates_folder, '/etc/letsencrypt');
         }
 
-
-        $nginx->add_site($this->host(), 80, '/var/www/public', null, null, '
+        $extra_site_config = "
                 location /socket.io {
                     proxy_pass http://localhost:6001;
                     proxy_http_version 1.1;
-                    proxy_set_header Upgrade $http_upgrade;
-                    proxy_set_header Connection "Upgrade";
+                    proxy_set_header Upgrade \$http_upgrade;
+                    proxy_set_header Connection \"Upgrade\";
                 }
-            ');
+        ";
+
+        if(($cache_age = env('NGINX_CACHE_AGE')) && ($cache_files = env('NGINX_CACHE_FILES'))){
+            $extra_site_config .= "
+                location ~* \.($cache_files)$ {
+                    expires $cache_age;
+                    etag off;
+                    if_modified_since off;
+                    add_header Cache-Control \"public, no-transform\";
+                }
+            ";
+        }
+
+        $nginx->add_site($this->host(), 80, '/var/www/public', null, null, $extra_site_config);
 
         if (env('NGINX_CUSTOM_CERTIFICATES_HOSTNAME')) {
             $certificate_hostname = env('NGINX_CUSTOM_CERTIFICATES_HOSTNAME', $this->host());
@@ -297,14 +309,7 @@ class LaravelRecipe extends DockerComposeRecipe
             $ssl_certificate_key = "/etc/letsencrypt/live/$certificate_hostname/privkey.pem";
         }
 
-        $nginx->add_site($this->host(), 443, '/var/www/public', $ssl_certificate ?? null, $ssl_certificate_key ?? null, '
-                location /socket.io {
-                    proxy_pass http://localhost:6001;
-                    proxy_http_version 1.1;
-                    proxy_set_header Upgrade $http_upgrade;
-                    proxy_set_header Connection "Upgrade";
-                }
-            ');
+        $nginx->add_site($this->host(), 443, '/var/www/public', $ssl_certificate ?? null, $ssl_certificate_key ?? null, $extra_site_config);
 
 
         if (!empty(env('NGINX_PORT'))) {

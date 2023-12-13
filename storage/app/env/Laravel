@@ -37,6 +37,9 @@ NGINX_PORT_SSL=443
 #NGINX_CUSTOM_CERTIFICATES_FOLDER=
 #NGINX_CUSTOM_CERTIFICATES_HOSTNAME=
 
+#NGINX_CACHE_AGE=1y
+#NGINX_CACHE_FILES="js|css|jpg|jpeg|png|gif|ico|swf|webp|svg"
+
 #######################
 #        MySql        #
 #######################

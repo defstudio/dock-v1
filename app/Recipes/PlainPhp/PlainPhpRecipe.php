@@ -230,6 +230,26 @@ namespace App\Recipes\PlainPhp;
 
             $nginx_root = env('NGINX_ROOT', '/var/www');
 
+            $extra_site_config = "
+                    location /socket.io {
+                        proxy_pass http://localhost:6001;
+                        proxy_http_version 1.1;
+                        proxy_set_header Upgrade \$http_upgrade;
+                        proxy_set_header Connection \"Upgrade\";
+                    }
+            ";
+
+            if(($cache_age = env('NGINX_CACHE_AGE')) && ($cache_files = env('NGINX_CACHE_FILES'))){
+                $extra_site_config .= "
+                    location ~* \.($cache_files)$ {
+                        expires $cache_age;
+                        etag off;
+                        if_modified_since off;
+                        add_header Cache-Control \"public, no-transform\";
+                    }
+                ";
+            }
+
 
             $nginx->add_site(
                 $this->host(),
@@ -237,12 +257,7 @@ namespace App\Recipes\PlainPhp;
                 $nginx_root,
                 null,
                 null,
-                'location /socket.io {
-                    proxy_pass http://localhost:6001;
-                    proxy_http_version 1.1;
-                    proxy_set_header Upgrade $http_upgrade;
-                    proxy_set_header Connection "Upgrade";
-                }');
+                $extra_site_config);
 
             if(env('NGINX_CUSTOM_CERTIFICATES_HOSTNAME')){
                 $certificate_hostname = env('NGINX_CUSTOM_CERTIFICATES_HOSTNAME', $this->host());
@@ -256,12 +271,7 @@ namespace App\Recipes\PlainPhp;
                 $nginx_root,
                 $ssl_certificate ?? null,
                 $ssl_certificate_key ?? null,
-                'location /socket.io {
-                    proxy_pass http://localhost:6001;
-                    proxy_http_version 1.1;
-                    proxy_set_header Upgrade $http_upgrade;
-                    proxy_set_header Connection "Upgrade";
-                }');
+                $extra_site_config);
 
 
             if(!empty(env('NGINX_PORT'))){
