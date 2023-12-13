@@ -291,7 +291,14 @@ class LaravelRecipe extends DockerComposeRecipe
         ";
 
         if(($cache_age = env('NGINX_CACHE_AGE')) && ($cache_files = env('NGINX_CACHE_FILES'))){
+
+
+
             $extra_site_config .= "
+                location ^~ /livewire {
+                    try_files \$uri \$uri/ /index.php?\$query_string;
+                }
+
                 location ~* \.($cache_files)$ {
                     expires $cache_age;
                     etag off;
