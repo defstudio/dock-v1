@@ -167,6 +167,7 @@ class ReverseProxyRecipe extends DockerComposeRecipe
     {
         parent::setup();
         $this->docker_service->add_network(self::PROXY_NETWORK, self::PROXY_NETWORK, 'bridge');
+        $this->docker_service->add_network(self::DB_NETWORK, self::DB_NETWORK, 'bridge');
     }
 
     /**
