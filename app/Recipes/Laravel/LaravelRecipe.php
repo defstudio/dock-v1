@@ -25,6 +25,7 @@ use App\Recipes\Laravel\Commands\Larastan;
 use App\Recipes\Laravel\Commands\Migrate;
 use App\Recipes\Laravel\Commands\Deploy;
 use App\Recipes\Laravel\Commands\OpcacheReset;
+use App\Recipes\Laravel\Commands\OpcacheStatus;
 use App\Recipes\Laravel\Commands\Pest;
 use App\Recipes\Laravel\Commands\PestCoverage;
 use App\Recipes\Laravel\Commands\PhpCs;
@@ -205,6 +206,7 @@ class LaravelRecipe extends DockerComposeRecipe
 
         if (env('ENABLE_OPCACHE')) {
             $commands[] = OpcacheReset::class;
+            $commands[] = OpcacheStatus::class;
         }
 
         return $commands;
