@@ -203,7 +203,7 @@ class LaravelRecipe extends DockerComposeRecipe
             $commands[] = Vite::class;
         }
 
-        if (env('OPCACHE_ENABLED')) {
+        if (env('ENABLE_OPCACHE')) {
             $commands[] = OpcacheReset::class;
         }
 
