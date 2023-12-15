@@ -5,6 +5,7 @@
 namespace App\Containers;
 
 
+use App\Containers\Commands\MakeDatabase;
 use App\Services\TerminalService;
 use Illuminate\Contracts\Container\BindingResolutionException;
 
@@ -23,12 +24,12 @@ class MySql extends Container
             'SYS_NICE',
         ],
         'environment' => [
-            'MYSQL_DATABASE'      => 'database',
-            'MYSQL_USER'          => 'dbuser',
-            'MYSQL_PASSWORD'      => 'dbpassword',
+            'MYSQL_DATABASE' => 'database',
+            'MYSQL_USER' => 'dbuser',
+            'MYSQL_PASSWORD' => 'dbpassword',
             'MYSQL_ROOT_PASSWORD' => 'root',
         ],
-        'expose'      => [3306],
+        'expose' => [3306],
     ];
 
     protected array $volumes = [
@@ -76,7 +77,7 @@ class MySql extends Container
         /** @var TerminalService $terminal */
         $terminal = app()->make(TerminalService::class);
 
-        $backup_file = config('filesystems.disks.backup.root') . "/$backup_folder/mysql.sql";
+        $backup_file = config('filesystems.disks.backup.root')."/$backup_folder/mysql.sql";
 
         $result = $this->execute_in_shell_command_line($terminal, [
             "mysqldump",
@@ -125,7 +126,7 @@ class MySql extends Container
 
     public function disable_strict_mode()
     {
-        $this->service_definition['command'] = $this->service_definition['command'] . ' --sql_mode=""';
+        $this->service_definition['command'] = $this->service_definition['command'].' --sql_mode=""';
     }
 
     public function __construct()
@@ -140,7 +141,7 @@ class MySql extends Container
     public function commands(): array
     {
         return [
-
+            MakeDatabase::class,
         ];
     }
 
