@@ -35,7 +35,7 @@ class MakeDatabase extends Command
             return self::FAILURE;
         }
 
-        if (!$this->execute_mysql_command($docker_service, $terminal, "grant all privileges on '$dbname'.* to '$dbuser'@'docker' with grant option")) {
+        if (!$this->execute_mysql_command($docker_service, $terminal, "GRANT ALL ON $dbname.* TO '$dbuser'@'docker'")) {
             $this->error('User permission setup failed');
             return self::FAILURE;
         }
