@@ -257,6 +257,8 @@ abstract class Container
 
         $commands = array_merge($service_command, $commands);
 
+        dump($commands);
+
         return $terminal->execute($commands, $input);
     }
 
