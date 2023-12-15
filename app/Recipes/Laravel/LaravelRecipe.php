@@ -75,7 +75,6 @@ class LaravelRecipe extends DockerComposeRecipe
                 $this->set_env($env_content, 'OPCACHE_ENABLED', $enable_opcache ? 1 : 0);
             }
 
-
             //<editor-fold desc="Network Configuration">
             $parent_command->question("Network configuration");
             if ($parent_command->confirm("Is the application behind a proxy?")) {
@@ -84,7 +83,13 @@ class LaravelRecipe extends DockerComposeRecipe
                 $this->comment_env($env_content, 'MYSQL_PORT');
                 $this->comment_env($env_content, 'PHPMYADMIN_PORT');
                 $this->comment_env($env_content, 'MAILHOG_PORT');
+
                 $this->set_env($env_content, 'REVERSE_PROXY_NETWORK', ReverseProxyRecipe::PROXY_NETWORK);
+
+                if ($shared_db = $parent_command->confirm('Should Application use a shared database')) {
+                    $this->set_env($env_content, 'MYSQL_SHARED_DB_NETWORK', ReverseProxyRecipe::DB_NETWORK);
+                }
+
             } else {
 
                 $parent_command->info("Exposed services selection (type x to skip)");
@@ -108,20 +113,21 @@ class LaravelRecipe extends DockerComposeRecipe
                     }
                 }
 
-                $mysql_port = $parent_command->ask("Enter MySQL exposed port", 3306);
-                if ($mysql_port == 'x') {
-                    $this->comment_env($env_content, 'MYSQL_PORT');
-                } else {
-                    $this->set_env($env_content, "MYSQL_PORT", $mysql_port);
-                }
+                if (!empty($shared_db)) {
+                    $mysql_port = $parent_command->ask("Enter MySQL exposed port", 3306);
+                    if ($mysql_port == 'x') {
+                        $this->comment_env($env_content, 'MYSQL_PORT');
+                    } else {
+                        $this->set_env($env_content, "MYSQL_PORT", $mysql_port);
+                    }
 
-                $phpmyadmin_port = $parent_command->ask("Enter PhpMyAdmin exposed port", 8081);
-                if ($phpmyadmin_port == 'x') {
-                    $this->comment_env($env_content, 'PHPMYADMIN_PORT');
-                } else {
-                    $this->set_env($env_content, "PHPMYADMIN_PORT", $phpmyadmin_port);
+                    $phpmyadmin_port = $parent_command->ask("Enter PhpMyAdmin exposed port", 8081);
+                    if ($phpmyadmin_port == 'x') {
+                        $this->comment_env($env_content, 'PHPMYADMIN_PORT');
+                    } else {
+                        $this->set_env($env_content, "PHPMYADMIN_PORT", $phpmyadmin_port);
+                    }
                 }
-
 
                 $mailhog_port = $parent_command->ask("Enter MailHog exposed port", 8025);
                 if ($mailhog_port == 'x') {
@@ -175,12 +181,57 @@ class LaravelRecipe extends DockerComposeRecipe
             $this->set_env($env_content, 'MYSQL_DATABASE', $parent_command->ask("Database Name", "database"));
             $this->set_env($env_content, 'MYSQL_USER', $parent_command->ask("Database User", "dbuser"));
             $this->set_env($env_content, 'MYSQL_PASSWORD', $parent_command->ask("Database Password", "dbpassword"));
-            $this->set_env($env_content, 'MYSQL_ROOT_PASSWORD', $parent_command->ask("Database Root Password", "root"));
+
+            if (!empty($shared_db)) {
+                $this->set_env($env_content, 'MYSQL_ROOT_PASSWORD', $parent_command->ask("Database Root Password", "root"));
+            }
             //</editor-fold>
 
         }
 
         return $env_content;
+    }
+
+    public function build_scheduler(): void
+    {
+        $scheduler = $this->add_container(Scheduler::class)
+            ->add_network($this->internal_network())
+            ->depends_on('redis');
+
+        if ($shared_db_network = env('MYSQL_SHARED_DB_NETWORK')) {
+            $scheduler->add_network($shared_db_network);
+        } else {
+            $scheduler->depends_on('mysql');
+        }
+    }
+
+    public function build_worker(): void
+    {
+        $worker = $this->add_container(Worker::class)
+            ->add_network($this->internal_network())
+            ->depends_on('redis');
+
+
+        if ($shared_db_network = env('MYSQL_SHARED_DB_NETWORK')) {
+            $worker->add_network($shared_db_network);
+        } else {
+            $worker->depends_on('mysql');
+        }
+    }
+
+    public function build_pulse(): void
+    {
+        if (!empty(env('ENABLE_PULSE'))) {
+            $pulse = $this->add_container(Pulse::class)
+                ->add_network($this->internal_network())
+                ->depends_on('redis');
+
+            if ($shared_db_network = env('MYSQL_SHARED_DB_NETWORK')) {
+                $pulse->add_network($shared_db_network);
+            } else {
+                $pulse->depends_on('mysql');
+            }
+        }
     }
 
     protected function recipe_commands(): array
@@ -222,27 +273,22 @@ class LaravelRecipe extends DockerComposeRecipe
         return "{$this->host()}_internal_network";
     }
 
-    public function build()
+    public function build(): void
     {
         $php = $this->build_php();
 
         $nginx = $this->build_nginx($php);
 
-        $mysql = $this->build_mysql();
-
-        $this->build_phpmyadmin($mysql, $nginx);
+        if (empty(env('MYSQL_SHARED_DB_NETWORK'))) {
+            $mysql = $this->build_mysql();
+            $this->build_phpmyadmin($mysql, $nginx);
+        }
 
         $this->build_mailhog($nginx);
 
-        $this->add_container(Scheduler::class)
-            ->add_network($this->internal_network())
-            ->depends_on('mysql')
-            ->depends_on('redis');
+        $this->build_scheduler();
 
-        $this->add_container(Worker::class)
-            ->add_network($this->internal_network())
-            ->depends_on('mysql')
-            ->depends_on('redis');
+        $this->build_worker();
 
 
         $this->add_container(Composer::class)
@@ -264,22 +310,22 @@ class LaravelRecipe extends DockerComposeRecipe
             $dusk->set_link($nginx->service_name(), env('HOST'));
         }
 
-
-        if (!empty(env('ENABLE_PULSE'))) {
-            $this->add_container(Pulse::class)
-                ->add_network($this->internal_network())
-                ->depends_on('mysql')
-                ->depends_on('redis');
-        }
+        $this->build_pulse();
     }
 
     private function build_php(): Php
     {
-        return app()->make(Php::class)
+        $php = app()->make(Php::class)
             ->set_environment('DOCK', 1)
             ->add_network($this->internal_network())
             ->depends_on('mysql')
             ->depends_on('redis');
+
+        if ($shared_db_network = env('MYSQL_SHARED_DB_NETWORK')) {
+            $php->add_network($shared_db_network);
+        }
+
+        return $php;
     }
 
     private function build_nginx(Php $php): Nginx
@@ -465,7 +511,7 @@ class LaravelRecipe extends DockerComposeRecipe
         return $mailhog;
     }
 
-    public function setup()
+    public function setup(): void
     {
         parent::setup();
 
