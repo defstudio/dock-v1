@@ -29,3 +29,18 @@ NGINX_PORT_SSL=443
 
 #CERTBOT_CHALLENGE_MODE=dns-cloudflare
 #CLOUDFLARE_TOKEN=
+
+
+#######################
+#        MySql        #
+#######################
+
+ENABLE_MYSQL=0
+
+#MySql exposed ports
+#MYSQL_PORT=3306
+
+#MYSQL_DATABASE=database
+#MYSQL_USER=dbuser
+#MYSQL_PASSWORD=dbpassword
+#MYSQL_ROOT_PASSWORD=root
