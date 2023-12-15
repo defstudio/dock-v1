@@ -36,7 +36,7 @@ class MakeDatabase extends Command
             return self::FAILURE;
         }
 
-        if (!$this->execute_mysql_command($terminal, "GRANT ALL ON $dbname.* TO '$dbuser'@'%'")) {
+        if (!$this->execute_mysql_command($terminal, "GRANT ALL ON $dbname.* TO $dbuser@'%'")) {
             $this->execute_mysql_command($terminal, "drop database $dbname");
             $this->execute_mysql_command($terminal, "drop user '$dbuser'@'%'");
             $this->execute_mysql_command($terminal, "flush privileges");
@@ -53,6 +53,8 @@ class MakeDatabase extends Command
     private function execute_mysql_command(TerminalService $terminal_service, string $command): int
     {
         $password = env('MYSQL_ROOT_PASSWORD');
+
+        dump($command);
 
         $command = [
             'docker exec -t',
