@@ -52,6 +52,6 @@ class MakeDatabase extends Command
             "-e \"$command\"",
         ];
 
-        return $docker_service->service('mysql')->run($terminal_service, $command) === 0;
+        return $docker_service->service('mysql')->execute($terminal_service, $command) === 0;
     }
 }
