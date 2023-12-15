@@ -24,6 +24,7 @@ use App\Recipes\Laravel\Commands\Install;
 use App\Recipes\Laravel\Commands\Larastan;
 use App\Recipes\Laravel\Commands\Migrate;
 use App\Recipes\Laravel\Commands\Deploy;
+use App\Recipes\Laravel\Commands\OpcacheReset;
 use App\Recipes\Laravel\Commands\Pest;
 use App\Recipes\Laravel\Commands\PestCoverage;
 use App\Recipes\Laravel\Commands\PhpCs;
@@ -200,6 +201,10 @@ class LaravelRecipe extends DockerComposeRecipe
 
         if (env('ENV') != 'production') {
             $commands[] = Vite::class;
+        }
+
+        if (env('OPCACHE_ENABLED')) {
+            $commands[] = OpcacheReset::class;
         }
 
         return $commands;
