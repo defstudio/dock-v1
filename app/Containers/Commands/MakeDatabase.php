@@ -52,6 +52,6 @@ class MakeDatabase extends Command
             "-e \"$command\"",
         ];
 
-        return $terminal_service->execute(["docker-compose exec mysql mysql -u root -v"]) === 0;
+        return $terminal_service->execute_in_shell_command_line(["docker-compose exec mysql mysql -u root -v"]) === 0;
     }
 }
