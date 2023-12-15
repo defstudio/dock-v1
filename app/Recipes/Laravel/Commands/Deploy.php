@@ -222,6 +222,21 @@ class Deploy extends Command
             return false;
         }
 
+        if(env('ENABLE_OPCACHE')){
+            if (!$this->task("Resetting OpCache", function () use ($docker_service, $terminal) {
+
+                $commands = [
+                    "/usr/bin/cachetool.phar",
+                    "opcache:reset",
+                ];
+
+                return $docker_service->service('php')->execute($terminal, $commands);
+            })) {
+                return false;
+            }
+        }
+
+
 
         return 0;
     }
