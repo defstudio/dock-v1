@@ -136,4 +136,13 @@ class MySql extends Container
             $this->disable_strict_mode();
         }
     }
+
+    public function commands(): array
+    {
+        return [
+
+        ];
+    }
+
+
 }
