@@ -25,17 +25,17 @@ class MakeDatabase extends Command
         $dbuser = $this->ask('Database User Name', 'dbuser');
         $dbpassword = $this->ask('Database User Password', 'dbpassword');
 
-        if (!$this->execute_mysql_command($docker_service, $terminal, "create database $dbname")) {
+        if (!$this->execute_mysql_command($terminal, "create database $dbname")) {
             $this->error('Database creation failed');
             return self::FAILURE;
         }
 
-        if (!$this->execute_mysql_command($docker_service, $terminal, "create user '$dbuser'@'docker' identified by '$dbpassword'")) {
+        if (!$this->execute_mysql_command($terminal, "create user '$dbuser'@'%' identified by '$dbpassword'")) {
             $this->error('User creation failed');
             return self::FAILURE;
         }
 
-        if (!$this->execute_mysql_command($docker_service, $terminal, "GRANT ALL ON $dbname.* TO '$dbuser'@'docker'")) {
+        if (!$this->execute_mysql_command($terminal, "GRANT ALL ON $dbname.* TO '$dbuser'@'%'")) {
             $this->error('User permission setup failed');
             return self::FAILURE;
         }
@@ -43,7 +43,7 @@ class MakeDatabase extends Command
         return self::SUCCESS;
     }
 
-    private function execute_mysql_command(DockerService $docker_service, TerminalService $terminal_service, string $command): int
+    private function execute_mysql_command(TerminalService $terminal_service, string $command): int
     {
         $password = env('MYSQL_ROOT_PASSWORD');
 
