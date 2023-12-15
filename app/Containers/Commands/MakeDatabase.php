@@ -48,11 +48,12 @@ class MakeDatabase extends Command
         $password = env('MYSQL_ROOT_PASSWORD');
 
         $command = [
+            'docker exec -t',
+            '-i proxy_mysql_1',
             "mysql -u root -p$password",
             "-e \"$command\"",
         ];
 
-        dump("docker exec -t -i  proxy_mysql_1 mysql -u root -v");
-        return $terminal_service->execute_in_shell_command_line(["docker exec -t -i  proxy_mysql_1 mysql -u root -v"]) === 0;
+        return $terminal_service->execute_in_shell_command_line($command) === 0;
     }
 }
