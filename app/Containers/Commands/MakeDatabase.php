@@ -32,13 +32,20 @@ class MakeDatabase extends Command
 
         if (!$this->execute_mysql_command($terminal, "create user '$dbuser'@'%' identified by '$dbpassword'")) {
             $this->error('User creation failed');
+            $this->execute_mysql_command($terminal, "drop database $dbname");
             return self::FAILURE;
         }
 
         if (!$this->execute_mysql_command($terminal, "GRANT ALL ON $dbname.* TO '$dbuser'@'%'")) {
+            $this->execute_mysql_command($terminal, "drop database $dbname");
+            $this->execute_mysql_command($terminal, "drop user '$dbuser'@'%'");
+            $this->execute_mysql_command($terminal, "flush privileges");
+
             $this->error('User permission setup failed');
             return self::FAILURE;
         }
+
+        $this->execute_mysql_command($terminal, "flush privileges");
 
         return self::SUCCESS;
     }
