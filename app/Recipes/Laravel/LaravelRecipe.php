@@ -318,11 +318,12 @@ class LaravelRecipe extends DockerComposeRecipe
         $php = app()->make(Php::class)
             ->set_environment('DOCK', 1)
             ->add_network($this->internal_network())
-            ->depends_on('mysql')
             ->depends_on('redis');
 
         if ($shared_db_network = env('MYSQL_SHARED_DB_NETWORK')) {
             $php->add_network($shared_db_network);
+        }else{
+            $php->depends_on('mysql');
         }
 
         return $php;
