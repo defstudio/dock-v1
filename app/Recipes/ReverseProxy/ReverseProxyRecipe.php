@@ -182,13 +182,13 @@ class ReverseProxyRecipe extends DockerComposeRecipe
         ];
     }
 
-    private function build_mysql(): MySql
+    private function build_mysql(): void
     {
-        if(env('ENABLE_MYSQL'))
+        if (!env('ENABLE_MYSQL')){
+            return;
+        }
 
-        /** @var MySql $mysql */
-        $mysql = $this->add_container(MySql::class)->add_network($this->internal_network());
-
+        $mysql = $this->add_container(MySql::class)->add_network(self::DB_NETWORK);
         $mysql->set_database(env('MYSQL_DATABASE', 'database'));
         $mysql->set_user(env('MYSQL_USER', 'dbuser'));
         $mysql->set_password(env('MYSQL_PASSWORD', 'dbpassword'));
@@ -197,10 +197,6 @@ class ReverseProxyRecipe extends DockerComposeRecipe
         if (!empty(env('MYSQL_PORT'))) {
             $mysql->map_port(env('MYSQL_PORT'), 3306);
         }
-
-        $mysql->add_network(self::DB_NETWORK);
-
-        return $mysql;
     }
 }
 
