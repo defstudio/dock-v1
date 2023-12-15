@@ -448,6 +448,12 @@ class LaravelRecipe extends DockerComposeRecipe
             $websocket->add_network($proxy_network);
         }
 
+        if ($shared_db_network = env('MYSQL_SHARED_DB_NETWORK')) {
+            $websocket->add_network($shared_db_network);
+        }else{
+            $websocket->depends_on('mysql');
+        }
+
         return $websocket;
     }
 
@@ -518,9 +524,13 @@ class LaravelRecipe extends DockerComposeRecipe
 
         $this->docker_service->add_network($this->internal_network(), $this->internal_network(), 'bridge');
 
-        $proxy_network = env('REVERSE_PROXY_NETWORK');
-        if (!empty($proxy_network)) {
+
+        if ($proxy_network = env('REVERSE_PROXY_NETWORK')) {
             $this->docker_service->add_external_network($proxy_network);
+        }
+
+        if ($shared_db_network = env('MYSQL_SHARED_DB_NETWORK')) {
+            $this->docker_service->add_external_network($shared_db_network);
         }
     }
 }
