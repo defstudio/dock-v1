@@ -16,10 +16,11 @@ class Php extends Container
             'context' => 'https://github.com/defstudio/docker-php.git',
             'target' => 'fpm',
             'args' => [
+                'PRODUCTION' => 0,
                 'ENABLE_XDEBUG' => 0,
                 'ENABLE_LIBREOFFICE_WRITER' => 0,
                 'ENABLE_BACKUP_TOOLS' => 0,
-                'PRODUCTION' => 0,
+                'ENABLE_OPCACHE' => 0,
             ],
         ],
         'expose' => [9000],
@@ -38,6 +39,12 @@ class Php extends Container
     public function set_version($version): self
     {
         $this->set_service_definition('build.args.PHP_VERSION', $version);
+        return $this;
+    }
+
+    public function enable_opcache(bool $enabled = true): self
+    {
+        $this->set_service_definition('build.args.ENABLE_OPCACHE', $enabled ? 1 : 0);
         return $this;
     }
 
@@ -91,6 +98,10 @@ class Php extends Container
 
         if (env('ENABLE_BACKUP_TOOLS', '0') == '1') {
             $this->enable_backup_tools();
+        }
+
+        if (env('ENABLE_BACKUP_TOOLS', '0') == '1') {
+            $this->enable_opcache();
         }
 
         if (!empty(env('PHP_VERSION'))) {
