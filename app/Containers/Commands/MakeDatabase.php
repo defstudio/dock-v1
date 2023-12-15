@@ -22,7 +22,7 @@ class MakeDatabase extends Command
 
         throw_if(empty($dbname), 'DB Name is required');
 
-        $dbuser = $this->ask('Database User Name', 'dbuser');
+        $dbuser = $this->ask('Database User Name', $dbname);
         $dbpassword = $this->ask('Database User Password', 'dbpassword');
 
         if (!$this->execute_mysql_command($terminal, "create database $dbname")) {
