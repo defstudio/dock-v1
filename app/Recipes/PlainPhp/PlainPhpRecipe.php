@@ -1,4 +1,5 @@
-<?php /** @noinspection LaravelFunctionsInspection */
+<?php /** @noinspection PhpUnhandledExceptionInspection */
+/** @noinspection LaravelFunctionsInspection */
 
 /** @noinspection DuplicatedCode */
 
@@ -187,15 +188,16 @@ class PlainPhpRecipe extends DockerComposeRecipe
         return "{$this->host()}_internal_network";
     }
 
-    /**
-     * @throws BindingResolutionException
-     */
-    public function build()
+    public function build(): void
     {
         $nginx = $this->build_nginx();
-        $mysql = $this->build_mysql();
 
-        $this->build_phpmyadmin($mysql, $nginx);
+        if (empty(env('MYSQL_SHARED_DB_NETWORK'))) {
+            $mysql = $this->build_mysql();
+            $this->build_phpmyadmin($mysql, $nginx);
+        }
+
+
 
         $this->build_mailhog($nginx);
 
@@ -335,13 +337,6 @@ class PlainPhpRecipe extends DockerComposeRecipe
         return $mysql;
     }
 
-    /**
-     * @param MySql $mysql
-     * @param Nginx $nginx
-     *
-     * @return PhpMyAdmin
-     * @throws BindingResolutionException
-     */
     public function build_phpmyadmin(MySql $mysql, Nginx $nginx): ?PhpMyAdmin
     {
 
@@ -375,12 +370,6 @@ class PlainPhpRecipe extends DockerComposeRecipe
         return $phpmyadmin;
     }
 
-    /**
-     * @param Nginx $nginx
-     *
-     * @return MailHog
-     * @throws BindingResolutionException
-     */
     public function build_mailhog(Nginx $nginx): ?MailHog
     {
 
