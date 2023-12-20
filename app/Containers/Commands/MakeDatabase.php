@@ -30,7 +30,7 @@ class MakeDatabase extends Command
             return self::FAILURE;
         }
 
-        if (!$this->execute_mysql_command($terminal, "create user '$dbuser'@'%' identified by '$dbpassword'")) {
+        if (!$this->execute_mysql_command($terminal, "create user '$dbuser'@'%' identified with mysql_native_password by '$dbpassword'")) {
             $this->error('User creation failed');
             $this->execute_mysql_command($terminal, "drop database $dbname");
             return self::FAILURE;
