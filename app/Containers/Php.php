@@ -100,7 +100,7 @@ class Php extends Container
             $this->enable_backup_tools();
         }
 
-        if (env('ENABLE_BACKUP_TOOLS', '0') == '1') {
+        if (env('ENABLE_OPCACHE', '0') == '1') {
             $this->enable_opcache();
         }
 
