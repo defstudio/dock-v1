@@ -73,6 +73,8 @@ class LaravelRecipe extends DockerComposeRecipe
             if ($application_env === 'production') {
                 $enable_opcache = $parent_command->confirm("Should OpCache be enabled?");
                 $this->set_env($env_content, 'OPCACHE_ENABLED', $enable_opcache ? 1 : 0);
+            }else{
+                $this->set_env($env_content, 'OPCACHE_ENABLED', 0);
             }
 
             //<editor-fold desc="Network Configuration">
