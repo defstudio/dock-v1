@@ -54,7 +54,6 @@ class Deploy extends Command
             }
         }
 
-
         if (!$this->task("Updating codebase from git", function () use ($docker_service, $terminal) {
             $commands = [
                 'cd',
@@ -76,6 +75,21 @@ class Deploy extends Command
             return false;
         }
 
+        if(env('ENABLE_OPCACHE')){
+            if (!$this->task("Resetting OpCache", function () use ($docker_service, $terminal) {
+
+                $commands = [
+                    'php',
+                    "/usr/bin/cachetool.phar",
+                    "opcache:reset",
+                ];
+
+                return $docker_service->service('php')->execute($terminal, $commands);
+            })) {
+                return false;
+            }
+        }
+
 
         if (!$this->task("Installing Composer packages", function () use ($docker_service, $terminal) {
             if ($this->is_production()) {
@@ -94,20 +108,6 @@ class Deploy extends Command
             return $docker_service->service('composer')->run($terminal, $commands, null, false);
         })) {
             return false;
-        }
-
-        if(env('ENABLE_OPCACHE')){
-            if (!$this->task("Resetting OpCache", function () use ($docker_service, $terminal) {
-
-                $commands = [
-                    "/usr/bin/cachetool.phar",
-                    "opcache:reset",
-                ];
-
-                return $docker_service->service('php')->execute($terminal, $commands);
-            })) {
-                return false;
-            }
         }
 
         if (!$this->task("Database maintenance", function () use ($docker_service, $terminal) {
