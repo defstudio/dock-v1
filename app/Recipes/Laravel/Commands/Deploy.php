@@ -84,7 +84,7 @@ class Deploy extends Command
                     "opcache:reset",
                 ];
 
-                return $docker_service->service('php')->execute_in_shell_command_line($terminal, $commands);
+                return $docker_service->service('php')->execute($terminal, $commands, with_pseudo_terminal: false);
             })) {
                 return false;
             }
