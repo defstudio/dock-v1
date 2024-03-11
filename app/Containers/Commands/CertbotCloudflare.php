@@ -52,7 +52,7 @@
             if($token === null){
                 $token_file = '/root/cloudflare.ini';
             }else{
-                $token_file = "/root/cloudflare-$token.ini";
+                $token_file = "/root/cloudflare_$token.ini";
             }
 
 
@@ -90,7 +90,7 @@
             if($token === null){
                 $token_file = '/root/cloudflare.ini';
             }else{
-                $token_file = "/root/cloudflare-$token.ini";
+                $token_file = "/root/cloudflare_$token.ini";
             }
 
             collect(Storage::disk('configs')->files('certbot/letsencrypt/renewal'))
