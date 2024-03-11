@@ -14,7 +14,7 @@
 
         protected $signature = 'certbot:cloudflare
                                 {task : task to execute (create|renew)}
-                                {--token=}
+                                {--token=default}
                                ';
 
         protected $description = 'Manage SSL certificates throught certbot cloudflare provider';
@@ -37,7 +37,7 @@
 
         }
 
-        private function create_certificate(DockerService $docker_service, TerminalService $terminal, string|null $token): bool{
+        private function create_certificate(DockerService $docker_service, TerminalService $terminal, string $token): bool{
 
             $this->title('Certbot certificate creation');
 
@@ -48,13 +48,6 @@
             while( !empty($domain = $this->ask('Enter domain (leave blank to skip)'))){
                 $domains[] = $domain;
             }
-
-            if($token === null){
-                $token_file = '/root/cloudflare.ini';
-            }else{
-                $token_file = "/root/cloudflare_$token.ini";
-            }
-
 
 
             if(empty($domains)){
@@ -67,7 +60,7 @@
                 'certonly',
                 '--dns-cloudflare',
                 '--dns-cloudflare-credentials',
-                $token_file,
+                "/root/tokens/$token.ini",
                 '--dns-cloudflare-propagation-seconds',
                 60,
                 "--email",
@@ -85,26 +78,20 @@
 
         }
 
-        private function renew_certificates(DockerService $docker_service, TerminalService $terminal, string|null $token): bool{
+        private function renew_certificates(DockerService $docker_service, TerminalService $terminal, string $token): bool{
             $this->title('Certbot certificate renewal');
-
-            if($token === null){
-                $token_file = '/root/cloudflare.ini';
-            }else{
-                $token_file = "/root/cloudflare_$token.ini";
-            }
 
             collect(Storage::disk('configs')->files('certbot/letsencrypt/renewal'))
                 ->filter(function (string $file) {
                     $content = Storage::disk('configs')->get($file);
                     return Str::of($content)->contains("authenticator = dns-cloudflare");
                 })->map(fn (string $file): string => Str::of($file)->afterLast("/")->before('.conf'))
-                ->each(function (string $domain) use ($token_file, $terminal, $docker_service) {
+                ->each(function (string $domain) use ($token, $terminal, $docker_service) {
                     $command = [
                         'renew',
                         '--dns-cloudflare',
                         '--dns-cloudflare-credentials',
-                        $token_file,
+                        "/root/tokens/$token.ini",
                         '--dns-cloudflare-propagation-seconds',
                         60,
                         "--agree-tos",
