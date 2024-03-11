@@ -56,6 +56,7 @@
             }
 
 
+
             if(empty($domains)){
                 $this->error('No domain selected');
                 $this->line('Enter at lease one domain to bind the certificate to');
