@@ -73,7 +73,7 @@ class LaravelRecipe extends DockerComposeRecipe
             if ($application_env === 'production') {
                 $enable_opcache = $parent_command->confirm("Should OpCache be enabled?");
                 $this->set_env($env_content, 'OPCACHE_ENABLED', $enable_opcache ? 1 : 0);
-            }else{
+            } else {
                 $this->set_env($env_content, 'OPCACHE_ENABLED', 0);
             }
 
@@ -236,6 +236,18 @@ class LaravelRecipe extends DockerComposeRecipe
         }
     }
 
+    public function build_composer(): void
+    {
+        $composer = $this->add_container(Composer::class)
+            ->add_network($this->internal_network());
+
+        if ($shared_db_network = env('MYSQL_SHARED_DB_NETWORK')) {
+            $composer->add_network($shared_db_network);
+        } else {
+            $composer->depends_on('mysql');
+        }
+    }
+
     protected function recipe_commands(): array
     {
         $commands = [
@@ -292,9 +304,7 @@ class LaravelRecipe extends DockerComposeRecipe
 
         $this->build_worker();
 
-
-        $this->add_container(Composer::class)
-            ->add_network($this->internal_network());
+        $this->build_composer();
 
         $this->add_container(Node::class)
             ->add_network($this->internal_network())
@@ -324,7 +334,7 @@ class LaravelRecipe extends DockerComposeRecipe
 
         if ($shared_db_network = env('MYSQL_SHARED_DB_NETWORK')) {
             $php->add_network($shared_db_network);
-        }else{
+        } else {
             $php->depends_on('mysql');
         }
 
@@ -452,7 +462,7 @@ class LaravelRecipe extends DockerComposeRecipe
 
         if ($shared_db_network = env('MYSQL_SHARED_DB_NETWORK')) {
             $websocket->add_network($shared_db_network);
-        }else{
+        } else {
             $websocket->depends_on('mysql');
         }
 
