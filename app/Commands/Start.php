@@ -43,7 +43,7 @@ class Start extends Command
 
         $this->task('Starting containers', function () use ($terminal) {
             $command = [
-                'docker-compose',
+                env('DOCKER_COMPOSE_COMMAND', 'docker-compose'),
                 'up',
                 '-d',
             ];

@@ -53,7 +53,7 @@
             $this->info("Starting shell for container: $service_name");
 
             return $terminal->execute([
-                'docker-compose',
+                env('DOCKER_COMPOSE_COMMAND', 'docker-compose'),
                 'exec',
                 $service_name,
                 '/bin/bash',

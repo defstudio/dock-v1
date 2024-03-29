@@ -41,7 +41,7 @@
             if(empty($service)) return 0;
 
             return $terminal->execute([
-                'docker-compose',
+                env('DOCKER_COMPOSE_COMMAND', 'docker-compose'),
                 'logs',
                 '--follow',
                 '--tail=50',

@@ -25,7 +25,7 @@
         public function handle(TerminalService $terminal){
 
             return $terminal->execute([
-                'docker-compose',
+                env('DOCKER_COMPOSE_COMMAND', 'docker-compose'),
                 'logs',
                 '--follow',
                 '--tail=50',

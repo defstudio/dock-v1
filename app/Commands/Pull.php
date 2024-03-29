@@ -32,7 +32,7 @@ namespace App\Commands;
             $this->info('Pulling updated images...');
 
             $exit_code = $terminal->execute([
-                'docker-compose',
+                env('DOCKER_COMPOSE_COMMAND', 'docker-compose'),
                 'pull'
             ]);
 

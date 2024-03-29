@@ -33,7 +33,7 @@
             $this->info('Stopping containers...');
 
             $exit_code = $terminal->execute([
-                'docker-compose',
+                env('DOCKER_COMPOSE_COMMAND', 'docker-compose'),
                 'down'
             ]);
 
