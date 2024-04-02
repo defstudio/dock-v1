@@ -170,9 +170,9 @@ class Nginx extends Container
         $template = Storage::get(self::PATH_NGINX_CONF);
 
         $this->compile_template($template, [
-            'ROBOTS' => env('ENABLE_ROBOTS', true)
+            'robots' => env('ENABLE_ROBOTS', true)
                 ? ''
-                : 'add_header  X-Robots-Tag "noindex, nofollow, nosnippet, noarchive"'
+                : 'add_header  X-Robots-Tag "noindex, nofollow, nosnippet, noarchive";'
         ]);
 
         $this->disk()->put(self::PATH_NGINX_CONF, $template);
