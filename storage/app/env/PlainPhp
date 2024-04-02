@@ -42,6 +42,8 @@ NGINX_ROOT=/var/www
 #NGINX_CACHE_AGE=1y
 #NGINX_CACHE_FILES="js|css|jpg|jpeg|png|gif|ico|swf|webp|svg"
 
+#ENABLE_ROBOTS=false
+
 #######################
 #        MySql        #
 #######################

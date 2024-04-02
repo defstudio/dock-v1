@@ -139,13 +139,14 @@ class Nginx extends Container
     }
 
 
+
     /**
      * @param DockerService $service
      *
      * @throws DuplicateServiceException
      * @throws ContainerException
      */
-    public function setup(DockerService $service)
+    public function setup(DockerService $service): void
     {
 
         if (!empty($this->php_service)) {
@@ -164,12 +165,20 @@ class Nginx extends Container
         $this->publish_backend_not_found();
     }
 
-    protected function publish_nginx_conf()
+    protected function publish_nginx_conf(): void
     {
-        $this->disk()->put(self::PATH_NGINX_CONF, Storage::get(self::PATH_NGINX_CONF));
+        $template = Storage::get(self::PATH_NGINX_CONF);
+
+        $this->compile_template($template, [
+            'ROBOTS' => env('ENABLE_ROBOTS', true)
+                ? ''
+                : 'add_header  X-Robots-Tag "noindex, nofollow, nosnippet, noarchive"'
+        ]);
+
+        $this->disk()->put(self::PATH_NGINX_CONF, $template);
     }
 
-    protected function publish_upstream_conf()
+    protected function publish_upstream_conf(): void
     {
         if (!empty($this->php_service)) {
             $template = Storage::get(self::PATH_UPSTREAM_CONF);
