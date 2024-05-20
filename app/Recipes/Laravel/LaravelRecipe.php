@@ -10,6 +10,7 @@
 namespace App\Recipes\Laravel;
 
 use App\Containers\MailHog;
+use App\Containers\Memcached;
 use App\Containers\Nginx;
 use App\Containers\Node;
 use App\Containers\PhpMyAdmin;
@@ -312,6 +313,11 @@ class LaravelRecipe extends DockerComposeRecipe
 
         $this->add_container(Redis::class)
             ->add_network($this->internal_network());
+
+        if (!empty(env('MEMCACHED_ENABLED'))) {
+            $this->add_container(Memcached::class)
+                ->add_network($this->internal_network());
+        }
 
         if (!empty(env('WEBSOCKET_PORT'))) {
             $this->build_websocket();

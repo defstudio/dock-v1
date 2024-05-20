@@ -81,6 +81,13 @@ MYSQL_ROOT_PASSWORD=root
 
 
 #######################
+#      Memcached      #
+#######################
+
+MEMCACHED_ENABLED=0
+
+
+#######################
 #      Websocket      #
 #######################
 
