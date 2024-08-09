@@ -36,7 +36,7 @@ trait ExecutesShellCommands
             $this->info('Log into Shell');
 
             return $terminal->execute([
-                env('DOCKER_COMPOSE_COMMAND', 'docker-compose'),
+                env('DOCKER_COMPOSE_COMMAND', 'docker compose'),
                 'run',
                 '--rm',
                 $target_service,

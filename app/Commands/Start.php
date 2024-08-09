@@ -36,14 +36,14 @@ class Start extends Command
         $terminal->init($this->output);
 
 
-        $this->task('Generating docker-compose files', function () use ($docker_service) {
+        $this->task('Generating docker compose files', function () use ($docker_service) {
             return $docker_service->publish();
         });
 
 
         $this->task('Starting containers', function () use ($terminal) {
             $command = [
-                env('DOCKER_COMPOSE_COMMAND', 'docker-compose'),
+                env('DOCKER_COMPOSE_COMMAND', 'docker compose'),
                 'up',
                 '-d',
             ];

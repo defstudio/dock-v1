@@ -245,7 +245,7 @@ abstract class Container
     {
 
         $service_command = [
-            env('DOCKER_COMPOSE_COMMAND', 'docker-compose'),
+            env('DOCKER_COMPOSE_COMMAND', 'docker compose'),
             'exec',
         ];
 
@@ -264,7 +264,7 @@ abstract class Container
     {
 
         $service_command = [
-            env('DOCKER_COMPOSE_COMMAND', 'docker-compose'),
+            env('DOCKER_COMPOSE_COMMAND', 'docker compose'),
             'run',
             '--service-ports',
             '--rm',
@@ -284,7 +284,7 @@ abstract class Container
     public function execute_in_shell_command_line(TerminalService $terminal, array $commands)
     {
         $service_command = [
-            env('DOCKER_COMPOSE_COMMAND', 'docker-compose'),
+            env('DOCKER_COMPOSE_COMMAND', 'docker compose'),
             'exec',
             $this->service_name(),
         ];
