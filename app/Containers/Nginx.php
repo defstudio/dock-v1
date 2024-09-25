@@ -47,8 +47,8 @@ class Nginx extends Container
 
     protected array $volumes = [
         self::HOST_SRC_VOLUME_PATH => '/var/www',
-        self::HOST_CONFIG_VOLUME_PATH . self::PATH_NGINX_CONF => '/etc/nginx/nginx.conf',
-        self::HOST_CONFIG_VOLUME_PATH . self::PATH_SITES_AVAILABLE => '/etc/nginx/sites-available',
+        self::HOST_CONFIG_VOLUME_PATH.self::PATH_NGINX_CONF => '/etc/nginx/nginx.conf',
+        self::HOST_CONFIG_VOLUME_PATH.self::PATH_SITES_AVAILABLE => '/etc/nginx/sites-available',
     ];
 
     private array $sites = [];
@@ -72,6 +72,13 @@ class Nginx extends Container
 
     public function add_site(string $host, int $port = 80, $root = "/var/www", ?string $ssl_certificate = null, string $ssl_certificate_key = null, string $extra = ''): self
     {
+        if (env('NGINX_SUPPORT_INDEX', false)) {
+            $index_support = '$uri/';
+            dump('index support');
+        } else {
+            dump('no index support');
+        }
+
         $this->sites[] = [
             'host' => $host,
             'port' => $port,
@@ -79,7 +86,7 @@ class Nginx extends Container
             'ssl_certificate' => $ssl_certificate,
             'ssl_certificate_key' => $ssl_certificate_key,
             'extra' => $extra,
-            'index_support' => env('NGINX_SUPPORT_INDEX', false) ? '$uri/' : '',
+            'index_support' => $index_support ?? '',
         ];
 
         return $this;
@@ -140,9 +147,8 @@ class Nginx extends Container
     }
 
 
-
     /**
-     * @param DockerService $service
+     * @param  DockerService  $service
      *
      * @throws DuplicateServiceException
      * @throws ContainerException
@@ -173,7 +179,7 @@ class Nginx extends Container
         $this->compile_template($template, [
             'robots' => env('ENABLE_ROBOTS', true)
                 ? ''
-                : 'add_header  X-Robots-Tag "noindex, nofollow, nosnippet, noarchive";'
+                : 'add_header  X-Robots-Tag "noindex, nofollow, nosnippet, noarchive";',
         ]);
 
         $this->disk()->put(self::PATH_NGINX_CONF, $template);
@@ -187,7 +193,7 @@ class Nginx extends Container
             $this->compile_template($template, ['php_service' => self::PHP_SERVICE_NAME]);
             $this->disk()->put(self::PATH_UPSTREAM_CONF, $template);
 
-            $this->set_volume(self::HOST_CONFIG_VOLUME_PATH . self::PATH_UPSTREAM_CONF, '/etc/nginx/conf.d/upstream.conf');
+            $this->set_volume(self::HOST_CONFIG_VOLUME_PATH.self::PATH_UPSTREAM_CONF, '/etc/nginx/conf.d/upstream.conf');
         }
     }
 
@@ -230,7 +236,7 @@ class Nginx extends Container
 
         $this->compile_template($template, $site_data);
 
-        $this->disk()->put(self::PATH_SITES_AVAILABLE . "/{$site_data['host']}.{$site_data['port']}.conf", $template);
+        $this->disk()->put(self::PATH_SITES_AVAILABLE."/{$site_data['host']}.{$site_data['port']}.conf", $template);
     }
 
     protected function publish_proxy(array $proxy_data)
@@ -243,10 +249,10 @@ class Nginx extends Container
 
         $this->compile_template($template, $proxy_data);
         $this->disk()->put(
-            Str::of( self::PATH_SITES_AVAILABLE)
-            ->append("/", $proxy_data['host'])
-            ->append(".", $proxy_data['port'])
-            ->append('.conf')
+            Str::of(self::PATH_SITES_AVAILABLE)
+                ->append("/", $proxy_data['host'])
+                ->append(".", $proxy_data['port'])
+                ->append('.conf')
             , $template
         );
 
