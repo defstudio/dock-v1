@@ -79,6 +79,7 @@ class Nginx extends Container
             'ssl_certificate' => $ssl_certificate,
             'ssl_certificate_key' => $ssl_certificate_key,
             'extra' => $extra,
+            'index_support' => env('NGINX_SUPPORT_INDEX', false) ? '$uri/' : '',
         ];
 
         return $this;
