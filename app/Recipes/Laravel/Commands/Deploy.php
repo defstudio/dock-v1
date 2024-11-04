@@ -102,6 +102,25 @@ class Deploy extends Command
             return false;
         }
 
+        if (!$this->task("Compiling Assets", function () use ($docker_service, $terminal) {
+            if ($this->is_production()) {
+                $commands = [
+                    "npm",
+                    "run",
+                    "prod",
+                ];
+            } else {
+                $commands = [
+                    "npm",
+                    "run",
+                    "dev",
+                ];
+            }
+            return $docker_service->service('node')->run($terminal, $commands, null, false);
+        })) {
+            return false;
+        }
+
 
         if (!$this->task("Installing Composer packages", function () use ($docker_service, $terminal) {
             if ($this->is_production()) {
@@ -191,24 +210,7 @@ class Deploy extends Command
 
 
 
-        if (!$this->task("Compiling Assets", function () use ($docker_service, $terminal) {
-            if ($this->is_production()) {
-                $commands = [
-                    "npm",
-                    "run",
-                    "prod",
-                ];
-            } else {
-                $commands = [
-                    "npm",
-                    "run",
-                    "dev",
-                ];
-            }
-            return $docker_service->service('node')->run($terminal, $commands, null, false);
-        })) {
-            return false;
-        }
+
 
 
         if (!$this->task("Exit from Maintenance mode", function () use ($docker_service, $terminal) {
