@@ -77,6 +77,9 @@
          * @throws ContainerException
          */
         public function publish(){
+            if(env('LOCK_COMPOSE_SERVICES')){
+                return true;
+            }
             return $this->publish_docker_compose();
         }
 
@@ -93,9 +96,7 @@
 
             $yaml = Yaml::dump($docker_compose, 5);
 
-            $result = Storage::disk('cwd')->put('docker-compose.yml', $yaml);
-
-            return $result;
+            return Storage::disk('cwd')->put('docker-compose.yml', $yaml);
         }
 
         /**
