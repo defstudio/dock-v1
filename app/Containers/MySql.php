@@ -19,7 +19,7 @@ class MySql extends Container
     protected array $service_definition = [
         'restart' => 'unless-stopped',
         'command' => '--character-set-server=utf8 --collation-server=utf8_general_ci --mysql-native-password=ON --sort_buffer_size=10M',
-        'image' => 'mysql:8',
+        'image' => 'mysql:8.4',
         'cap_add' => [
             'SYS_NICE',
         ],
