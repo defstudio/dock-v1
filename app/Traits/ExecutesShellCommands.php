@@ -5,6 +5,7 @@ namespace App\Traits;
 
 use App\Services\DockerService;
 use App\Services\TerminalService;
+use Illuminate\Support\Stringable;
 use LaravelZero\Framework\Commands\Command;
 
 /**
@@ -36,7 +37,9 @@ trait ExecutesShellCommands
             $this->info('Log into Shell');
 
             return $terminal->execute([
-                env('DOCKER_COMPOSE_COMMAND', 'docker compose'),
+                ...((new Stringable(env('DOCKER_COMPOSE_COMMAND', 'docker compose')))
+                    ->explode(' ')
+                    ->toArray()),
                 'run',
                 '--rm',
                 $target_service,

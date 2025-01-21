@@ -4,6 +4,7 @@
 
     use App\Services\DockerService;
     use App\Services\TerminalService;
+    use Illuminate\Support\Stringable;
     use LaravelZero\Framework\Commands\Command;
 
     /**
@@ -25,7 +26,9 @@
         public function handle(TerminalService $terminal){
 
             return $terminal->execute([
-                env('DOCKER_COMPOSE_COMMAND', 'docker compose'),
+                ...((new Stringable(env('DOCKER_COMPOSE_COMMAND', 'docker compose')))
+                    ->explode(' ')
+                    ->toArray()),
                 'logs',
                 '--follow',
                 '--tail=50',

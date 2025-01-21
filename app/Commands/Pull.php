@@ -3,6 +3,7 @@
 namespace App\Commands;
 
     use App\Services\TerminalService;
+    use Illuminate\Support\Stringable;
     use LaravelZero\Framework\Commands\Command;
 
     class Pull extends Command{
@@ -32,7 +33,9 @@ namespace App\Commands;
             $this->info('Pulling updated images...');
 
             $exit_code = $terminal->execute([
-                env('DOCKER_COMPOSE_COMMAND', 'docker compose'),
+                ...((new Stringable(env('DOCKER_COMPOSE_COMMAND', 'docker compose')))
+                    ->explode(' ')
+                    ->toArray()),
                 'pull'
             ]);
 

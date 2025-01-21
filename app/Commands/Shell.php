@@ -4,6 +4,7 @@
 
     use App\Services\DockerService;
     use App\Services\TerminalService;
+    use Illuminate\Support\Stringable;
     use LaravelZero\Framework\Commands\Command;
 
     /**
@@ -53,7 +54,9 @@
             $this->info("Starting shell for container: $service_name");
 
             return $terminal->execute([
-                env('DOCKER_COMPOSE_COMMAND', 'docker compose'),
+                ...((new Stringable(env('DOCKER_COMPOSE_COMMAND', 'docker compose')))
+                    ->explode(' ')
+                    ->toArray()),
                 'exec',
                 $service_name,
                 '/bin/bash',

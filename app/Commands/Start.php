@@ -7,6 +7,7 @@ use App\Exceptions\DuplicateServiceException;
 use App\Exceptions\ContainerException;
 use App\Services\DockerService;
 use App\Services\TerminalService;
+use Illuminate\Support\Stringable;
 use LaravelZero\Framework\Commands\Command;
 
 class Start extends Command
@@ -43,7 +44,9 @@ class Start extends Command
 
         $this->task('Starting containers', function () use ($terminal) {
             $command = [
-                env('DOCKER_COMPOSE_COMMAND', 'docker compose'),
+                ...((new Stringable(env('DOCKER_COMPOSE_COMMAND', 'docker compose')))
+                    ->explode(' ')
+                    ->toArray()),
                 'up',
                 '-d',
             ];

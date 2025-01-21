@@ -4,6 +4,7 @@
 
     use App\Services\TerminalService;
     use Illuminate\Console\Scheduling\Schedule;
+    use Illuminate\Support\Stringable;
     use LaravelZero\Framework\Commands\Command;
 
     class Stop extends Command{
@@ -33,7 +34,9 @@
             $this->info('Stopping containers...');
 
             $exit_code = $terminal->execute([
-                env('DOCKER_COMPOSE_COMMAND', 'docker compose'),
+                ...((new Stringable(env('DOCKER_COMPOSE_COMMAND', 'docker compose')))
+                    ->explode(' ')
+                    ->toArray()),
                 'down'
             ]);
 

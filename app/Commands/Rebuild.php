@@ -4,6 +4,7 @@ namespace App\Commands;
 
 use App\Services\DockerService;
 use App\Services\TerminalService;
+use Illuminate\Support\Stringable;
 use LaravelZero\Framework\Commands\Command;
 
 /**
@@ -58,13 +59,17 @@ class Rebuild extends Command
         $this->info("Rebuilding service: $service_name");
 
         $terminal->execute([
-            env('DOCKER_COMPOSE_COMMAND', 'docker compose'),
+            ...((new Stringable(env('DOCKER_COMPOSE_COMMAND', 'docker compose')))
+                ->explode(' ')
+                ->toArray()),
             'pull',
             $service_name,
         ]);
 
         $terminal->execute([
-            env('DOCKER_COMPOSE_COMMAND', 'docker compose'),
+            ...((new Stringable(env('DOCKER_COMPOSE_COMMAND', 'docker compose')))
+                ->explode(' ')
+                ->toArray()),
             'up',
             '-d',
             '--no-deps',
