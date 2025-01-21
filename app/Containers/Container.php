@@ -257,6 +257,7 @@ abstract class Container
 
         $commands = array_merge($service_command, $commands);
 
+        dump($commands);
         return $terminal->execute($commands, $input);
     }
 
@@ -277,7 +278,7 @@ abstract class Container
         $service_command[] = $this->service_name;
 
         $commands = array_merge($service_command, $commands);
-
+        dump($commands);
         return $terminal->execute($commands, $input);
     }
 
