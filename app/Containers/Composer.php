@@ -19,7 +19,7 @@ class Composer extends Php
     {
         parent::__construct();
         $this->set_target('composer');
-        $this->set_volume('./configs/composer/auth.json', '/.composer/auth.json');
+        $this->set_volume('./configs/composer/auth.json', '/home/user/.composer/auth.json');
     }
 
     public function commands(): array
