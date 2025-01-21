@@ -11,6 +11,7 @@ use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Support\Stringable;
 
 abstract class Container
 {
@@ -34,11 +35,11 @@ abstract class Container
     public function __construct()
     {
         if (empty($this->service_name)) {
-            throw new ContainerException("Service name missing for image " . static::class);
+            throw new ContainerException("Service name missing for image ".static::class);
         }
 
         if (empty($this->service_definition)) {
-            throw new ContainerException("Service definition missing for image " . static::class);
+            throw new ContainerException("Service definition missing for image ".static::class);
         }
 
     }
@@ -46,7 +47,7 @@ abstract class Container
     /**
      * Returns this service name
      *
-     * @param null $new_service_name
+     * @param  null  $new_service_name
      *
      * @return string
      */
@@ -76,7 +77,7 @@ abstract class Container
     /**
      * Set Container user
      *
-     * @param string|null $user (default value current_user_id:current_group_id
+     * @param  string|null  $user (default value current_user_id:current_group_id
      *
      * @return Container
      */
@@ -95,8 +96,8 @@ abstract class Container
     /**
      * Map an host port to container port
      *
-     * @param int $external Port on host system
-     * @param int $internal Port on container (default = $esternal)
+     * @param  int  $external Port on host system
+     * @param  int  $internal Port on container (default = $esternal)
      *
      * @return Container
      */
@@ -146,7 +147,7 @@ abstract class Container
     /**
      * Set container dependency
      *
-     * @param string $service_name
+     * @param  string  $service_name
      *
      * @return $this
      */
@@ -160,8 +161,8 @@ abstract class Container
     /**
      * Retrieve and environment value from the container
      *
-     * @param string $key
-     * @param string|null $default
+     * @param  string  $key
+     * @param  string|null  $default
      *
      * @return string
      */
@@ -265,7 +266,9 @@ abstract class Container
     {
 
         $service_command = [
-            env('DOCKER_COMPOSE_COMMAND', 'docker compose'),
+            ...((new Stringable(env('DOCKER_COMPOSE_COMMAND', 'docker compose')))
+                ->explode(' ')
+                ->toArray()),
             'run',
             '--service-ports',
             '--rm',
@@ -285,7 +288,9 @@ abstract class Container
     public function execute_in_shell_command_line(TerminalService $terminal, array $commands)
     {
         $service_command = [
-            env('DOCKER_COMPOSE_COMMAND', 'docker compose'),
+            ...((new Stringable(env('DOCKER_COMPOSE_COMMAND', 'docker compose')))
+                ->explode(' ')
+                ->toArray()),
             'exec',
             $this->service_name(),
         ];
