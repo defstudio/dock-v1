@@ -246,7 +246,9 @@ abstract class Container
     {
 
         $service_command = [
-            env('DOCKER_COMPOSE_COMMAND', 'docker compose'),
+            ...((new Stringable(env('DOCKER_COMPOSE_COMMAND', 'docker compose')))
+                ->explode(' ')
+                ->toArray()),
             'exec',
         ];
 
@@ -258,7 +260,6 @@ abstract class Container
 
         $commands = array_merge($service_command, $commands);
 
-        dump($commands);
         return $terminal->execute($commands, $input);
     }
 
@@ -281,7 +282,6 @@ abstract class Container
         $service_command[] = $this->service_name;
 
         $commands = array_merge($service_command, $commands);
-        dump($commands);
         return $terminal->execute($commands, $input);
     }
 
