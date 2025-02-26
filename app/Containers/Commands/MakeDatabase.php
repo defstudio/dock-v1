@@ -6,6 +6,7 @@ namespace App\Containers\Commands;
 
 use App\Services\DockerService;
 use App\Services\TerminalService;
+use Exception;
 use LaravelZero\Framework\Commands\Command;
 
 class MakeDatabase extends Command
@@ -63,6 +64,17 @@ class MakeDatabase extends Command
             "-e \"$command\"",
         ];
 
-        return $terminal_service->execute_in_shell_command_line($command) === 0;
+        try {
+            return $terminal_service->execute_in_shell_command_line($command) === 0;
+        }catch (Exception){
+            $command = [
+                'docker exec -t',
+                '-i proxy-mysql-1',
+                "mysql -u root -p$password",
+                "-e \"$command\"",
+            ];
+            return $terminal_service->execute_in_shell_command_line($command) === 0;
+        }
+
     }
 }
