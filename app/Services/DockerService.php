@@ -88,7 +88,6 @@
          */
         private function publish_docker_compose(){
             $docker_compose = [
-                'version'  => '3.5',
                 'services' => $this->publish_services(),
                 'networks' => $this->publish_networks(),
             ];
