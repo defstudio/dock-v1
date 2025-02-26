@@ -58,23 +58,12 @@ class MakeDatabase extends Command
         dump($command);
 
         $command = [
-            'docker exec -t',
-            '-i proxy_mysql_1',
+            'docker compose exec -t',
+            '-i mysql',
             "mysql -u root -p$password",
             "-e \"$command\"",
         ];
 
-        try {
-            return $terminal_service->execute_in_shell_command_line($command) === 0;
-        }catch (Exception){
-            $command = [
-                'docker exec -t',
-                '-i proxy-mysql-1',
-                "mysql -u root -p$password",
-                "-e \"$command\"",
-            ];
-            return $terminal_service->execute_in_shell_command_line($command) === 0;
-        }
-
+        return $terminal_service->execute_in_shell_command_line($command) === 0;
     }
 }
