@@ -21,6 +21,7 @@ class Php extends Container
                 'ENABLE_LIBREOFFICE_WRITER' => 0,
                 'ENABLE_BACKUP_TOOLS' => 0,
                 'ENABLE_OPCACHE' => 0,
+                'NODE_VERSION' => 0,
             ],
         ],
         'expose' => [9000],
@@ -78,6 +79,12 @@ class Php extends Container
         return $this;
     }
 
+    public function set_node_version($version): self
+    {
+        $this->set_service_definition('build.args.NODE_VERSION', $version);
+        return $this;
+    }
+
     public function __construct()
     {
         parent::__construct();
@@ -110,6 +117,10 @@ class Php extends Container
 
         if (!empty(env('EXPOSE_INTERNAL_HOST'))) {
             $this->expose_internal_host();
+        }
+
+        if (!empty(env('NODE_VERSION'))) {
+            $this->set_node_version(env('NODE_VERSION'));
         }
     }
 }
