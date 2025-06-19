@@ -13,6 +13,8 @@ class Nightwatch extends Php
     public function __construct()
     {
         parent::__construct();
+
         $this->set_target('nightwatch');
+        $this->set_service_definition('expose', [2407]);
     }
 }
