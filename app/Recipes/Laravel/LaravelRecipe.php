@@ -35,6 +35,7 @@ use App\Recipes\Laravel\Commands\Vite;
 use App\Recipes\Laravel\Commands\Watch;
 use App\Containers\Php;
 use App\Recipes\Laravel\Containers\Dusk;
+use App\Recipes\Laravel\Containers\Nightwatch;
 use App\Recipes\Laravel\Containers\Pulse;
 use App\Recipes\Laravel\Containers\Scheduler;
 use App\Recipes\Laravel\Containers\Websocket;
@@ -237,6 +238,17 @@ class LaravelRecipe extends DockerComposeRecipe
         }
     }
 
+
+    public function build_nightwatch(): void
+    {
+        if (!empty(env('ENABLE_NIGHTWATCH'))) {
+            $this->add_container(Nightwatch::class)
+                ->add_network($this->internal_network());
+        }
+    }
+
+
+
     public function build_composer(): void
     {
         $composer = $this->add_container(Composer::class)
@@ -329,6 +341,8 @@ class LaravelRecipe extends DockerComposeRecipe
         }
 
         $this->build_pulse();
+
+        $this->build_nightwatch();
     }
 
     private function build_php(): Php

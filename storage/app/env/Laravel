@@ -106,3 +106,10 @@ ENABLE_BROWSER_TESTS=
 #######################
 
 ENABLE_PULSE=
+
+
+#######################
+#  Nightwatch Agent   #
+#######################
+
+ENABLE_NIGHTWATCH=
