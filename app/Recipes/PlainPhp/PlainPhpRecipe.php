@@ -185,7 +185,7 @@ class PlainPhpRecipe extends DockerComposeRecipe
 
     protected function internal_network(): string
     {
-        return "{$this->host()}_internal_network";
+        return "internal_network";
     }
 
     public function build(): void
