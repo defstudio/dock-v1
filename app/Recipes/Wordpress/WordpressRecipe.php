@@ -147,7 +147,7 @@
         }
 
         protected function internal_network(): string{
-            return "internal_network";
+            return "internal";
         }
 
         /**

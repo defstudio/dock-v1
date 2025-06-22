@@ -297,7 +297,7 @@ class LaravelRecipe extends DockerComposeRecipe
 
     protected function internal_network(): string
     {
-        return "internal_network";
+        return "internal";
     }
 
     public function build(): void
