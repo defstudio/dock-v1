@@ -42,6 +42,7 @@ use App\Recipes\Laravel\Containers\Websocket;
 use App\Recipes\Laravel\Containers\Worker;
 use App\Recipes\ReverseProxy\ReverseProxyRecipe;
 use Illuminate\Console\Command;
+use Illuminate\Support\Str;
 
 class LaravelRecipe extends DockerComposeRecipe
 {
@@ -297,7 +298,7 @@ class LaravelRecipe extends DockerComposeRecipe
 
     protected function internal_network(): string
     {
-        return "internal";
+        return Str::of("{$this->host()} internal network")->slug('_');
     }
 
     public function build(): void
