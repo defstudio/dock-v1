@@ -166,42 +166,28 @@ class Deploy extends Command
             $docker_service->service('php')->execute($terminal, [
                 "php",
                 "artisan",
-                "config:clear",
+                "optimize:clear",
             ], null, false);
 
             if ($this->is_production()) {
                 $docker_service->service('php')->execute($terminal, [
                     "php",
                     "artisan",
-                    "config:cache",
+                    "optimize:cache",
                 ], null, false);
             }
 
             $docker_service->service('php')->execute($terminal, [
                 "php",
                 "artisan",
-                "route:clear",
+                "event:clear",
             ], null, false);
 
             if ($this->is_production()) {
                 $docker_service->service('php')->execute($terminal, [
                     "php",
                     "artisan",
-                    "route:cache",
-                ], null, false);
-            }
-
-            $docker_service->service('php')->execute($terminal, [
-                "php",
-                "artisan",
-                "view:clear",
-            ], null, false);
-
-            if ($this->is_production()) {
-                $docker_service->service('php')->execute($terminal, [
-                    "php",
-                    "artisan",
-                    "view:cache",
+                    "event:cache",
                 ], null, false);
             }
 
@@ -209,10 +195,6 @@ class Deploy extends Command
         })) {
             return false;
         }
-
-
-
-
 
 
         if (!$this->task("Exit from Maintenance mode", function () use ($docker_service, $terminal) {
