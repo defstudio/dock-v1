@@ -173,7 +173,7 @@ class Deploy extends Command
                 $docker_service->service('php')->execute($terminal, [
                     "php",
                     "artisan",
-                    "optimize:cache",
+                    "optimize",
                 ], null, false);
             }
 
