@@ -163,11 +163,6 @@ class Deploy extends Command
 
 
         if (!$this->task("Cache setup", function () use ($docker_service, $terminal) {
-            $docker_service->service('php')->execute($terminal, [
-                "php",
-                "artisan",
-                "optimize:clear",
-            ], null, false);
 
             if ($this->is_production()) {
                 $docker_service->service('php')->execute($terminal, [
@@ -175,21 +170,14 @@ class Deploy extends Command
                     "artisan",
                     "optimize",
                 ], null, false);
-            }
-
-            $docker_service->service('php')->execute($terminal, [
-                "php",
-                "artisan",
-                "event:clear",
-            ], null, false);
-
-            if ($this->is_production()) {
+            }else{
                 $docker_service->service('php')->execute($terminal, [
                     "php",
                     "artisan",
-                    "event:cache",
+                    "optimize:clear",
                 ], null, false);
             }
+
 
             return true;
         })) {
