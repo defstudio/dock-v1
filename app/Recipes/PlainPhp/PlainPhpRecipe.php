@@ -232,6 +232,10 @@ class PlainPhpRecipe extends DockerComposeRecipe
             $php->enable_libreoffice_writer();
         }
 
+        if (env('ENABLE_HEADLESS_CHROME', '0') == '1') {
+            $php->enable_headless_chrome();
+        }
+
         $php->set_version(env('PHP_VERSION', 'latest'));
 
         if ($shared_db_network = env('MYSQL_SHARED_DB_NETWORK')) {
