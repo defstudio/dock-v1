@@ -89,6 +89,13 @@ MEMCACHED_ENABLED=0
 
 
 #######################
+#     Meilisearch     #
+#######################
+
+MEILISEARCH_ENABLED=0
+
+
+#######################
 #      Websocket      #
 #######################
 

@@ -35,6 +35,7 @@ use App\Recipes\Laravel\Commands\Vite;
 use App\Recipes\Laravel\Commands\Watch;
 use App\Containers\Php;
 use App\Recipes\Laravel\Containers\Dusk;
+use App\Recipes\Laravel\Containers\MeiliSearch;
 use App\Recipes\Laravel\Containers\Nightwatch;
 use App\Recipes\Laravel\Containers\Pulse;
 use App\Recipes\Laravel\Containers\Scheduler;
@@ -329,6 +330,11 @@ class LaravelRecipe extends DockerComposeRecipe
 
         if (!empty(env('MEMCACHED_ENABLED'))) {
             $this->add_container(Memcached::class)
+                ->add_network($this->internal_network());
+        }
+
+        if (!empty(env('MEILISEARCH_ENABLED'))) {
+            $this->add_container(MeiliSearch::class)
                 ->add_network($this->internal_network());
         }
 

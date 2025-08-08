@@ -13,6 +13,7 @@ class Worker extends Php
     public function __construct()
     {
         parent::__construct();
+
         $this->set_target('worker');
     }
 }
