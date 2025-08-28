@@ -20,6 +20,7 @@ class Php extends Container
                 'ENABLE_XDEBUG' => 0,
                 'ENABLE_LIBREOFFICE_WRITER' => 0,
                 'ENABLE_HEADLESS_CHROME' => 0,
+                'ENABLE_RSYNC' => 0,
                 'ENABLE_BACKUP_TOOLS' => 0,
                 'ENABLE_OPCACHE' => 0,
                 'NODE_VERSION' => 0,
@@ -74,6 +75,12 @@ class Php extends Container
         return $this;
     }
 
+    public function enable_rsync(bool $enabled = true): self
+    {
+        $this->set_service_definition('build.args.ENABLE_RSYNC', $enabled ? 1 : 0);
+        return $this;
+    }
+
     public function enable_backup_tools(bool $enabled = true): self
     {
         $this->set_service_definition('build.args.ENABLE_BACKUP_TOOLS', $enabled ? 1 : 0);
@@ -112,6 +119,10 @@ class Php extends Container
 
         if (env('ENABLE_HEADLESS_CHROME', '0') == '1') {
             $this->enable_headless_chrome();
+        }
+
+        if (env('ENABLE_RSYNC', '0') == '1') {
+            $this->enable_rsync();
         }
 
         if (env('ENABLE_BACKUP_TOOLS', '0') == '1') {

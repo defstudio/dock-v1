@@ -236,6 +236,10 @@ class PlainPhpRecipe extends DockerComposeRecipe
             $php->enable_headless_chrome();
         }
 
+        if (env('ENABLE_RSYNC', '0') == '1') {
+            $php->enable_rsync();
+        }
+
         $php->set_version(env('PHP_VERSION', 'latest'));
 
         if ($shared_db_network = env('MYSQL_SHARED_DB_NETWORK')) {
