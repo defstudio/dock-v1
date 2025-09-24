@@ -113,9 +113,11 @@ class TargetsService
             $proxy_protocol = $target->proxy_protocol ?? 'http';
             $ssl_certificate = $target->ssl_certificate ?? '';
             $ssl_certificate_key = $target->ssl_certificate_key ?? '';
-            $ssl_client_certificate = !empty($target->ssl_client_certificate)
-                ? ''
-                : "    ssl_client_certificate /etc/nginx/client-certificates/$target->ssl_client_certificate;\n    ssl_verify_client on;\n    ssl_verify_depth 2;"
+
+            $target->ssl_client_certificate ??= '';
+            $ssl_client_certificate = $target->ssl_client_certificate
+                ? "    ssl_client_certificate /etc/nginx/client-certificates/$target->ssl_client_certificate;\n    ssl_verify_client on;\n    ssl_verify_depth 2;"
+                : ''
             ;
 
             $nginx->add_proxy(
