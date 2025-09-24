@@ -116,7 +116,7 @@ class TargetsService
 
             $target->ssl_client_certificate ??= '';
             $ssl_client_certificate = $target->ssl_client_certificate
-                ? "    ssl_client_certificate /etc/nginx/client-certificates/$target->ssl_client_certificate;\n    ssl_verify_client on;\n    ssl_verify_depth 2;"
+                ? "ssl_client_certificate /etc/nginx/client-certificates/$target->ssl_client_certificate;\n    ssl_verify_client on;\n    ssl_verify_depth 2;"
                 : ''
             ;
 
