@@ -127,8 +127,9 @@ class TargetsService
                 proxy_port         : $destination_port,
                 ssl_certificate    : $ssl_certificate,
                 ssl_certificate_key: $ssl_certificate_key,
+                extra: '',
+                proxy_protocol     : $proxy_protocol,
                 ssl_client_certificate: $ssl_client_certificate,
-                proxy_protocol     : $proxy_protocol
             );
 
             foreach ($target->subdomains ?? [] as $subdomain => $visibility) {
