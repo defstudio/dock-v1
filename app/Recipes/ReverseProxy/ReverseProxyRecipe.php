@@ -117,6 +117,8 @@ class ReverseProxyRecipe extends DockerComposeRecipe
 
         $nginx->enable_backend_not_found_page();
 
+        $nginx->enable_client_certificates();
+
         $nginx->set_volume(Container::HOST_CONFIG_VOLUME_PATH.'certbot/letsencrypt', '/etc/letsencrypt');
 
         $nginx->add_network(self::PROXY_NETWORK);

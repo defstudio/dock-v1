@@ -57,6 +57,7 @@ class Nginx extends Container
     private ?Php $php_service;
 
     private bool $enable_backend_not_found = false;
+    private bool $enable_client_certificates = false;
 
 
     public function __construct(Php $php_service)
@@ -85,7 +86,7 @@ class Nginx extends Container
         return $this;
     }
 
-    public function add_proxy(string $host, int $port, string $proxy_target, int $proxy_port, ?string $ssl_certificate = null, string $ssl_certificate_key = null, string $extra = '', string $proxy_protocol = 'http'): self
+    public function add_proxy(string $host, int $port, string $proxy_target, int $proxy_port, ?string $ssl_certificate = null, string $ssl_certificate_key = null, string $extra = '', string $proxy_protocol = 'http', string $ssl_client_certificate): self
     {
         $this->proxies[] = [
             'port' => $port,
@@ -94,6 +95,7 @@ class Nginx extends Container
             'proxy_port' => $proxy_port,
             'ssl_certificate' => $ssl_certificate,
             'ssl_certificate_key' => $ssl_certificate_key,
+            'ssl_client_certificate' => $ssl_client_certificate,
             'extra' => $extra,
             'proxy_protocol' => $proxy_protocol,
         ];
@@ -139,7 +141,13 @@ class Nginx extends Container
         return $this;
     }
 
+    public function enable_client_certificates(): self
+    {
+        $this->enable_client_certificates = true;
+        $this->set_volume('./client-certificates', '/etc/nginx/client-certificates');
 
+        return $this;
+    }
 
     /**
      * @param DockerService $service
@@ -157,9 +165,10 @@ class Nginx extends Container
     }
 
 
-    public function publish_assets()
+    public function publish_assets(): void
     {
         $this->publish_nginx_conf();
+        $this->publish_client_certificates_directory();
         $this->publish_sites_available_directory();
         $this->publish_sites();
         $this->publish_upstream_conf();
@@ -173,7 +182,7 @@ class Nginx extends Container
         $this->compile_template($template, [
             'robots' => env('ENABLE_ROBOTS', true)
                 ? ''
-                : 'add_header  X-Robots-Tag "noindex, nofollow, nosnippet, noarchive";'
+                : 'add_header  X-Robots-Tag "noindex, nofollow, nosnippet, noarchive";',
         ]);
 
         $this->disk()->put(self::PATH_NGINX_CONF, $template);
@@ -200,7 +209,14 @@ class Nginx extends Container
         $this->disk()->put(self::PATH_BACKEND_NOT_FOUND_CONF, Storage::get(self::PATH_BACKEND_NOT_FOUND_CONF));
     }
 
-    protected function publish_sites_available_directory()
+    protected function publish_client_certificates_directory(): void
+    {
+        if(!Storage::disk('cwd')->exists('/client-certificates')) {
+            Storage::disk('cwd')->makeDirectory('/client-certificates');
+        }
+    }
+
+    protected function publish_sites_available_directory(): void
     {
         if ($this->disk()->exists(self::PATH_SITES_AVAILABLE)) {
             $this->disk()->deleteDirectory(self::PATH_SITES_AVAILABLE);
