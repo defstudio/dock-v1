@@ -86,7 +86,7 @@ class Nginx extends Container
         return $this;
     }
 
-    public function add_proxy(string $host, int $port, string $proxy_target, int $proxy_port, ?string $ssl_certificate = null, string $ssl_certificate_key = null, string $extra = '', string $proxy_protocol = 'http', string $ssl_client_certificate): self
+    public function add_proxy(string $host, int $port, string $proxy_target, int $proxy_port, ?string $ssl_certificate = null, string $ssl_certificate_key = null, string $extra = '', string $proxy_protocol = 'http', string $ssl_client_certificate = ''): self
     {
         $this->proxies[] = [
             'port' => $port,
