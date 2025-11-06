@@ -76,10 +76,10 @@ class Release extends Command
             $this->check_uncommitted_changes()
             && $this->get_repository()
             && $this->get_current_version()
-            // && $this->bump_new_version()
-            // && $this->create_new_tag()
-            && $this->get_changes()// && $this->release()
-        ;
+            && $this->bump_new_version()
+            && $this->create_new_tag()
+            && $this->get_changes()
+            && $this->release();
 
         if (!$success) {
             return self::FAILURE;
