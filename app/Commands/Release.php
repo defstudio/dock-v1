@@ -59,10 +59,9 @@ class Release extends Command
         $this->type = $this->argument('type');
 
         $this->github_token = env('GITHUB_TOKEN');
-        $this->github_repository = env('GITHUB_REPOSITORY');
 
-        if (empty($this->github_token) || empty($this->github_repository)) {
-            $this->error('GITHUB_TOKEN and GITHUB_REPOSITORY env variables are required');
+        if (empty($this->github_token)) {
+            $this->error('GITHUB_TOKEN .env variable is required');
             return self::FAILURE;
         }
 
@@ -71,7 +70,8 @@ class Release extends Command
             return self::FAILURE;
         }
 
-        $success = $this->get_current_version()
+        $success = $this->get_repository()
+            && $this->get_current_version()
             && $this->get_changes()
             && $this->bump_new_version()
             && $this->create_new_tag()
@@ -161,6 +161,32 @@ class Release extends Command
                     '&&',
                     'git', 'push', '--tags',
                 ]) === self::SUCCESS;
+        });
+    }
+
+    public function get_repository(): bool
+    {
+        return $this->task("Detecting repository", function() {
+            $process = Process::fromShellCommandline(implode(' ', [
+                'cd src',
+                '&&',
+                'git', 'config', '--get', 'remote.origin.url',
+            ]));
+
+            $process->run();
+
+            if (!$process->isSuccessful()) {
+                $this->error('Failed to detect repository');
+
+                return false;
+            }
+
+
+            $url = trim($process->getOutput());
+
+            $this->github_repository = (new Stringable($url))->afterLast('github.com:')->beforeLast('.git')->__toString();
+
+            return true;
         });
     }
 
