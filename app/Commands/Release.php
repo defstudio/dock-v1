@@ -73,9 +73,9 @@ class Release extends Command
         $success = $this->check_uncommitted_changes()
             && $this->get_repository()
             && $this->get_current_version()
-            && $this->get_changes()
             && $this->bump_new_version()
             && $this->create_new_tag()
+            && $this->get_changes()
             && $this->release();
 
         if (!$success) {
@@ -209,10 +209,15 @@ class Release extends Command
             }
 
 
-            $output = trim($process->getOutput());
+            $output = trim($process->getOutput()) ?: 'No new commits.';
 
-            $this->changes = "### Changes since $this->old_tag\n".($output ?: 'No new commits.');
+            $this->changes = <<<EOF
+                ### Changes since $this->old_tag
 
+                **Full Changelog**: https://github.com/$this->github_repository/compare/$this->old_tag...$this->new_tag
+
+                $output
+            EOF;
             return true;
         });
     }
