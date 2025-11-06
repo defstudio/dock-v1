@@ -4,7 +4,9 @@ namespace App\Commands;
 
 use App\Services\TerminalService;
 use Illuminate\Console\Scheduling\Schedule;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
 use Illuminate\Support\Stringable;
 use LaravelZero\Framework\Commands\Command;
 use Symfony\Component\Process\Process;
@@ -70,13 +72,14 @@ class Release extends Command
             return self::FAILURE;
         }
 
-        $success = $this->check_uncommitted_changes()
+        $success =
+            $this->check_uncommitted_changes()
             && $this->get_repository()
             && $this->get_current_version()
-            && $this->bump_new_version()
-            && $this->create_new_tag()
-            && $this->get_changes()
-            && $this->release();
+            // && $this->bump_new_version()
+            // && $this->create_new_tag()
+            && $this->get_changes()// && $this->release()
+        ;
 
         if (!$success) {
             return self::FAILURE;
@@ -192,7 +195,7 @@ class Release extends Command
             $process = Process::fromShellCommandline(implode(' ', [
                 'cd src',
                 '&&',
-                'git', 'log', "$this->old_tag..HEAD", '--pretty="format: - %s by **%an**"',
+                'git', 'log', "$this->old_tag..HEAD", '--pretty="format: - %s[####]%an"',
             ]));
 
             $process->run();
@@ -204,9 +207,87 @@ class Release extends Command
             }
 
 
-            $output = trim($process->getOutput()) ?: 'No new commits.';
+            $output = trim($process->getOutput());
 
-            $this->changes = "### Changes since $this->old_tag\n\n$output\n\n**Full Changelog**: https://github.com/$this->github_repository/compare/$this->old_tag...$this->new_tag";
+            $output = new Stringable($output);
+
+            $changes = $output->isEmpty()
+                ? 'No commits found'
+                : $output->explode("\n")
+                    ->map(function($line) {
+                        $line = trim($line);
+                        $line = ltrim($line, '- ');
+
+                        [$message, $author] = explode('[####]', $line);
+
+                        $message = new Stringable($message);
+
+                        if ($author === 'dependabot[bot]') {
+                            $author = 'dependabot';
+                        }
+
+                        $type = match (true) {
+                            $message->contains('Merge pull request') && $message->contains('/dependabot/') => 'dependencies_pull_request',
+                            $message->contains('Merge pull request') => 'pull_request',
+                            $author === 'dependabot' => 'dependencies',
+                            $message->startsWith('[fix]') => 'fix',
+                            $message->startsWith('fix') => 'fix',
+                            $message->startsWith('[feat]') => 'feat',
+                            $message->startsWith('[chore]') => 'chore',
+                            $message->startsWith('[docs]') => 'docs',
+                            $message->startsWith('[style]') => 'style',
+                            $message->startsWith('[refactor]') => 'refactor',
+                            $message->startsWith('[perf]') => 'perf',
+                            $message->startsWith('[test]') => 'test',
+                            $message->startsWith('[ci]') => 'ci',
+                            $message->startsWith('[build]') => 'build',
+                            $message->startsWith('[revert]') => 'revert',
+                            $message->contains('wip') => 'wip',
+                            $message->contains('bump') => 'bump',
+                            default => 'other',
+                        };
+
+                        if ($type === 'pull_request' || $type === 'dependencies_pull_request') {
+                            $pull_request_number = (int) $message->after('Merge pull request #')->before(' from')->__toString();
+                        }
+
+                        $priority = match ($type) {
+                            'pull_request' => 1,
+                            'other' => 99,
+                            'dependencies_pull_request' => 100,
+                            default => 1000,
+                        };
+
+                        return [
+                            'type' => $type,
+                            'priority' => $priority,
+                            'author' => $author,
+                            'message' => (string) $message,
+                            'pull_request_number' => $pull_request_number ?? null,
+                        ];
+                    })
+                    ->sortBy('priority')
+                    ->groupBy('type')
+                    ->except(['bump', 'dependencies'])
+                    ->map(function(Collection $changes, $group) {
+                        $group = Str::of($group)->headline();
+                        return "- **$group:**\n".$changes
+                                ->map(fn($change) => Str::of("  - ")
+                                    ->append($change['message'])
+                                    ->append(' by ', "*".$change['author']."*")
+                                    ->when($change['pull_request_number'], fn($message) => $message->append(' (', "#{$change['pull_request_number']}", ')'))
+                                )->implode("\n")."\n";
+
+                    });
+
+            $this->changes = <<<EOF
+## What's Changed
+
+$output
+
+**Full Changelog**: https://github.com/$this->github_repository/compare/$this->old_tag...$this->new_tag
+EOF;
+
             return true;
         });
     }
@@ -226,7 +307,7 @@ class Release extends Command
             return false;
         }
 
-        if(trim($process->getOutput()) !== ''){
+        if (trim($process->getOutput()) !== '') {
             $this->warn("⚠️ There are uncommitted changes in your working directory.");
 
             if (!$this->confirm('Continue anyway?')) {
