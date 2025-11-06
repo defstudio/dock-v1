@@ -106,6 +106,8 @@ class Release extends Command
 
     public function bump_new_version(): bool
     {
+        $this->type = $this->ask("Please confirm release type:", $this->type);
+
         return $this->task("Bumping new $this->type version from $this->old_tag", function() {
 
             [$major, $minor, $patch] = array_pad(explode('.', $this->old_version), 3, 0);
