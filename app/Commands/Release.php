@@ -70,7 +70,8 @@ class Release extends Command
             return self::FAILURE;
         }
 
-        $success = $this->get_repository()
+        $success = $this->check_uncommitted_changes()
+            && $this->get_repository()
             && $this->get_current_version()
             && $this->get_changes()
             && $this->bump_new_version()
@@ -214,6 +215,34 @@ class Release extends Command
 
             return true;
         });
+    }
+
+    public function check_uncommitted_changes(): bool
+    {
+        $process = Process::fromShellCommandline(implode(' ', [
+            'cd src',
+            '&&',
+            'git', 'status', '--porcelain',
+        ]));
+
+        $process->run();
+
+        if (!$process->isSuccessful()) {
+            $this->error("Failed to check for uncommitted changes");
+            return false;
+        }
+
+        if(trim($process->getOutput()) !== ''){
+            $this->warn("⚠️ There are uncommitted changes in your working directory.");
+
+            if (!$this->confirm('Continue anyway?')) {
+                $this->info('Aborted.');
+                return false;
+            }
+        }
+
+        return true;
+
     }
 
     public function release(): bool
