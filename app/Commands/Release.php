@@ -73,9 +73,9 @@ class Release extends Command
         $this->detect_release_type();
 
         $success =
-            $this->check_uncommitted_changes()
-            && $this->get_repository()
+            $this->get_repository()
             && $this->get_current_version()
+            && $this->check_uncommitted_changes()
             && $this->bump_new_version()
             && $this->create_new_tag()
             && $this->get_changes()
