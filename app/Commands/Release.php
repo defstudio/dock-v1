@@ -278,7 +278,7 @@ class Release extends Command
                                     ->when($change['pull_request_number'], fn($message) => $message->append(' (', "#{$change['pull_request_number']}", ')'))
                                 )->implode("\n")."\n";
 
-                    });
+                    })->implode("\n");
 
             $this->changes = <<<EOF
 ## What's Changed
