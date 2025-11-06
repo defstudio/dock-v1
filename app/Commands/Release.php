@@ -113,11 +113,6 @@ class Release extends Command
 
             [$major, $minor, $patch] = array_pad(explode('.', $this->old_version), 3, 0);
 
-            if (empty($major) || empty($minor) || empty($patch)) {
-                $this->error("Invalid version format: $this->old_version");
-                return false;
-            }
-
             switch ($this->type) {
                 case 'major':
                     $major++;
