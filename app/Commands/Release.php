@@ -65,11 +65,6 @@ class Release extends Command
             return self::FAILURE;
         }
 
-        if (!in_array($this->type, ['major', 'minor', 'patch'])) {
-            $this->error('Invalid release type. Valid types are: major, minor, patch');
-            return self::FAILURE;
-        }
-
         $success =
             $this->check_uncommitted_changes()
             && $this->get_repository()
