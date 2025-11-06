@@ -283,7 +283,7 @@ class Release extends Command
             $this->changes = <<<EOF
 ## What's Changed
 
-$output
+$changes
 
 **Full Changelog**: https://github.com/$this->github_repository/compare/$this->old_tag...$this->new_tag
 EOF;
