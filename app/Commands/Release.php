@@ -18,7 +18,7 @@ class Release extends Command
      *
      * @var string
      */
-    protected $signature = 'release {type : major|minor|patch} {--message=} {--force}';
+    protected $signature = 'release {type? : major|minor|patch} {--message=} {--force}';
 
     /**
      * The description of the command.
@@ -143,7 +143,7 @@ class Release extends Command
 
     public function create_new_tag(): bool
     {
-        if (!$this->option('force') && !$this->confirm("Are you sure you want to create a new tag $this->new_tag?")) {
+        if (!$this->option('force') && !$this->confirm("Are you sure you want to create a new {$this->type} $this->new_tag?")) {
             $this->warn('Aborted');
             return false;
         }
@@ -343,15 +343,26 @@ EOF;
         });
     }
 
-    public function detect_release_type(): string
+    public function detect_release_type(): bool
     {
-        $process = new Process(['git', 'diff', '--name-only', "{$this->old_tag}..HEAD"]);
+        if (isset($this->type)) {
+            return true;
+        }
+
+        $process = Process::fromShellCommandline(implode(' ', [
+            'cd src',
+            '&&',
+            'git', 'diff', '--name-only', "$this->old_tag..HEAD",
+        ]));
+
         $process->run();
+
         $changedFiles = array_filter(explode("\n", trim($process->getOutput())));
 
         if (empty($changedFiles)) {
             $this->info('No code changes detected → patch');
-            return 'patch';
+            $this->type = 'patch';
+            return true;
         }
 
         $phpFiles = [];
@@ -388,7 +399,12 @@ EOF;
 
         // ⚙️ Analyse PHP diffs
         foreach ($phpFiles as $file) {
-            $diffProcess = new Process(['git', 'diff', "$this->old_tag..HEAD", '--', $file]);
+            $diffProcess = Process::fromShellCommandline(implode(' ', [
+                'cd src',
+                '&&',
+                'git', 'diff', "$this->old_tag..HEAD", '--', $file,
+            ]));
+
             $diffProcess->run();
             $diff = $diffProcess->getOutput();
 
@@ -451,22 +467,26 @@ EOF;
         $nonCodeChanges = count($phpFiles) === 0 && (!empty($tests) || !empty($docs));
         if ($nonCodeChanges) {
             $this->info('🧪 Only tests/docs changed → PATCH');
-            return 'patch';
+            $this->type = 'patch';
+            return true;
         }
 
         // 🚨 Prioritize major > minor > patch
         if ($major) {
             $this->info('🧨 Detected removed/modified public methods or classes → MAJOR');
-            return 'major';
+            $this->type = 'major';
+            return true;
         }
 
         if ($minor) {
             $this->info('✨ Detected new public methods/classes or migrations/configs → MINOR');
-            return 'minor';
+            $this->type = 'minor';
+            return true;
         }
 
         $this->info('🐛 Only safe changes → PATCH');
-        return 'patch';
+        $this->type = 'patch';
+        return true;
     }
 
     private function getPhpVersionFromComposer(): ?string
