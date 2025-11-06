@@ -274,7 +274,7 @@ class Release extends Command
                         return "- **$group:**\n".$changes
                                 ->map(fn($change) => Str::of("  - ")
                                     ->append($change['message'])
-                                    ->append(' by ', "*".$change['author']."*")
+                                    ->append(" *by {$change['author']}*")
                                     ->when($change['pull_request_number'], fn($message) => $message->append(' (', "#{$change['pull_request_number']}", ')'))
                                 )->implode("\n")."\n";
 
