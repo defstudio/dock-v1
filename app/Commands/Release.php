@@ -144,13 +144,12 @@ class Release extends Command
 
     public function create_new_tag(): bool
     {
+        if (!$this->option('force') && !$this->confirm("Are you sure you want to create a new tag $this->new_tag?")) {
+            $this->warn('Aborted');
+            return false;
+        }
+
         return $this->task("Creating new tag $this->new_tag", function() {
-
-            if (!$this->option('force') && !$this->confirm("Are you sure you want to create a new tag $this->new_tag?")) {
-                $this->warn('Aborted');
-                return false;
-            }
-
             return $this->terminal->execute_in_shell_command_line([
                     'cd src',
                     '&&',
