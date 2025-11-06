@@ -197,7 +197,7 @@ class Release extends Command
             $process = Process::fromShellCommandline(implode(' ', [
                 'cd src',
                 '&&',
-                'git', 'log', "$this->old_tag..HEAD", '--pretty="format: - %s (%an)"',
+                'git', 'log', "$this->old_tag..HEAD", '--pretty="format: - %s by **%an**"',
             ]));
 
             $process->run();
