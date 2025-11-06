@@ -211,13 +211,7 @@ class Release extends Command
 
             $output = trim($process->getOutput()) ?: 'No new commits.';
 
-            $this->changes = <<<EOF
-### Changes since $this->old_tag
-
-**Full Changelog**: https://github.com/$this->github_repository/compare/$this->old_tag...$this->new_tag
-
-$output
-EOF;
+            $this->changes = "### Changes since $this->old_tag\n\n**Full Changelog**: https://github.com/$this->github_repository/compare/$this->old_tag...$this->new_tag\n\n$output";
             return true;
         });
     }
