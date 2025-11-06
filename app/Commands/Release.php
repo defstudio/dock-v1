@@ -70,12 +70,11 @@ class Release extends Command
             return self::FAILURE;
         }
 
-        $this->detect_release_type();
-
         $success =
-            $this->get_repository()
+            $this->check_uncommitted_changes()
+            && $this->get_repository()
             && $this->get_current_version()
-            && $this->check_uncommitted_changes()
+            && $this->detect_release_type()
             && $this->bump_new_version()
             && $this->create_new_tag()
             && $this->get_changes()
@@ -355,18 +354,28 @@ EOF;
             return 'patch';
         }
 
-        $phpFiles   = [];
+        $phpFiles = [];
         $migrations = [];
-        $tests      = [];
-        $docs       = [];
-        $configs    = [];
+        $tests = [];
+        $docs = [];
+        $configs = [];
 
         foreach ($changedFiles as $file) {
-            if (str_ends_with($file, '.php')) $phpFiles[] = $file;
-            if (Str::contains($file, 'database/migrations')) $migrations[] = $file;
-            if (Str::contains($file, 'tests/')) $tests[] = $file;
-            if (Str::contains($file, 'docs/') || preg_match('/\.(md|rst|txt)$/i', $file)) $docs[] = $file;
-            if (Str::contains($file, 'config/')) $configs[] = $file;
+            if (str_ends_with($file, '.php')) {
+                $phpFiles[] = $file;
+            }
+            if (Str::contains($file, 'database/migrations')) {
+                $migrations[] = $file;
+            }
+            if (Str::contains($file, 'tests/')) {
+                $tests[] = $file;
+            }
+            if (Str::contains($file, 'docs/') || preg_match('/\.(md|rst|txt)$/i', $file)) {
+                $docs[] = $file;
+            }
+            if (Str::contains($file, 'config/')) {
+                $configs[] = $file;
+            }
         }
 
 
@@ -384,18 +393,26 @@ EOF;
             $diff = $diffProcess->getOutput();
 
             $removed = [];
-            $added   = [];
+            $added = [];
             foreach (explode("\n", $diff) as $line) {
-                if (str_starts_with($line, '-')) $removed[] = substr($line, 1);
-                if (str_starts_with($line, '+')) $added[]   = substr($line, 1);
+                if (str_starts_with($line, '-')) {
+                    $removed[] = substr($line, 1);
+                }
+                if (str_starts_with($line, '+')) {
+                    $added[] = substr($line, 1);
+                }
             }
 
             // Detect added/removed classes
             foreach ($removed as $line) {
-                if (preg_match('/class\s+([A-Za-z0-9_]+)/', $line)) $major = true;
+                if (preg_match('/class\s+([A-Za-z0-9_]+)/', $line)) {
+                    $major = true;
+                }
             }
             foreach ($added as $line) {
-                if (preg_match('/class\s+([A-Za-z0-9_]+)/', $line)) $minor = true;
+                if (preg_match('/class\s+([A-Za-z0-9_]+)/', $line)) {
+                    $minor = true;
+                }
             }
 
             // Detect added/removed/modified public methods and signatures
@@ -415,7 +432,7 @@ EOF;
             foreach ($removed as $r) {
                 if (preg_match('/public function\s+([A-Za-z0-9_]+)\s*\((.*?)\)/', $r, $m1)) {
                     foreach ($added as $a) {
-                        if (preg_match('/public function\s+(' . preg_quote($m1[1], '/') . ')\s*\((.*?)\)/', $a, $m2)) {
+                        if (preg_match('/public function\s+('.preg_quote($m1[1], '/').')\s*\((.*?)\)/', $a, $m2)) {
                             if (trim($m1[2]) !== trim($m2[2])) {
                                 $major = true;
                             }
