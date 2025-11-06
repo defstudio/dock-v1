@@ -3,7 +3,7 @@
 namespace App\Commands;
 
 use App\Services\TerminalService;
-use Illuminate\Console\Scheduling\Schedule;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
@@ -50,8 +50,6 @@ class Release extends Command
     /**
      * Execute the console command.
      *
-     * @param  TerminalService  $terminal
-     *
      * @return mixed
      */
     public function handle(): int
@@ -71,6 +69,8 @@ class Release extends Command
             $this->error('Invalid release type. Valid types are: major, minor, patch');
             return self::FAILURE;
         }
+
+        $this->detect_release_type();
 
         $success =
             $this->check_uncommitted_changes()
@@ -342,5 +342,140 @@ EOF;
 
             return true;
         });
+    }
+
+    public function detect_release_type(): string
+    {
+        $process = new Process(['git', 'diff', '--name-only', "{$this->old_tag}..HEAD"]);
+        $process->run();
+        $changedFiles = array_filter(explode("\n", trim($process->getOutput())));
+
+        if (empty($changedFiles)) {
+            $this->info('No code changes detected → patch');
+            return 'patch';
+        }
+
+        $phpFiles   = [];
+        $migrations = [];
+        $tests      = [];
+        $docs       = [];
+        $configs    = [];
+
+        foreach ($changedFiles as $file) {
+            if (str_ends_with($file, '.php')) $phpFiles[] = $file;
+            if (Str::contains($file, 'database/migrations')) $migrations[] = $file;
+            if (Str::contains($file, 'tests/')) $tests[] = $file;
+            if (Str::contains($file, 'docs/') || preg_match('/\.(md|rst|txt)$/i', $file)) $docs[] = $file;
+            if (Str::contains($file, 'config/')) $configs[] = $file;
+        }
+
+
+        $phpVersion = $this->getPhpVersionFromComposer() ?? '8.2';
+        $this->info("🔍 Using PHP $phpVersion for parsing");
+
+        // $parser = (new ParserFactory())->createForVersion(PhpVersion::fromString($phpVersion));
+
+        $major = $minor = false;
+
+        // ⚙️ Analyse PHP diffs
+        foreach ($phpFiles as $file) {
+            $diffProcess = new Process(['git', 'diff', "$this->old_tag..HEAD", '--', $file]);
+            $diffProcess->run();
+            $diff = $diffProcess->getOutput();
+
+            $removed = [];
+            $added   = [];
+            foreach (explode("\n", $diff) as $line) {
+                if (str_starts_with($line, '-')) $removed[] = substr($line, 1);
+                if (str_starts_with($line, '+')) $added[]   = substr($line, 1);
+            }
+
+            // Detect added/removed classes
+            foreach ($removed as $line) {
+                if (preg_match('/class\s+([A-Za-z0-9_]+)/', $line)) $major = true;
+            }
+            foreach ($added as $line) {
+                if (preg_match('/class\s+([A-Za-z0-9_]+)/', $line)) $minor = true;
+            }
+
+            // Detect added/removed/modified public methods and signatures
+            foreach ($removed as $line) {
+                if (preg_match('/public function\s+([A-Za-z0-9_]+)\s*\((.*?)\)/', $line, $m)) {
+                    $major = true; // removed or changed public method
+                }
+            }
+
+            foreach ($added as $line) {
+                if (preg_match('/public function\s+([A-Za-z0-9_]+)\s*\((.*?)\)/', $line, $m)) {
+                    $minor = true;
+                }
+            }
+
+            // Detect changed signatures (parameters or return types)
+            foreach ($removed as $r) {
+                if (preg_match('/public function\s+([A-Za-z0-9_]+)\s*\((.*?)\)/', $r, $m1)) {
+                    foreach ($added as $a) {
+                        if (preg_match('/public function\s+(' . preg_quote($m1[1], '/') . ')\s*\((.*?)\)/', $a, $m2)) {
+                            if (trim($m1[2]) !== trim($m2[2])) {
+                                $major = true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // 📦 Migrations or config changes imply new features → minor
+        if (!empty($migrations) || !empty($configs)) {
+            $minor = true;
+        }
+
+        // 🧪 Only tests/docs changed → patch
+        $nonCodeChanges = count($phpFiles) === 0 && (!empty($tests) || !empty($docs));
+        if ($nonCodeChanges) {
+            $this->info('🧪 Only tests/docs changed → PATCH');
+            return 'patch';
+        }
+
+        // 🚨 Prioritize major > minor > patch
+        if ($major) {
+            $this->info('🧨 Detected removed/modified public methods or classes → MAJOR');
+            return 'major';
+        }
+
+        if ($minor) {
+            $this->info('✨ Detected new public methods/classes or migrations/configs → MINOR');
+            return 'minor';
+        }
+
+        $this->info('🐛 Only safe changes → PATCH');
+        return 'patch';
+    }
+
+    private function getPhpVersionFromComposer(): ?string
+    {
+        $path = Storage::disk('src')->path('composer.json');
+
+        if (!file_exists($path)) {
+            $this->warn('composer.json not found.');
+            return null;
+        }
+
+        $composer = json_decode(file_get_contents($path), true);
+        $require = $composer['require'] ?? [];
+
+        if (empty($require['php'])) {
+            $this->warn('No PHP version specified in composer.json');
+            return null;
+        }
+
+        $constraint = $require['php'];
+
+        // Extract first numeric version, e.g. "^8.2" -> "8.2"
+        if (preg_match('/(\d+\.\d+)/', $constraint, $matches)) {
+            return $matches[1];
+        }
+
+        return null;
     }
 }
