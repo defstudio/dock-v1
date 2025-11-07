@@ -394,7 +394,7 @@ EOF;
 
 
         $phpVersion = $this->getPhpVersionFromComposer() ?? '8.2';
-        $this->info("🔍 Using PHP $phpVersion for parsing");
+        $this->info("🔍 Using PHP $phpVersion for parsing changes from $this->old_tag");
 
         // $parser = (new ParserFactory())->createForVersion(PhpVersion::fromString($phpVersion));
 
@@ -426,22 +426,22 @@ EOF;
             foreach ($added as $line) {
                 // Detect added classes
                 if (preg_match('/\b(class|interface|trait|enum)\s+[A-Za-z0-9_]+/', $line)) {
-                    $this->info('- added class/trait/interface/enum → MINOR');
+                    $this->info("- added class/trait/interface/enum → Minor [$line]");
                     $minor = true;
                 }
                 // Detect added public methods
                 if (preg_match('/public function\s+([A-Za-z0-9_]+)\s*\((.*?)\)/', $line, $m)) {
-                    $this->info('- added public method → Minor');
+                    $this->info("- added public method → Minor [$line]");
                     $minor = true;
                 }
                 // Detect public property creation
                 if (preg_match('/public\s+\$[A-Za-z0-9_]+/', $line)) {
-                    $this->info('- added public property → MINOR');
+                    $this->info("- added public property → Minor [$line]");
                     $minor = true;
                 }
                 // Detect public const property creation
                 if (preg_match('/public\s+const\s+[A-Za-z0-9_]+/', $line)) {
-                    $this->info('- added public constant → MINOR');
+                    $this->info("- added public constant → Minor [$line]");
                     $minor = true;
                 }
             }
@@ -450,12 +450,12 @@ EOF;
             foreach ($removed as $line) {
                 // Detect removed classes
                 if (preg_match('/\b(class|interface|trait|enum)\s+[A-Za-z0-9_]+/', $line)) {
-                    $this->info('- removed class/trait/interface/enum → MAJOR');
+                    $this->info("- removed class/trait/interface/enum → MAJOR [$line]");
                     $major = true;
                 }
                 // Detect removed public methods
                 if (preg_match('/public function\s+([A-Za-z0-9_]+)\s*\((.*?)\)/', $line, $m)) {
-                    $this->info('- removed public method → MAJOR');
+                    $this->info("- removed public method → MAJOR [$line]");
                     $major = true; // removed or changed public method
                 }
                 // Detect changed signatures (parameters or return types)
@@ -463,7 +463,7 @@ EOF;
                     foreach ($added as $a) {
                         if (preg_match('/(public|protected|private)\s+function\s+(' . preg_quote($m1[2], '/') . ')/', $a, $m2)) {
                             if ($m1[1] !== $m2[1]) {
-                                $this->info("- visibility changed for $m1[2] → MAJOR");
+                                $this->info("- visibility changed for $m1[2] → MAJOR [$line]");
                                 $major = true;
                             }
                         }
@@ -474,7 +474,7 @@ EOF;
                     foreach ($added as $a) {
                         if (preg_match('/public\s+function\s+' . preg_quote($m1[1], '/') . '\s*\([^)]*\)\s*:\s*([A-Za-z0-9|?\\_]+)/', $a, $m2)) {
                             if (trim($m1[2]) !== trim($m2[1])) {
-                                $this->info("- changed return type of $m1[1] → MAJOR");
+                                $this->info("- changed return type of $m1[1] → MAJOR [$line]");
                                 $major = true;
                             }
                         }
@@ -485,7 +485,7 @@ EOF;
                     foreach ($added as $a) {
                         if (preg_match('/public\s+function\s+' . preg_quote($m1[1], '/') . '\s*\((.*?)\)/', $a, $m2)) {
                             if (trim($m1[2]) !== trim($m2[1])) {
-                                $this->info("- changed parameters for $m1[1] → MAJOR");
+                                $this->info("- changed parameters for $m1[1] → MAJOR [$line]");
                                 $major = true;
                             }
                         }
@@ -493,51 +493,51 @@ EOF;
                 }
                 // Detect public property removed
                 if (preg_match('/public\s+\$[A-Za-z0-9_]+/', $line)) {
-                    $this->info('- removed public property → MAJOR');
+                    $this->info("- removed public property → MAJOR [$line]");
                     $major = true;
                 }
                 // Detect public const property removed
                 if (preg_match('/public\s+const\s+[A-Za-z0-9_]+/', $line)) {
-                    $this->info('- removed public constant → MAJOR');
+                    $this->info("- removed public constant → MAJOR [$line]");
                     $major = true;
                 }
             }
 
             // controller heuristic (Laravel)
             if (Str::contains($file, 'app/Http/Controllers') && ($major || $minor)) {
-                $this->info('- controller change detected → MAJOR');
-                $major = true;
+                $this->info("- controller change detected → Minor [$file]");
+                $minor = true;
             }
         }
 
         // composer dependency changes → Minor
         if (!empty($composer)) {
-            $this->info('- composer.json/lock changed → Minor');
-            $major = true;
+            $this->info("- composer.json/lock changed → Minor");
+            $minor = true;
         }
 
         // views changes also imply feature → MINOR
         if (!empty($views)) {
-            $this->info('- new migrations/configs/views → Minor');
+            $this->info("- new views → Minor [" . implode(', ', $views) . "]");
             $minor = true;
         }
 
         // 📦 Migrations changes imply new features → minor
         if (!empty($migrations)) {
-            $this->info('- new migrations → Minor');
+            $this->info("- new migrations → Minor [" . implode(', ', $migrations) . "]");
             $minor = true;
         }
 
         // 📦 Config changes imply new features → minor
         if (!empty($configs)) {
-            $this->info('- new configs → Minor');
+            $this->info("- new configs → Minor [" . implode(', ', $configs) . "]");
             $minor = true;
         }
 
         // 🧪 Only tests/docs changed → patch
         $nonCodeChanges = count($phpFiles) === 0 && (!empty($tests) || !empty($docs));
         if ($nonCodeChanges) {
-            $this->info('🧪 Only tests/docs changed → PATCH');
+            $this->info("🧪 Only tests/docs changed → PATCH [" . implode(', ', $tests) .', ' . implode(', ', $tests) . "]");
             $this->type = 'patch';
             return true;
         }
