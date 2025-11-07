@@ -140,7 +140,7 @@ class Release extends Command
 
     public function create_new_tag(): bool
     {
-        if (!$this->option('force') && !$this->confirm("Are you sure you want to create a new {$this->type} $this->new_tag?")) {
+        if (!$this->option('force') && !$this->confirm("Are you sure you want to create a new $this->type $this->new_tag?")) {
             $this->warn('Aborted');
             return false;
         }
@@ -261,6 +261,7 @@ class Release extends Command
                             'pull_request_number' => $pull_request_number ?? null,
                         ];
                     })
+                    ->unique('message')
                     ->sortBy('priority')
                     ->groupBy('type')
                     ->except(['bump', 'dependencies'])
@@ -274,6 +275,7 @@ class Release extends Command
                                 )->implode("\n")."\n";
 
                     })->implode("\n");
+            //TODO remove duplicates
 
             $this->changes = <<<EOF
 ## What's Changed
@@ -461,7 +463,7 @@ EOF;
                     foreach ($added as $a) {
                         if (preg_match('/(public|protected|private)\s+function\s+(' . preg_quote($m1[2], '/') . ')/', $a, $m2)) {
                             if ($m1[1] !== $m2[1]) {
-                                $this->info("- visibility changed for {$m1[2]} → MAJOR");
+                                $this->info("- visibility changed for $m1[2] → MAJOR");
                                 $major = true;
                             }
                         }
@@ -472,7 +474,7 @@ EOF;
                     foreach ($added as $a) {
                         if (preg_match('/public\s+function\s+' . preg_quote($m1[1], '/') . '\s*\([^)]*\)\s*:\s*([A-Za-z0-9_|?\\]+)/', $a, $m2)) {
                             if (trim($m1[2]) !== trim($m2[1])) {
-                                $this->info("- changed return type of {$m1[1]} → MAJOR");
+                                $this->info("- changed return type of $m1[1] → MAJOR");
                                 $major = true;
                             }
                         }
@@ -483,18 +485,18 @@ EOF;
                     foreach ($added as $a) {
                         if (preg_match('/public\s+function\s+' . preg_quote($m1[1], '/') . '\s*\((.*?)\)/', $a, $m2)) {
                             if (trim($m1[2]) !== trim($m2[1])) {
-                                $this->info("- changed parameters for {$m1[1]} → MAJOR");
+                                $this->info("- changed parameters for $m1[1] → MAJOR");
                                 $major = true;
                             }
                         }
                     }
                 }
-                // Detect public property change
+                // Detect public property removed
                 if (preg_match('/public\s+\$[A-Za-z0-9_]+/', $line)) {
                     $this->info('- removed public property → MAJOR');
                     $major = true;
                 }
-                // Detect public const property change
+                // Detect public const property removed
                 if (preg_match('/public\s+const\s+[A-Za-z0-9_]+/', $line)) {
                     $this->info('- removed public constant → MAJOR');
                     $major = true;
@@ -508,21 +510,27 @@ EOF;
             }
         }
 
-        // composer dependency changes → MAJOR
+        // composer dependency changes → Minor
         if (!empty($composer)) {
-            $this->info('- composer.json/lock changed → MAJOR');
+            $this->info('- composer.json/lock changed → Minor');
             $major = true;
         }
 
         // views changes also imply feature → MINOR
         if (!empty($views)) {
-            $this->info('- new migrations/configs/views → MINOR');
+            $this->info('- new migrations/configs/views → Minor');
             $minor = true;
         }
 
-        // 📦 Migrations or config changes imply new features → minor
-        if (!empty($migrations) || !empty($configs)) {
+        // 📦 Migrations changes imply new features → minor
+        if (!empty($migrations)) {
             $this->info('- new migrations → Minor');
+            $minor = true;
+        }
+
+        // 📦 Config changes imply new features → minor
+        if (!empty($configs)) {
+            $this->info('- new configs → Minor');
             $minor = true;
         }
 
