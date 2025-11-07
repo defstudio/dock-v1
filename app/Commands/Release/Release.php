@@ -470,7 +470,7 @@ EOF;
                     }
                 }
                 // Detect return type changes
-                if (preg_match('/public\s+function\s+([A-Za-z0-9_]+)\s*\([^)]*\)\s*:\s*([A-Za-z0-9_|?\\]+)/', $line, $m1)) {
+                if (preg_match('/public\s+function\s+([A-Za-z0-9_]+)\s*\([^)]*\)\s*:\s*([A-Za-z0-9|?\\_]+)/', $line, $m1)) {
                     foreach ($added as $a) {
                         if (preg_match('/public\s+function\s+' . preg_quote($m1[1], '/') . '\s*\([^)]*\)\s*:\s*([A-Za-z0-9_|?\\]+)/', $a, $m2)) {
                             if (trim($m1[2]) !== trim($m2[1])) {
