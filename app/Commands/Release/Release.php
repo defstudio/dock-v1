@@ -222,8 +222,8 @@ class Release extends Command
                         }
 
                         $type = match (true) {
-                            $message->contains('Merge pull request') && $message->contains('/dependabot/') => 'dependencies_pull_request',
-                            $message->contains('Merge pull request') => 'pull_request',
+                            $message->contains('Merge pull request') && $message->contains('/dependabot/') => 'dependencies_pull_requests',
+                            $message->contains('Merge pull request') => 'pull_requests',
                             $author === 'dependabot' => 'dependencies',
                             $message->startsWith('[fix]') => 'fix',
                             $message->startsWith('fix') => 'fix',
@@ -242,14 +242,14 @@ class Release extends Command
                             default => 'other',
                         };
 
-                        if ($type === 'pull_request' || $type === 'dependencies_pull_request') {
+                        if ($type === 'pull_requests' || $type === 'dependencies_pull_requests') {
                             $pull_request_number = (int) $message->after('Merge pull request #')->before(' from')->__toString();
                         }
 
                         $priority = match ($type) {
-                            'pull_request' => 1,
+                            'pull_requests' => 1,
                             'other' => 99,
-                            'dependencies_pull_request' => 100,
+                            'dependencies_pull_requests' => 100,
                             default => 1000,
                         };
 
