@@ -534,6 +534,8 @@ EOF;
             $minor = true;
         }
 
+        $this->info(" ");
+
         // 🧪 Only tests/docs changed → patch
         $nonCodeChanges = count($phpFiles) === 0 && (!empty($tests) || !empty($docs));
         if ($nonCodeChanges) {
