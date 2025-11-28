@@ -35,6 +35,7 @@ use App\Recipes\Laravel\Commands\Vite;
 use App\Recipes\Laravel\Commands\Watch;
 use App\Containers\Php;
 use App\Recipes\Laravel\Containers\Dusk;
+use App\Recipes\Laravel\Containers\LaravelWebsocket;
 use App\Recipes\Laravel\Containers\MeiliSearch;
 use App\Recipes\Laravel\Containers\Nightwatch;
 use App\Recipes\Laravel\Containers\Pulse;
@@ -250,7 +251,6 @@ class LaravelRecipe extends DockerComposeRecipe
     }
 
 
-
     public function build_composer(): void
     {
         $composer = $this->add_container(Composer::class)
@@ -341,6 +341,11 @@ class LaravelRecipe extends DockerComposeRecipe
         if (!empty(env('WEBSOCKET_PORT'))) {
             $this->build_websocket();
         }
+
+        if (!empty(env('LARAVEL_WEBSOCKET_PORT'))) {
+            $this->build_websocket(true);
+        }
+
 
         if (!empty(env('ENABLE_BROWSER_TESTS'))) {
             $dusk = $this->build_dusk();
@@ -467,14 +472,25 @@ class LaravelRecipe extends DockerComposeRecipe
         return $dusk;
     }
 
-    public function build_websocket(): ?Websocket
+    public function build_websocket(bool $forLaravel = false): ?Websocket
     {
-        if (empty(env("WEBSOCKET_PORT"))) {
-            return null;
+        if ($forLaravel) {
+            if (empty(env("LARAVEL_WEBSOCKET_PORT"))) {
+                return null;
+            }
+
+            /** @var LaravelWebsocket $websocket */
+            $websocket = $this->add_container(LaravelWebsocket::class);
+        } else {
+            if (empty(env("WEBSOCKET_PORT"))) {
+                return null;
+            }
+
+            /** @var Websocket $websocket */
+            $websocket = $this->add_container(Websocket::class);
         }
 
-        /** @var Websocket $websocket */
-        $websocket = $this->add_container(Websocket::class)
+        $websocket = $websocket
             ->add_network($this->internal_network())
             ->depends_on('php');
 
