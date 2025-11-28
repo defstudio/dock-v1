@@ -472,7 +472,7 @@ class LaravelRecipe extends DockerComposeRecipe
         return $dusk;
     }
 
-    public function build_websocket(bool $forLaravel = false): ?Websocket
+    public function build_websocket(bool $forLaravel = false): null|Websocket|LaravelWebsocket
     {
         if ($forLaravel) {
             if (empty(env("LARAVEL_WEBSOCKET_PORT"))) {
