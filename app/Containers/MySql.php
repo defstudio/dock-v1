@@ -18,7 +18,14 @@ class MySql extends Container
 
     protected array $service_definition = [
         'restart' => 'unless-stopped',
-        'command' => '--character-set-server=utf8 --collation-server=utf8_general_ci --mysql-native-password=ON --sort_buffer_size=10M',
+        'command' => [
+            '--character-set-server=utf8',
+            '--collation-server=utf8_general_ci',
+            '--mysql-native-password=ON',
+            '--sort_buffer_size=10M',
+            '--binlog-expire-logs-seconds=86400',
+            '--binlog-expire-logs-auto-purge=ON',
+        ],
         'image' => 'mysql:8.4',
         'cap_add' => [
             'SYS_NICE',
@@ -43,7 +50,7 @@ class MySql extends Container
     }
 
     /**
-     * @param string $name
+     * @param  string  $name
      */
     public function set_user($name = 'dbuser')
     {
@@ -51,7 +58,7 @@ class MySql extends Container
     }
 
     /**
-     * @param string $password
+     * @param  string  $password
      */
     public function set_password(string $password = 'dbpassword')
     {
@@ -59,7 +66,7 @@ class MySql extends Container
     }
 
     /**
-     * @param string $password
+     * @param  string  $password
      */
     public function set_root_password(string $password = 'root')
     {
