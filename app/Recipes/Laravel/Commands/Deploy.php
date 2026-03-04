@@ -185,19 +185,6 @@ class Deploy extends Command
         }
 
 
-        if (!$this->task("Exit from Maintenance mode", function () use ($docker_service, $terminal) {
-            if (Storage::disk('src')->exists('storage/framework/down')) {
-                $docker_service->service('php')->execute($terminal, [
-                    'php',
-                    'artisan',
-                    'up',
-                ], null, false);
-            }
-        })) {
-            return false;
-        }
-
-
         if (!$this->task("Restarting Queues", function () use ($docker_service, $terminal) {
 
             $commands = [
