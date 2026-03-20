@@ -22,7 +22,7 @@ class MySql extends Container
             '--character-set-server=utf8',
             '--collation-server=utf8_general_ci',
             '--mysql-native-password=ON',
-            '--sort_buffer_size=10M',
+            '--sort_buffer_size=2M',
             '--binlog-expire-logs-seconds=86400',
             '--binlog-expire-logs-auto-purge=ON',
         ],
