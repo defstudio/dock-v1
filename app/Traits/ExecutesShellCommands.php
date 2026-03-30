@@ -41,6 +41,7 @@ trait ExecutesShellCommands
                     ->explode(' ')
                     ->toArray()),
                 'run',
+                '--no-deps',
                 '--rm',
                 $target_service,
                 'bash',
