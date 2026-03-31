@@ -272,6 +272,7 @@ abstract class Container
                 ->explode(' ')
                 ->toArray()),
             'run',
+            '--no-deps',
             '--service-ports',
             '--rm',
         ];
